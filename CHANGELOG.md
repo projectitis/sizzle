@@ -1,3 +1,8 @@
+## 0.1.1
+
+- SizzleGame
+    - Support for single scene
+
 ## 0.1.0
 
 - Initial version

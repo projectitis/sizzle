@@ -11,4 +11,5 @@ export 'package:flame/extensions.dart';
 export 'src/game/game.dart';
 export 'src/game/services.dart';
 export 'src/game/scene.dart';
+export 'src/display/dialog.dart';
 export 'src/display/sprite.dart';
