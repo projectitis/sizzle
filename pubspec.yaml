@@ -6,10 +6,21 @@ repository: https://github.com/projectitis/sizzle
 environment:
   sdk: '>=2.19.4 <3.0.0'
 
+# flame: #^1.7.2
 dependencies:
-  flame: ^1.7.2
+#  flame:
+#    path: C:/Projects/flutter/flame/packages/flame
+#    git:
+#      url: https://github.com/flame-engine/flame.git
+#      path: packages/flame
+  flame: ^1.8.2
+  jenny:
+    path: C:/Projects/flutter/flame/packages/flame_jenny/jenny
   flutter:
     sdk: flutter
+  jx: ^1.0.5
+#  jx:
+#    path: C:/Projects/jx-parser/jx-dart
   path_provider: ^2.0.14
 
 dev_dependencies:

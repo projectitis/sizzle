@@ -1,19 +1,23 @@
-A bitmap/pixel game engline based on Flame.
+![sizzle](sizzle-logo.png "sizzle")
 
-> This package is in alpha not yet production ready. Use at own risk
+A bitmap/pixel game engine based on Flame.
 
-This package takes all the hard work out of making a perfect pixelart game. It's compatible with other Flame features, so you can make use of audio,
+<a title="Pub" href="https://pub.dev/packages/sizzle"><img src="https://img.shields.io/badge/pub-v0.1-blue"/></a>
+
+> This package is in alpha and not yet production ready. Use at own risk!
+
+This package takes all the hard work out of making a perfect pixelart game. It's compatible with other Flame features, so you can make use of audio, bloc, forge2d etc.
 
 ## Features
 
 - Set target canvas size, and sizzle will scale and letterbox the game for you
 - Either use smooth movement, or snap to pixels
-- Dialog system with conversation tree
+- Dialog system
 - Persist game state (saves to local device)
 
 ## Getting started
 
-- Add `sizzle:` to your `pubspec.yaml`
+- Add `sizzle` using `dart pub add sizzle`
 
 ## Usage
 

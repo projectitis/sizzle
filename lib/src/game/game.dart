@@ -2,63 +2,122 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:sizzle/sizzle.dart';
-import 'package:flame/events.dart';
 import 'package:flutter/material.dart' hide Route;
 
-class SizzleGame extends FlameGame with SingleGameInstance, MouseMovementDetector, TapDetector {
-  int _pointerEventId = 0;
-  RouterComponent? _router;
-  final Vector2 _targetSize = Vector2(320, 240);
-  final Vector2 _maxSize = Vector2(320, 240);
-  final Vector2 bitmapScale = Vector2.all(1.0);
-  Rect viewWindow = Rect.fromLTWH(0.0, 0.0, 320.0, 240.0);
-  Paint? _letterBoxPaint;
+class SizzleGame extends FlameGame with SingleGameInstance {
+  /// Router component to manage scenes
+  late RouterComponent _router;
 
-  SizzleGame({
-    required Map<String, Component Function()> scenes,
-    Vector2? targetSize,
-    Vector2? maxSize,
-    Color letterBoxColor = const Color(0xff000000),
-  }) : super() {
+  /// Target size in scaled pixels. Common sizes are 320x240, 160x120 etc
+  final Vector2 _targetSize = Vector2(320, 240);
+
+  /// Set a maximum size that is larger than the [targetSize] to extend the
+  /// visible area of the game beyond the target size. You should ensure that
+  /// all action occurs in the target area because anything outside that is not
+  /// guaranteed to be displayed.
+  final Vector2 _maxSize = Vector2(320, 240);
+
+  /// The size of each pixel once the view window has been scaled. This is used
+  /// by bitmap sprites to display at the correct scale and to snap to whole pixels.
+  final Vector2 bitmapScale = Vector2.all(1.0);
+
+  /// Always ensure that the [bitmapScale] is in whole pixels
+  bool scaleToWholePixels = false;
+
+  /// The visible game window inside the letterbox
+  final MutableRectangle<double> viewWindow = MutableRectangle(0.0, 0.0, 320.0, 240.0);
+
+  /// The maximum size of the game. Not all parts may be visible
+  final MutableRectangle<double> gameWindow = MutableRectangle(0.0, 0.0, 320.0, 240.0);
+
+  /// The visible safe window. May be smaller than the view window, but guaranteed to be visible
+  final MutableRectangle<double> safeWindow = MutableRectangle(0.0, 0.0, 320.0, 240.0);
+
+  /// The paint used to draw the letterbox. Only the color is used. Usually black.
+  final Paint _letterBoxPaint = Paint();
+
+  /// Create a new sizzle game
+  ///
+  /// Either a [scene] or map of [scenes] should be provided. The game will start on
+  /// the first scene in the list. Set a target screen size using [targetSize], and
+  /// use [maxSize] to support a larger game area. Set the color of the letterbox with
+  /// [letterBoxColor].
+  SizzleGame(
+      {Map<String, Component Function()>? scenes,
+      Component Function()? scene,
+      Vector2? targetSize,
+      Vector2? maxSize,
+      Color letterBoxColor = const Color(0xff000000),
+      this.scaleToWholePixels = false})
+      : super() {
+    assert(scene != null || scenes != null, 'A scene or scenes must be provided');
+    assert(!(scene != null && scenes != null), 'Provide either a scene or list of scenes, not both');
+
     if (targetSize != null) _targetSize.setFrom(targetSize);
     _maxSize.setFrom(maxSize ?? _targetSize);
-    _letterBoxPaint = Paint()..color = letterBoxColor;
+
+    _letterBoxPaint.color = letterBoxColor;
+
     final Map<String, Route> routes = {};
-    scenes.forEach((key, value) {
-      routes[key] = Route(value);
-    });
-    add(_router = RouterComponent(initialRoute: scenes.keys.first, routes: routes));
+    if (scenes != null) {
+      scenes.forEach((key, value) {
+        routes[key] = Route(value);
+      });
+    } else if (scene != null) {
+      routes['default'] = Route(scene);
+    }
+    add(_router = RouterComponent(initialRoute: routes.keys.first, routes: routes));
   }
 
+  /// Ensure services are initialized
   @override
   FutureOr<void> onLoad() async {
-    await Services.init();
+    await Services.init(this);
+
     return super.onLoad();
   }
 
+  /// Calculate new view window size and bitmap scaling when the game resizes
   @override
   void onGameResize(Vector2 canvasSize) {
     if (_targetSize.x != 0) {
       double s = min(canvasSize.x / _targetSize.x, canvasSize.y / _targetSize.y);
-      double w = min(canvasSize.x, _maxSize.x * s);
-      double h = min(canvasSize.y, _maxSize.y * s);
+      if (scaleToWholePixels) s = max(s.floorToDouble(), 1.0);
+      double xMax = _maxSize.x * s;
+      double yMax = _maxSize.y * s;
+      double xMin = _targetSize.x * s;
+      double yMin = _targetSize.y * s;
+      double w = min(canvasSize.x, xMax);
+      double h = min(canvasSize.y, yMax);
       bitmapScale.setValues(s, s);
-      viewWindow = Rect.fromLTWH(
+      viewWindow.setValues(
         (canvasSize.x - w) * 0.5,
         (canvasSize.y - h) * 0.5,
         w,
         h,
       );
+      safeWindow.setValues(
+        (xMax - xMin) * 0.5,
+        (yMax - yMin) * 0.5,
+        xMin,
+        yMin,
+      );
+      gameWindow.setValues(
+        (xMax - w) * 0.5,
+        (yMax - h) * 0.5,
+        xMax,
+        yMax,
+      );
     }
     super.onGameResize(canvasSize);
   }
 
-  /// Override renderTree to set up letterbox
+  /// Letterbox the view window
   @override
   void renderTree(Canvas c) {
     if (_targetSize.x != 0) {
       c.save();
-      c.translate(viewWindow.left, viewWindow.top);
+      c.translate(viewWindow.left - gameWindow.left, viewWindow.top - gameWindow.top);
       super.renderTree(c);
       c.restore();
 
@@ -74,40 +133,10 @@ class SizzleGame extends FlameGame with SingleGameInstance, MouseMovementDetecto
     }
   }
 
+  /// Handle scene changes using the Flame router
   void changeScene(String scene) {
-    _router?.pushNamed(scene);
-  }
+    assert(_router.routes.keys.contains(scene), 'The scene \'$scene\' does not exist');
 
-  @override
-  void onMouseMove(PointerHoverInfo info) {
-    super.onMouseMove(info);
-
-    for (final child in children) {
-      //if (child is RiveSprite) {
-      //  child.pointerMove(info.eventPosition.global);
-      //}
-    }
-  }
-
-  @override
-  void onTapDown(TapDownInfo info) {
-    super.onTapDown(info);
-
-    for (final child in children) {
-      //if (child is RiveSprite) {
-      //  child.pointerDown(info.eventPosition.global, ++_pointerEventId);
-      //}
-    }
-  }
-
-  @override
-  void onTapUp(TapUpInfo info) {
-    super.onTapUp(info);
-
-    for (final child in children) {
-      //if (child is RiveSprite) {
-      //  child.pointerUp(info.eventPosition.global);
-      //}
-    }
+    _router.pushNamed(scene);
   }
 }
