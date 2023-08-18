@@ -1,6 +1,8 @@
+![sizzle](sizzle-logo.png "sizzle")
+
 A bitmap/pixel game engine based on Flame.
 
-![sizzle](sizzle-logo.png "sizzle")
+<a title="Pub" href="https://pub.dev/packages/sizzle"><img src="https://img.shields.io/badge/pub-v0.1-blue"/></a>
 
 > This package is in alpha and not yet production ready. Use at own risk!
 

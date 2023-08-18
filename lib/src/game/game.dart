@@ -2,10 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:sizzle/sizzle.dart';
-import 'package:flame/events.dart';
 import 'package:flutter/material.dart' hide Route;
 
-class SizzleGame extends FlameGame with SingleGameInstance, MouseMovementDetector, TapDetector {
+class SizzleGame extends FlameGame with SingleGameInstance {
   /// Router component to manage scenes
   late RouterComponent _router;
 
@@ -22,11 +21,20 @@ class SizzleGame extends FlameGame with SingleGameInstance, MouseMovementDetecto
   /// by bitmap sprites to display at the correct scale and to snap to whole pixels.
   final Vector2 bitmapScale = Vector2.all(1.0);
 
+  /// Always ensure that the [bitmapScale] is in whole pixels
+  bool scaleToWholePixels = false;
+
   /// The visible game window inside the letterbox
-  Rect viewWindow = Rect.fromLTWH(0.0, 0.0, 320.0, 240.0);
+  final MutableRectangle<double> viewWindow = MutableRectangle(0.0, 0.0, 320.0, 240.0);
+
+  /// The maximum size of the game. Not all parts may be visible
+  final MutableRectangle<double> gameWindow = MutableRectangle(0.0, 0.0, 320.0, 240.0);
+
+  /// The visible safe window. May be smaller than the view window, but guaranteed to be visible
+  final MutableRectangle<double> safeWindow = MutableRectangle(0.0, 0.0, 320.0, 240.0);
 
   /// The paint used to draw the letterbox. Only the color is used. Usually black.
-  Paint? _letterBoxPaint;
+  final Paint _letterBoxPaint = Paint();
 
   /// Create a new sizzle game
   ///
@@ -34,20 +42,21 @@ class SizzleGame extends FlameGame with SingleGameInstance, MouseMovementDetecto
   /// the first scene in the list. Set a target screen size using [targetSize], and
   /// use [maxSize] to support a larger game area. Set the color of the letterbox with
   /// [letterBoxColor].
-  SizzleGame({
-    Map<String, Component Function()>? scenes,
-    Component Function()? scene,
-    Vector2? targetSize,
-    Vector2? maxSize,
-    Color letterBoxColor = const Color(0xff000000),
-  }) : super() {
+  SizzleGame(
+      {Map<String, Component Function()>? scenes,
+      Component Function()? scene,
+      Vector2? targetSize,
+      Vector2? maxSize,
+      Color letterBoxColor = const Color(0xff000000),
+      this.scaleToWholePixels = false})
+      : super() {
     assert(scene != null || scenes != null, 'A scene or scenes must be provided');
     assert(!(scene != null && scenes != null), 'Provide either a scene or list of scenes, not both');
 
     if (targetSize != null) _targetSize.setFrom(targetSize);
     _maxSize.setFrom(maxSize ?? _targetSize);
 
-    _letterBoxPaint = Paint()..color = letterBoxColor;
+    _letterBoxPaint.color = letterBoxColor;
 
     final Map<String, Route> routes = {};
     if (scenes != null) {
@@ -60,10 +69,11 @@ class SizzleGame extends FlameGame with SingleGameInstance, MouseMovementDetecto
     add(_router = RouterComponent(initialRoute: routes.keys.first, routes: routes));
   }
 
-  /// Ensure services are initialised
+  /// Ensure services are initialized
   @override
   FutureOr<void> onLoad() async {
-    await Services.init();
+    await Services.init(this);
+
     return super.onLoad();
   }
 
@@ -72,14 +82,31 @@ class SizzleGame extends FlameGame with SingleGameInstance, MouseMovementDetecto
   void onGameResize(Vector2 canvasSize) {
     if (_targetSize.x != 0) {
       double s = min(canvasSize.x / _targetSize.x, canvasSize.y / _targetSize.y);
-      double w = min(canvasSize.x, _maxSize.x * s);
-      double h = min(canvasSize.y, _maxSize.y * s);
+      if (scaleToWholePixels) s = max(s.floorToDouble(), 1.0);
+      double xMax = _maxSize.x * s;
+      double yMax = _maxSize.y * s;
+      double xMin = _targetSize.x * s;
+      double yMin = _targetSize.y * s;
+      double w = min(canvasSize.x, xMax);
+      double h = min(canvasSize.y, yMax);
       bitmapScale.setValues(s, s);
-      viewWindow = Rect.fromLTWH(
+      viewWindow.setValues(
         (canvasSize.x - w) * 0.5,
         (canvasSize.y - h) * 0.5,
         w,
         h,
+      );
+      safeWindow.setValues(
+        (xMax - xMin) * 0.5,
+        (yMax - yMin) * 0.5,
+        xMin,
+        yMin,
+      );
+      gameWindow.setValues(
+        (xMax - w) * 0.5,
+        (yMax - h) * 0.5,
+        xMax,
+        yMax,
       );
     }
     super.onGameResize(canvasSize);
@@ -90,7 +117,7 @@ class SizzleGame extends FlameGame with SingleGameInstance, MouseMovementDetecto
   void renderTree(Canvas c) {
     if (_targetSize.x != 0) {
       c.save();
-      c.translate(viewWindow.left, viewWindow.top);
+      c.translate(viewWindow.left - gameWindow.left, viewWindow.top - gameWindow.top);
       super.renderTree(c);
       c.restore();
 
