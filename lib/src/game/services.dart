@@ -96,8 +96,11 @@ class Services {
     assert(_runner == null, 'Trying to start dialog $nodeName but dialog already started');
     assert(views.isNotEmpty, 'Trying to start dialog $nodeName but no dialog views provided');
     _runner = DialogueRunner(yarnProject: yarn, dialogueViews: views);
-    _runner!.startDialogue(nodeName);
-    // TODO: How to remove runner when dialog complete?
+    _runner!.startDialogue(nodeName).whenComplete(_dialogEnded);
+  }
+
+  static void _dialogEnded() {
+    _runner = null;
   }
 
   static FutureOr<void> loadDialog(List<String> files, {bool replaceNodes = false}) async {

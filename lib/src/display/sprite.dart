@@ -25,7 +25,7 @@ mixin Snap on PositionComponent {
   Vector2 bitmapPosition = Vector2.zero();
 
   /// Where to base coordinates on
-  AnchorWindow anchorWindow = AnchorWindow.gameWindow;
+  AnchorWindow _anchorWindow = AnchorWindow.gameWindow;
 
   /// Calculations for anchor window
   final Vector2 _anchorOffset = Vector2.zero();
@@ -42,6 +42,15 @@ mixin Snap on PositionComponent {
   @override
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
+    _update();
+  }
+
+  AnchorWindow get anchorWindow {
+    return _anchorWindow;
+  }
+
+  set anchorWindow(AnchorWindow window) {
+    _anchorWindow = window;
     _update();
   }
 
@@ -87,8 +96,8 @@ mixin Snap on PositionComponent {
   @override
   bool containsLocalPoint(Vector2 point) {
     point.setValues(
-      point.x + game.gameWindow.left / game.bitmapScale.x,
-      point.y + game.gameWindow.top / game.bitmapScale.y,
+      point.x + game.gameWindowOffset.x / game.bitmapScale.x,
+      point.y + game.gameWindowOffset.y / game.bitmapScale.y,
     );
     return super.containsLocalPoint(point);
   }
