@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:sizzle/sizzle.dart';
 import 'package:flutter/material.dart' hide Route;
 
-class SizzleGame extends FlameGame with SingleGameInstance {
+class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
   /// Router component to manage scenes
   late RouterComponent _router;
 
@@ -32,6 +32,8 @@ class SizzleGame extends FlameGame with SingleGameInstance {
 
   /// The visible safe window. May be smaller than the view window, but guaranteed to be visible
   final MutableRectangle<double> safeWindow = MutableRectangle(0.0, 0.0, 320.0, 240.0);
+
+  final Vector2 gameWindowOffset = Vector2.zero();
 
   /// The paint used to draw the letterbox. Only the color is used. Usually black.
   final Paint _letterBoxPaint = Paint();
@@ -107,6 +109,10 @@ class SizzleGame extends FlameGame with SingleGameInstance {
         (yMax - h) * 0.5,
         xMax,
         yMax,
+      );
+      gameWindowOffset.setValues(
+        (xMax - canvasSize.x) * 0.5,
+        (yMax - canvasSize.y) * 0.5,
       );
     }
     super.onGameResize(canvasSize);
