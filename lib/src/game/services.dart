@@ -20,6 +20,7 @@ class Services {
   static Directory? _dir;
   static final YarnProject yarn = YarnProject();
   static DialogueRunner? _runner;
+  static Completer<void>? _dialogComplete;
 
   static OnFileAccessCallback? _onLoad;
   static set onLoad(OnFileAccessCallback callback) {
@@ -92,15 +93,19 @@ class Services {
     return _flags;
   }
 
-  static void startDialog(String nodeName, List<DialogueView> views) {
+  static Future<void> startDialog(String nodeName, List<DialogueView> views) {
     assert(_runner == null, 'Trying to start dialog $nodeName but dialog already started');
     assert(views.isNotEmpty, 'Trying to start dialog $nodeName but no dialog views provided');
     _runner = DialogueRunner(yarnProject: yarn, dialogueViews: views);
     _runner!.startDialogue(nodeName).whenComplete(_dialogEnded);
+    _dialogComplete = Completer();
+    return _dialogComplete!.future;
   }
 
   static void _dialogEnded() {
     _runner = null;
+    _dialogComplete?.complete();
+    _dialogComplete = null;
   }
 
   static FutureOr<void> loadDialog(List<String> files, {bool replaceNodes = false}) async {

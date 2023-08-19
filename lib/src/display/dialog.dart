@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/semantics.dart';
-import 'package:flutter/services.dart';
 import 'package:jenny/jenny.dart';
 import 'package:flame/events.dart';
 import 'package:flame/components.dart';
