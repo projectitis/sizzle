@@ -158,6 +158,7 @@ class TextAreaComponent extends PositionComponent {
     bool isBreak = false;
 
     void addLine(int pos, double offset) {
+      print('    add line from $startPos to $pos');
       _lines.add(TextAreaLine(startPos, pos, offset));
       isBreak = true;
       startPos = pos;
@@ -187,6 +188,7 @@ class TextAreaComponent extends PositionComponent {
     _lines.clear();
     int pos = 0;
     while (pos < _text.length) {
+      print(_text[pos]);
       int c = _text.codeUnitAt(pos++);
 
       // After break, ignore leading whitespace
@@ -198,27 +200,40 @@ class TextAreaComponent extends PositionComponent {
 
       // Force break
       if (c == CharCode.newline) {
+        print('  force break');
         addLine(pos, 0);
       }
       // Allow break before
       else if (CharCode.isBreakableBefore(c)) {
+        print('  breakable before');
         pos = prepareLine(pos - 1) ?? pos;
       }
       // Allow break
       else if (CharCode.isWhitespace(c)) {
+        print('  breakable');
         pos = prepareLine(pos - 1) ?? pos;
       }
       // Allow break after
       else if (CharCode.isBreakableAfter(c)) {
+        print('  breakable after');
         pos = prepareLine(pos) ?? pos;
       }
       // No break
+      print('  at end. pos=$pos breakPos=$breakPos startPos=$startPos');
     }
     // Add last line
-    //breakPos = pos;
+    print('  second to last line');
     pos = prepareLine(pos) ?? pos;
     breakPos = pos;
     prepareLine(_text.length, true);
+    /*
+    startPos = pos + 1;
+    breakPos = _text.length;
+    if (breakPos > startPos) {
+      print('  last line');
+      prepareLine(_text.length, true);
+    }
+    */
 
     // Total size
     size.setValues(_actualWidth, _lineHeight * _lines.length);
