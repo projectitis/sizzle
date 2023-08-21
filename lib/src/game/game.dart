@@ -10,12 +10,14 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
 
   /// Target size in scaled pixels. Common sizes are 320x240, 160x120 etc
   final Vector2 _targetSize = Vector2(320, 240);
+  get targetGameSize => _targetSize;
 
   /// Set a maximum size that is larger than the [targetSize] to extend the
   /// visible area of the game beyond the target size. You should ensure that
   /// all action occurs in the target area because anything outside that is not
   /// guaranteed to be displayed.
   final Vector2 _maxSize = Vector2(320, 240);
+  get maxGameSize => _maxSize;
 
   /// The size of each pixel once the view window has been scaled. This is used
   /// by bitmap sprites to display at the correct scale and to snap to whole pixels.
