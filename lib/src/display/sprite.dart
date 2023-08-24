@@ -17,26 +17,17 @@ class PlySpriteComponent extends PositionComponent with Snap {
   final String name;
   late final Image _image;
   late final PlySpriteData _data;
+  final Paint _paint = Paint();
 
-  // The active animation
   late PlyAnimation _anim;
-
-  // The current advance direction
   bool _animForward = true;
 
-  // The active frame
   late PlyFrame _frame;
-
-  // The active frame index
   int _frameIndex = 0;
-
-  // Total millis into the frame
   double _framePos = 0;
 
-  // Flag to indicate whether the animation is playing
   bool _playing = false;
-
-  final Paint _paint = Paint();
+  get isPlaying => _playing;
 
   @override
   FutureOr<void> onLoad() async {
@@ -147,9 +138,7 @@ class PlySpriteComponent extends PositionComponent with Snap {
   @override
   void render(Canvas canvas) {
     if (isLoaded) {
-      //print("render frame with ${_frame.plys.length} plys");
       for (final ply in _frame.plys) {
-        //print("  ${ply.src} => ${ply.dst}");
         canvas.drawImageRect(_image, ply.src, ply.dst, _paint);
       }
     }
@@ -187,10 +176,7 @@ enum PlyDirection {
 }
 
 class Ply {
-  Ply(this.orientation, this.src, double x, double y) : dst = Rect.fromLTWH(x, y, src.width, src.height) {
-    print(
-        "    Ply (${src.left}, ${src.top}, ${src.width}, ${src.height}) to (${dst.left}, ${dst.top}, ${dst.width}, ${dst.height})");
-  }
+  Ply(this.orientation, this.src, double x, double y) : dst = Rect.fromLTWH(x, y, src.width, src.height);
   final PlyOrientation orientation;
   final Rect src;
   final Rect dst;
@@ -218,14 +204,12 @@ class PlySpriteData {
       data.width = json['width'];
       data.height = json['height'];
       for (final part in json['parts']) {
-        final r = Rect.fromLTWH(
+        data.parts.add(Rect.fromLTWH(
           part['x'].toDouble(),
           part['y'].toDouble(),
           part['width'].toDouble(),
           part['height'].toDouble(),
-        );
-        data.parts.add(r);
-        print("Part (${r.left}, ${r.top}, ${r.width}, ${r.height})");
+        ));
       }
       json['animations'].forEach((name, animData) {
         final anim = PlyAnimation(PlyDirection.getByValue(animData['direction']));
