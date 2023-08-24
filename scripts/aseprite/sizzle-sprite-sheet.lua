@@ -148,13 +148,14 @@ end
 
 -- Step tags
 for _,tag in ipairs(tags) do
-    animation = {name = tag.name, direction = tag.aniDir, frames = {}}
+    animation = {direction = tag.aniDir, frames = {}}
     frame = tag.fromFrame
     while frame do
-        layeredSprite = {index = frame.frameNumber - tag.fromFrame.frameNumber + 1, duration = frame.duration, parts = {}}
+        layeredSprite = {duration = frame.duration, parts = {}}
 
         -- Step through all layers
         for _,layer in ipairs(sprite.layers) do
+            
             -- Ignore invisible layers
             if not allLayers and not layer.isVisible then
                 goto next_layer
@@ -185,6 +186,7 @@ for _,tag in ipairs(tags) do
                     name = layer.name.."_"..frame.frameNumber,
                     image = cel.image
                 }
+                --print("      Inserting part {"..part.index..", "..part.name..", "..part.image.width.."x"..part.image.height.."}")
                 table.insert(output.parts, part)
                 partsArea = partsArea + cel.image.width * cel.image.height
                 orientation = ImageCompare.Same
@@ -212,7 +214,7 @@ for _,tag in ipairs(tags) do
         end
     end
 
-    table.insert(output.animations, animation)
+    output.animations[tag.name] = animation;
 end
 
 -- Reset color mode
@@ -234,17 +236,15 @@ local outputName = app.fs.joinPath(app.fs.filePath(sprite.filename), outputId)
 
 -- Estimate final size (add 5% buffer to start)
 sortParts = function(p1, p2)
-    if p1.image.height > p2.image.height then
-        return true
-    elseif p1.image.height < p2.image.height then
-        return false
-    else
+    if p1.image.height == p2.image.height then
         return p1.image.width > p2.image.width
+    else
+        return p1.image.height > p2.image.height
     end
 end
 table.sort(output.parts, sortParts)
 
-local buffer = 0.1
+local buffer = 0.05
 local image = nil
 local placed = false
 local cropx = 0
@@ -252,7 +252,6 @@ local cropy = 0
 while not placed do
     sideLength = math.ceil(math.sqrt(partsArea * (1 + buffer)))
     image = Image(sideLength, sideLength)
-    print("Trying image of side "..sideLength)
     imageRows = {}
     for i=0, sideLength do
         imageRows[i] = 0
@@ -281,7 +280,8 @@ while not placed do
         if not placed then break end
     end
     if not placed then
-        buffer = buffer + 0.1
+        print("Trying larger buffer. Failed at "..(buffer * 100).."%")
+        buffer = buffer + 0.05
     end
 end
 imageCropped = Image(cropx, cropy)
@@ -290,22 +290,24 @@ print("Final image size "..cropx.."x"..cropy)
 
 -- Save the image tile
 imageCropped:saveAs(outputName..".png")
-print("Save sprite data to '"..outputId..".png'")
+print("Save image tile to '"..outputId..".png'")
 
 --
 -- Write output data
 --
 
 -- Prepare
+table.sort(output.parts, function (p1, p2) return p1.index < p2.index end)
 for _, p in pairs(output.parts) do
-   p.image = nil
-   p.name = nil
+    p.index = nil
+    p.image = nil
+    p.name = nil
 end
-output.image = outputName..".png"
+output.image = outputId..".png"
 
 -- Save
 local json = dofile("./json.lua")
 local file = io.open(outputName..".json", "w")
 file:write(json.encode(output))
 file:close()
-print("Save data to '"..outputId..".json'")
+print("Save data file to '"..outputId..".json'")
