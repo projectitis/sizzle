@@ -3,10 +3,10 @@ import 'dart:ui';
 import 'dart:math';
 
 import 'package:meta/meta.dart';
-
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:sizzle/src/display/sprite.dart';
+
+import 'snap.dart';
 
 /// A nine-tile grid implementation
 ///

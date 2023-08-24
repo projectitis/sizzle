@@ -8,7 +8,7 @@ import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 
 import 'package:sizzle/src/text/text.dart';
-import 'package:sizzle/src/display/sprite.dart';
+import 'snap.dart';
 
 /// Options available to the speech bubble
 class DialogOptions {

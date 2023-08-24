@@ -1,6 +1,6 @@
 import 'package:flame/components.dart';
 
-import 'sprite.dart';
+import 'snap.dart';
 
 class BitmapRectangleComponent extends RectangleComponent with Snap {
   BitmapRectangleComponent({

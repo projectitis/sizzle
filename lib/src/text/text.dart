@@ -1,9 +1,8 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:flame/text.dart';
 import 'package:flutter/painting.dart';
-import 'package:sizzle/src/display/sprite.dart';
+import 'package:sizzle/src/display/snap.dart';
 
 /// Details of a line of text
 class TextAreaLine {
