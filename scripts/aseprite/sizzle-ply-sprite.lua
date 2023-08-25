@@ -14,12 +14,14 @@ end
 
 -- Dialog for options
 local dlg = Dialog()
---dlg:combobox{ id="output", label="Output", option="JSON", options={ "JSON", "Jx" } }
+dlg:combobox{ id="output", label="Output", option="JSON verbose", options={ "JSON verbose", "JSON condensed" } } -- "Jx"
 dlg:combobox{ id="optimise", label="Optimise", option="Rotations only", options={ "Rotations and Flips", "Rotations only" } }
 dlg:combobox{ id="layers", label="Layers", option="Visible only", options={ "Visible only", "All layers" } }
 dlg:button{ id="continue", text="Continue" }
 dlg:show()
+
 outputAsJx = dlg.data.output == "Jx"
+outputVerbose = dlg.data.output == "JSON verbose"
 supportFlips = dlg.data.optimise == "Rotations and Flips"
 allLayers = dlg.data.layers == "All layers"
 
@@ -146,15 +148,50 @@ if #tags == 0 then
     }}
 end
 
--- Step tags
+-- Step tags (animations)
 for _,tag in ipairs(tags) do
     animation = {direction = tag.aniDir, frames = {}}
+    local gotAnchor = false
+    local anchor = {x=0, y=0}
+
     frame = tag.fromFrame
     while frame do
         layeredSprite = {duration = frame.duration, parts = {}}
 
         -- Step through all layers
         for _,layer in ipairs(sprite.layers) do
+
+            -- Anchor
+            if layer.name == "_anchor" then
+                if not gotAnchor then
+                    local cel = layer:cel(frame.frameNumber)
+                    if cel ~= nil then
+                        if cel.image.width == 3 and cel.image.height == 3 then
+                            if cel.image:getPixel(0,0) & 0xff000000 == 0 then
+                                anchor = {x=cel.bounds.x + 3, y=cel.bounds.y + 3}
+                                gotAnchor = true
+                            elseif cel.image:getPixel(2,0) & 0xff000000 == 0 then
+                                anchor = {x=cel.bounds.x, y=cel.bounds.y + 3}
+                                gotAnchor = true
+                            elseif cel.image:getPixel(0,2) & 0xff000000 == 0 then
+                                anchor = {x=cel.bounds.x + 3, y=cel.bounds.y}
+                                gotAnchor = true
+                            elseif cel.image:getPixel(2,2) & 0xff000000 == 0 then
+                                anchor = {x=cel.bounds.x, y=cel.bounds.y}
+                                gotAnchor = true
+                            else
+                                print("Warning! Anchor shape not correct for '"..tag.name.."' on frame "..frame.frameNumber)
+                            end
+                            if gotAnchor then
+                                print("Anchor for '"..tag.name.."' set to "..anchor.x..","..anchor.y.." on frame "..frame.frameNumber)
+                            end
+                        else
+                            print("Warning! Anchor not drawn at correct size (3x3) for '"..tag.name.."' on frame "..frame.frameNumber)
+                        end
+                    end
+                end
+                goto next_layer
+            end
             
             -- Ignore invisible layers
             if not allLayers and not layer.isVisible then
@@ -214,6 +251,7 @@ for _,tag in ipairs(tags) do
         end
     end
 
+    animation.anchor = anchor;
     output.animations[tag.name] = animation;
 end
 
@@ -304,6 +342,34 @@ for _, p in pairs(output.parts) do
     p.name = nil
 end
 output.image = outputId..".png"
+
+-- Condensed
+if not outputVerbose then
+    local condensedOutput = {{output.width, output.height}}
+    local parts = {}
+    for _, p in pairs(output.parts) do
+        table.insert(parts, {p.x, p.y, p.width, p.height})
+    end
+    table.insert(condensedOutput, parts)
+    local anims = {}
+    for name, a in pairs(output.animations) do
+        local anim = {name, a.direction, {a.anchor.x, a.anchor.y}}
+        local frames = {}
+        for _, f in pairs(a.frames) do
+            local frame = {f.duration}
+            local parts = {}
+            for _, p in pairs(f.parts) do
+                table.insert(parts, {p.index, p.orientation, p.x, p.y})
+            end
+            table.insert(frame, parts)
+            table.insert(frames, frame)
+        end
+        table.insert(anim, frames)
+        table.insert(anims, anim)
+    end
+    table.insert(condensedOutput, anims)
+    output = condensedOutput;
+end
 
 -- Save
 local json = dofile("./json.lua")
