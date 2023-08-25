@@ -14,7 +14,7 @@ end
 
 -- Dialog for options
 local dlg = Dialog()
-dlg:combobox{ id="output", label="Output", option="JSON verbose", options={ "JSON verbose", "JSON condensed" } } -- "Jx"
+dlg:combobox{ id="output", label="Output", option="JSON condensed", options={ "JSON verbose", "JSON condensed" } } -- "Jx"
 dlg:combobox{ id="optimise", label="Optimise", option="Rotations only", options={ "Rotations and Flips", "Rotations only" } }
 dlg:combobox{ id="layers", label="Layers", option="Visible only", options={ "Visible only", "All layers" } }
 dlg:button{ id="continue", text="Continue" }
@@ -150,7 +150,8 @@ end
 
 -- Step tags (animations)
 for _,tag in ipairs(tags) do
-    animation = {direction = tag.aniDir, frames = {}}
+    print("Processing "..tag.name)
+    animation = {name = tag.name, direction = tag.aniDir, frames = {}}
     local gotAnchor = false
     local anchor = {x=0, y=0}
 
@@ -252,14 +253,7 @@ for _,tag in ipairs(tags) do
     end
 
     animation.anchor = anchor;
-    output.animations[tag.name] = animation;
-end
-
--- Reset color mode
-if origColorMode == ColorMode.INDEXED then
-    app.command.ChangePixelFormat{ format="indexed", dithering="none" }
-elseif origColorMode == ColorMode.GRAY then
-    app.command.ChangePixelFormat{ format="gray" }
+    table.insert(output.animations, animation)
 end
 
 --
@@ -304,7 +298,7 @@ while not placed do
                     p.y = y
                     p.width = p.image.width
                     p.height = p.image.height
-                    for i=0, p.image.height do
+                    for i=0, p.image.height - 1 do
                         imageRows[y + i] = x + p.image.width
                     end
                     cropx = math.max(cropx, x + p.image.width)
@@ -343,8 +337,17 @@ for _, p in pairs(output.parts) do
 end
 output.image = outputId..".png"
 
--- Condensed
-if not outputVerbose then
+-- Output format
+if outputVerbose then
+    -- Verbose
+    local namedAnims = {}
+    for _, a in pairs(output.animations) do
+        namedAnims[a.name] = a;
+        namedAnims[a.name].name = nil
+    end
+    output.animations = namedAnims
+else
+    -- Condensed
     local condensedOutput = {{output.width, output.height}}
     local parts = {}
     for _, p in pairs(output.parts) do
@@ -352,8 +355,8 @@ if not outputVerbose then
     end
     table.insert(condensedOutput, parts)
     local anims = {}
-    for name, a in pairs(output.animations) do
-        local anim = {name, a.direction, {a.anchor.x, a.anchor.y}}
+    for _, a in pairs(output.animations) do
+        local anim = {a.name, a.direction, {a.anchor.x, a.anchor.y}}
         local frames = {}
         for _, f in pairs(a.frames) do
             local frame = {f.duration}
@@ -365,6 +368,7 @@ if not outputVerbose then
             table.insert(frames, frame)
         end
         table.insert(anim, frames)
+        print("Inserting "..a.name)
         table.insert(anims, anim)
     end
     table.insert(condensedOutput, anims)
@@ -377,3 +381,10 @@ local file = io.open(outputName..".json", "w")
 file:write(json.encode(output))
 file:close()
 print("Save data file to '"..outputId..".json'")
+
+-- Reset color mode
+if origColorMode == ColorMode.INDEXED then
+    app.command.ChangePixelFormat{ format="indexed", dithering="none" }
+elseif origColorMode == ColorMode.GRAY then
+    app.command.ChangePixelFormat{ format="gray" }
+end
