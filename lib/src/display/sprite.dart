@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/cache.dart';
@@ -21,6 +22,7 @@ class PlySpriteComponent extends PositionComponent with Snap {
 
   late _PlyAnimation _anim;
   bool _animForward = true;
+  String? nextAnimation;
 
   late _PlyFrame _frame;
   int _frameIndex = 0;
@@ -28,6 +30,10 @@ class PlySpriteComponent extends PositionComponent with Snap {
 
   bool _playing = false;
   get isPlaying => _playing;
+
+  static int directionForward = 0;
+  static int directionReverse = 1;
+  static int directionPingpong = 2;
 
   @override
   FutureOr<void> onLoad() async {
@@ -37,13 +43,13 @@ class PlySpriteComponent extends PositionComponent with Snap {
     width = _data.width;
     height = _data.height;
     reset();
-    play();
+    play(nextAnimation);
     return super.onLoad();
   }
 
   /// Reset current animation back to the start
   void reset() {
-    _animForward = _anim.direction != _PlyDirection.reverse;
+    _animForward = _anim.direction != directionReverse;
     if (_animForward) {
       _frameIndex = 0;
     } else {
@@ -59,10 +65,14 @@ class PlySpriteComponent extends PositionComponent with Snap {
   /// in the file.
   void play([String? name]) {
     if (name != null) {
-      final anim = _data.animations[name] ?? _data.animations.values.first;
-      if (anim != _anim) {
-        _anim = anim;
-        reset();
+      if (!isLoaded) {
+        nextAnimation = name;
+      } else {
+        final anim = _data.animations[name] ?? _data.animations.values.first;
+        if (anim != _anim) {
+          _anim = anim;
+          reset();
+        }
       }
     }
     _playing = true;
@@ -79,7 +89,7 @@ class PlySpriteComponent extends PositionComponent with Snap {
     int newIndex = _frameIndex;
     if (!advance) {
       _framePos = 0;
-      if (_anim.direction == _PlyDirection.reverse) {
+      if (_anim.direction == directionReverse) {
         newIndex = _anim.frames.length - 1;
         _animForward = false;
       } else {
@@ -98,7 +108,7 @@ class PlySpriteComponent extends PositionComponent with Snap {
         if (_animForward) {
           newIndex++;
           if (newIndex >= _anim.frames.length) {
-            if (_anim.direction == _PlyDirection.pingpong) {
+            if (_anim.direction == directionPingpong) {
               newIndex = _anim.frames.length - 2;
               if (newIndex < 0) newIndex = 0;
               _animForward = false;
@@ -109,7 +119,7 @@ class PlySpriteComponent extends PositionComponent with Snap {
         } else {
           newIndex--;
           if (newIndex < 0) {
-            if (_anim.direction == _PlyDirection.pingpong) {
+            if (_anim.direction == directionPingpong) {
               newIndex = 1;
               if (_anim.frames.length < 2) newIndex = 0;
               _animForward = true;
@@ -141,60 +151,49 @@ class PlySpriteComponent extends PositionComponent with Snap {
   @override
   void render(Canvas canvas) {
     if (isLoaded) {
-      for (final ply in _frame.plys) {
-        canvas.drawImageRect(_image, ply.src, ply.dst, _paint);
-      }
+      canvas.drawAtlas(_image, _frame.transforms, _frame.rects, null, null, null, _paint);
     }
     super.render(canvas);
   }
 }
 
-enum _PlyOrientation {
-  normal(0),
-  flipH(1),
-  flipV(2),
-  rotate90(4),
-  rotate180(1 & 4),
-  rotate270(1 & 2 & 4);
-
-  const _PlyOrientation(this.value);
-  final int value;
-
-  static _PlyOrientation getByValue(int i) {
-    return _PlyOrientation.values.firstWhere((x) => x.value == i);
-  }
-}
-
-enum _PlyDirection {
-  forward(0),
-  reverse(1),
-  pingpong(2);
-
-  const _PlyDirection(this.value);
-  final int value;
-
-  static _PlyDirection getByValue(int i) {
-    return _PlyDirection.values.firstWhere((x) => x.value == i);
-  }
-}
-
-class _Ply {
-  _Ply(this.src, this.orientation, double x, double y) : dst = Rect.fromLTWH(x, y, src.width, src.height);
-  final _PlyOrientation orientation;
-  final Rect src;
-  final Rect dst;
-}
-
 class _PlyFrame {
   _PlyFrame(this.duration);
   final double duration;
-  final List<_Ply> plys = [];
+  final List<RSTransform> transforms = [];
+  final List<Rect> rects = [];
+
+  void addPly(Rect part, int orientation, double x, double y) {
+    double rot = 0;
+    double ox = 0;
+    double oy = 0;
+    if (orientation == 4) {
+      rot = pi * 0.5;
+      ox = part.width;
+    } else if (orientation == 3) {
+      rot = pi;
+      oy = part.height;
+      ox = part.width;
+    } else if (orientation == 7) {
+      rot = pi * 1.5;
+      oy = part.height;
+    }
+    transforms.add(RSTransform.fromComponents(
+      rotation: rot,
+      scale: 1.0,
+      anchorX: 0.0,
+      anchorY: 0.0,
+      translateX: x + ox,
+      translateY: y + oy,
+    ));
+    rects.add(part);
+  }
 }
 
 class _PlyAnimation {
   _PlyAnimation(this.direction, double x, double y) : anchor = Vector2(x, y);
   final Vector2 anchor;
-  final _PlyDirection direction;
+  final int direction;
   final List<_PlyFrame> frames = [];
 }
 
@@ -236,7 +235,7 @@ class _PlySpriteData {
       assert(json['animations'] is Map, 'root.animations must be an object');
       json['animations'].forEach((name, animData) {
         final anim = _PlyAnimation(
-          _PlyDirection.getByValue(animData['direction']),
+          animData['direction'],
           animData['anchor']['x'].toDouble(),
           animData['anchor']['y'].toDouble(),
         );
@@ -244,12 +243,12 @@ class _PlySpriteData {
         animData['frames'].forEach((frameData) {
           final frame = _PlyFrame(frameData['duration']);
           frameData['parts'].forEach((partData) {
-            frame.plys.add(_Ply(
+            frame.addPly(
               parts[partData['index']],
-              _PlyOrientation.getByValue(partData['orientation']),
+              partData['orientation'],
               partData['x'].toDouble(),
               partData['y'].toDouble(),
-            ));
+            );
           });
           anim.frames.add(frame);
         });
@@ -282,7 +281,7 @@ class _PlySpriteData {
         assert(a[1] is num, 'root[2][n][1]: animation direction expected. int');
         assert(a[2] is List && a[2].length == 2, 'root[2][n][2]: animation anchor expected [int, int]');
         final anim = _PlyAnimation(
-          _PlyDirection.getByValue(a[1]),
+          a[1],
           a[2][0].toDouble(),
           a[2][1].toDouble(),
         );
@@ -295,12 +294,12 @@ class _PlySpriteData {
           assert(f[1] is List, 'root[2][n][3][n][1]: ply array expected [...]');
           for (final p in f[1]) {
             assert(p is List && p.length == 4, 'root[2][n][3][n][1][n]: ply array expected [int, int, int, int]');
-            frame.plys.add(_Ply(
+            frame.addPly(
               parts[p[0]],
-              _PlyOrientation.getByValue(p[1]),
+              p[1],
               p[2].toDouble(),
               p[3].toDouble(),
-            ));
+            );
           }
 
           anim.frames.add(frame);
