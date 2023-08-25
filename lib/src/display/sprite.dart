@@ -16,13 +16,13 @@ class PlySpriteComponent extends PositionComponent with Snap {
 
   final String name;
   late final Image _image;
-  late final PlySpriteData _data;
+  late final _PlySpriteData _data;
   final Paint _paint = Paint();
 
-  late PlyAnimation _anim;
+  late _PlyAnimation _anim;
   bool _animForward = true;
 
-  late PlyFrame _frame;
+  late _PlyFrame _frame;
   int _frameIndex = 0;
   double _framePos = 0;
 
@@ -32,8 +32,10 @@ class PlySpriteComponent extends PositionComponent with Snap {
   @override
   FutureOr<void> onLoad() async {
     _image = await Images().load("$name.png");
-    _data = await PlySpriteData.create(name);
+    _data = await _PlySpriteData.create(name);
     _anim = _data.animations.values.first;
+    width = _data.width;
+    height = _data.height;
     reset();
     play();
     return super.onLoad();
@@ -41,7 +43,7 @@ class PlySpriteComponent extends PositionComponent with Snap {
 
   /// Reset current animation back to the start
   void reset() {
-    _animForward = _anim.direction != PlyDirection.reverse;
+    _animForward = _anim.direction != _PlyDirection.reverse;
     if (_animForward) {
       _frameIndex = 0;
     } else {
@@ -49,6 +51,7 @@ class PlySpriteComponent extends PositionComponent with Snap {
     }
     _frame = _anim.frames[_frameIndex];
     _framePos = 0;
+    anchor = Anchor(_anim.anchor.x / width, _anim.anchor.y / height);
   }
 
   /// Play an animation by [name]. If no [name] is specified will continue
@@ -76,7 +79,7 @@ class PlySpriteComponent extends PositionComponent with Snap {
     int newIndex = _frameIndex;
     if (!advance) {
       _framePos = 0;
-      if (_anim.direction == PlyDirection.reverse) {
+      if (_anim.direction == _PlyDirection.reverse) {
         newIndex = _anim.frames.length - 1;
         _animForward = false;
       } else {
@@ -95,7 +98,7 @@ class PlySpriteComponent extends PositionComponent with Snap {
         if (_animForward) {
           newIndex++;
           if (newIndex >= _anim.frames.length) {
-            if (_anim.direction == PlyDirection.pingpong) {
+            if (_anim.direction == _PlyDirection.pingpong) {
               newIndex = _anim.frames.length - 2;
               if (newIndex < 0) newIndex = 0;
               _animForward = false;
@@ -106,7 +109,7 @@ class PlySpriteComponent extends PositionComponent with Snap {
         } else {
           newIndex--;
           if (newIndex < 0) {
-            if (_anim.direction == PlyDirection.pingpong) {
+            if (_anim.direction == _PlyDirection.pingpong) {
               newIndex = 1;
               if (_anim.frames.length < 2) newIndex = 0;
               _animForward = true;
@@ -146,7 +149,7 @@ class PlySpriteComponent extends PositionComponent with Snap {
   }
 }
 
-enum PlyOrientation {
+enum _PlyOrientation {
   normal(0),
   flipH(1),
   flipV(2),
@@ -154,86 +157,162 @@ enum PlyOrientation {
   rotate180(1 & 4),
   rotate270(1 & 2 & 4);
 
-  const PlyOrientation(this.value);
+  const _PlyOrientation(this.value);
   final int value;
 
-  static PlyOrientation getByValue(int i) {
-    return PlyOrientation.values.firstWhere((x) => x.value == i);
+  static _PlyOrientation getByValue(int i) {
+    return _PlyOrientation.values.firstWhere((x) => x.value == i);
   }
 }
 
-enum PlyDirection {
+enum _PlyDirection {
   forward(0),
   reverse(1),
   pingpong(2);
 
-  const PlyDirection(this.value);
+  const _PlyDirection(this.value);
   final int value;
 
-  static PlyDirection getByValue(int i) {
-    return PlyDirection.values.firstWhere((x) => x.value == i);
+  static _PlyDirection getByValue(int i) {
+    return _PlyDirection.values.firstWhere((x) => x.value == i);
   }
 }
 
-class Ply {
-  Ply(this.orientation, this.src, double x, double y) : dst = Rect.fromLTWH(x, y, src.width, src.height);
-  final PlyOrientation orientation;
+class _Ply {
+  _Ply(this.src, this.orientation, double x, double y) : dst = Rect.fromLTWH(x, y, src.width, src.height);
+  final _PlyOrientation orientation;
   final Rect src;
   final Rect dst;
 }
 
-class PlyFrame {
-  PlyFrame(this.duration);
+class _PlyFrame {
+  _PlyFrame(this.duration);
   final double duration;
-  final List<Ply> plys = [];
+  final List<_Ply> plys = [];
 }
 
-class PlyAnimation {
-  PlyAnimation(this.direction);
-  final PlyDirection direction;
-  final List<PlyFrame> frames = [];
+class _PlyAnimation {
+  _PlyAnimation(this.direction, double x, double y) : anchor = Vector2(x, y);
+  final Vector2 anchor;
+  final _PlyDirection direction;
+  final List<_PlyFrame> frames = [];
 }
 
-class PlySpriteData {
-  static final Map<String, PlySpriteData> _cache = {};
+class _PlySpriteData {
+  static final Map<String, _PlySpriteData> _cache = {};
 
-  static FutureOr<PlySpriteData> create(String name) async {
+  static FutureOr<_PlySpriteData> create(String name) async {
     if (!_cache.containsKey(name)) {
-      final data = PlySpriteData();
       final json = jsonDecode(await rootBundle.loadString("${Images().prefix}$name.json"));
-      data.width = json['width'];
-      data.height = json['height'];
+      final data = _PlySpriteData(json);
+      _cache[name] = data;
+    }
+    return _cache[name]!;
+  }
+
+  _PlySpriteData(dynamic json) {
+    /// Verbose JSON
+    if (json is Map) {
+      assert(json.containsKey('width'), 'root.width not found');
+      assert(json.containsKey('height'), 'root.height not found');
+      assert(json['parts'] is List, 'root.parts must be an array');
+      width = json['width'].toDouble();
+      height = json['height'].toDouble();
+
       for (final part in json['parts']) {
-        data.parts.add(Rect.fromLTWH(
+        assert(part.containsKey('x'), 'root.parts[n].x not found');
+        assert(part.containsKey('y'), 'root.parts[n].y not found');
+        assert(part.containsKey('width'), 'root.parts[n].width not found');
+        assert(part.containsKey('height'), 'root.parts[n].height not found');
+        parts.add(Rect.fromLTWH(
           part['x'].toDouble(),
           part['y'].toDouble(),
           part['width'].toDouble(),
           part['height'].toDouble(),
         ));
       }
+
+      assert(json.containsKey('animations'), 'root.animations array not found');
+      assert(json['animations'] is Map, 'root.animations must be an object');
       json['animations'].forEach((name, animData) {
-        final anim = PlyAnimation(PlyDirection.getByValue(animData['direction']));
+        final anim = _PlyAnimation(
+          _PlyDirection.getByValue(animData['direction']),
+          animData['anchor']['x'].toDouble(),
+          animData['anchor']['y'].toDouble(),
+        );
+
         animData['frames'].forEach((frameData) {
-          final frame = PlyFrame(frameData['duration']);
+          final frame = _PlyFrame(frameData['duration']);
           frameData['parts'].forEach((partData) {
-            frame.plys.add(Ply(
-              PlyOrientation.getByValue(partData['orientation']),
-              data.parts[partData['index']],
+            frame.plys.add(_Ply(
+              parts[partData['index']],
+              _PlyOrientation.getByValue(partData['orientation']),
               partData['x'].toDouble(),
               partData['y'].toDouble(),
             ));
           });
           anim.frames.add(frame);
         });
-        data.animations[name] = anim;
+        animations[name] = anim;
       });
-      _cache[name] = data;
     }
-    return _cache[name]!;
+
+    /// Condensed JSON
+    else {
+      assert(json.length == 3, 'root: 3 arrays expected [[], [], []]');
+      assert(json[0] is List && json[0].length == 2, 'root[0]: size of sprite expected [int, int]');
+      width = json[0][0].toDouble();
+      height = json[0][1].toDouble();
+
+      assert(json[1] is List, 'root[1]: parts array expected [...]');
+      for (final part in json[1]) {
+        assert(part is List && part.length == 4, 'root[1][n]: part array expected [int, int, int, int]');
+        parts.add(Rect.fromLTWH(
+          part[0].toDouble(),
+          part[1].toDouble(),
+          part[2].toDouble(),
+          part[3].toDouble(),
+        ));
+      }
+
+      assert(json[2] is List, 'root[2]: animation array expected []');
+      for (final a in json[2]) {
+        assert(a is List && a.length == 4, 'root[2][n]: animation array expected [string, int, [int, int], [...]]');
+        assert(a[0] is String, 'root[2][n][0]: animation name expected. string');
+        assert(a[1] is num, 'root[2][n][1]: animation direction expected. int');
+        assert(a[2] is List && a[2].length == 2, 'root[2][n][2]: animation anchor expected [int, int]');
+        final anim = _PlyAnimation(
+          _PlyDirection.getByValue(a[1]),
+          a[2][0].toDouble(),
+          a[2][1].toDouble(),
+        );
+
+        assert(a[3] is List, 'root[2][n][3]: animation frames array expected [...]');
+        for (final f in a[3]) {
+          assert(f is List && f.length == 2, 'root[2][n][3][n]: frame array expected [double, [...]]');
+          final frame = _PlyFrame(f[0].toDouble());
+
+          assert(f[1] is List, 'root[2][n][3][n][1]: ply array expected [...]');
+          for (final p in f[1]) {
+            assert(p is List && p.length == 4, 'root[2][n][3][n][1][n]: ply array expected [int, int, int, int]');
+            frame.plys.add(_Ply(
+              parts[p[0]],
+              _PlyOrientation.getByValue(p[1]),
+              p[2].toDouble(),
+              p[3].toDouble(),
+            ));
+          }
+
+          anim.frames.add(frame);
+        }
+
+        animations[a[0]] = anim;
+      }
+    }
   }
 
-  late final int width;
-  late final int height;
+  late final double width;
+  late final double height;
   final List<Rect> parts = [];
-  final Map<String, PlyAnimation> animations = {};
+  final Map<String, _PlyAnimation> animations = {};
 }
