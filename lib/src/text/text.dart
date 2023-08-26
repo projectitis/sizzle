@@ -135,12 +135,13 @@ class TextArea extends PositionComponent with Snap {
 
   /// Calculate the width of a substring
   double _calculateWidth(int start, int end) {
-    final expectedSize = _renderer.measureText(
-      _text.substring(start, min(end, _text.length)),
-    );
-    _lineHeight = max(_lineHeight, expectedSize.y);
-    _actualWidth = max(_actualWidth, expectedSize.x);
-    return expectedSize.x;
+    final expectedSize = _renderer.getLineMetrics(_text.substring(
+      start,
+      min(end, _text.length),
+    ));
+    _lineHeight = max(_lineHeight, expectedSize.height);
+    _actualWidth = max(_actualWidth, expectedSize.width);
+    return expectedSize.width;
   }
 
   /// Calculate each line of the text area

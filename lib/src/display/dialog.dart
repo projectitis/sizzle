@@ -6,6 +6,8 @@ import 'package:flame/events.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:sizzle/src/display/ninegrid.dart';
+import 'package:sizzle/src/game/services.dart';
 
 import 'package:sizzle/src/text/text.dart';
 import 'snap.dart';
@@ -22,18 +24,22 @@ class DialogOptions {
 /// A dialog style definition
 class DialogStyle {
   String name;
-  String spriteName;
-  EdgeInsets grid;
+  String imageName;
+  NineGridSize grid;
+  NineGridRepeat repeat;
+  bool safeRepeat;
   EdgeInsets padding;
   Anchor anchor;
 
   DialogStyle(
     this.name, {
-    required this.spriteName,
+    required this.imageName,
     required this.grid,
     required this.padding,
     required this.anchor,
-  });
+    NineGridRepeat? repeat,
+    this.safeRepeat = false,
+  }) : repeat = repeat ?? NineGridRepeat();
 }
 
 /// A dialog text style definition
@@ -54,20 +60,18 @@ class DialogTextStyle {
 ///
 /// Uses yarn spinner to process and display conversation. Add
 /// a component to the tree, then pass it to `Services.startDialog`.
-class DialogComponent extends PositionComponent with DialogueView, Snap, TapCallbacks, Hoverable {
+class DialogComponent extends PositionComponent with DialogueView, TapCallbacks, Hoverable, Snap, HasVisibility {
   Vector2 dialogSize;
-  bool showing = false;
   Snap? _trackTarget;
   final List<String> characters = [];
   final Map<String, DialogStyle> _dialogStyles = {};
   final Map<String, DialogTextStyle> _textStyles = {};
   late DialogStyle _activeDialogStyle;
-  final Map<String, Sprite> _backgrounds = {};
   Completer<bool> _lineCompleter = Completer();
   Completer<int> _choiceCompleter = Completer();
 
   final DialogOptions options = DialogOptions();
-  late NineTileBoxComponent _bg;
+  late NineGridComponent _bg;
   final List<TextArea> _text = [];
 
   /// Called by the dialog to locate a character in the scene
@@ -130,51 +134,44 @@ class DialogComponent extends PositionComponent with DialogueView, Snap, TapCall
       _textStyles[s.name] = s;
     }
     anchor = _activeDialogStyle.anchor;
+    isVisible = false;
   }
 
   @override
   FutureOr<void> onLoad() async {
-    // Load all background sprites and cache them
+    // Cache all background images
     for (final s in _dialogStyles.values) {
-      if (!_backgrounds.containsKey(s.spriteName)) {
-        final sprite = await Sprite.load(s.spriteName);
-        _backgrounds[s.spriteName] = sprite;
-      }
+      await Services.loadImage(s.imageName);
     }
-    _bg = NineTileBoxComponent(
-        nineTileBox: NineTileBox.withGrid(
-          _backgrounds[_activeDialogStyle.spriteName]!,
-          leftWidth: _activeDialogStyle.grid.left,
-          rightWidth: _activeDialogStyle.grid.right,
-          topHeight: _activeDialogStyle.grid.top,
-          bottomHeight: _activeDialogStyle.grid.bottom,
-        ),
-        size: dialogSize);
+
+    // Set active dialog
+    _bg = NineGridComponent(
+      Services.cachedImage(_activeDialogStyle.imageName),
+      dialogSize,
+      grid: _activeDialogStyle.grid,
+      repeat: _activeDialogStyle.repeat,
+      useSafeSize: _activeDialogStyle.safeRepeat,
+    );
+    add(_bg);
 
     return super.onLoad();
   }
 
   FutureOr<void> _show() async {
-    if (showing) return;
-    showing = true;
+    if (isVisible) return;
     await loaded;
 
-    bitmapPosition.setFrom(position);
-
-    // Change style
-    if (_bg.isMounted) {
-      await _bg.removed;
-    }
-    add(_bg);
+    isVisible = true;
   }
 
   void _hide() {
-    if (!showing) return;
-    showing = false;
+    if (!isVisible) return;
+
     _clearTextAreas();
-    remove(_bg);
     _trackTarget = null;
     game.mouseCursor = SystemMouseCursors.basic;
+
+    isVisible = false;
   }
 
   @override
@@ -206,12 +203,11 @@ class DialogComponent extends PositionComponent with DialogueView, Snap, TapCall
     }
     if (_dialogStyles.containsKey(styleName) && _activeDialogStyle.name != styleName) {
       _activeDialogStyle = _dialogStyles[styleName]!;
-      _bg.nineTileBox = NineTileBox.withGrid(
-        _backgrounds[_activeDialogStyle.spriteName]!,
-        leftWidth: _activeDialogStyle.grid.left,
-        rightWidth: _activeDialogStyle.grid.right,
-        topHeight: _activeDialogStyle.grid.top,
-        bottomHeight: _activeDialogStyle.grid.bottom,
+      _bg.replace(
+        image: Services.cachedImage(_activeDialogStyle.imageName),
+        grid: _activeDialogStyle.grid,
+        repeat: _activeDialogStyle.repeat,
+        useSafeSize: _activeDialogStyle.safeRepeat,
       );
     }
 
@@ -279,7 +275,7 @@ class DialogComponent extends PositionComponent with DialogueView, Snap, TapCall
         _addTextArea(textStyle.textStyle, option.text);
       }
     }
-    if (showing) {
+    if (isVisible) {
       _prepare(true);
 
       _choiceCompleter = Completer();
@@ -331,7 +327,7 @@ class DialogComponent extends PositionComponent with DialogueView, Snap, TapCall
       }
       lt = t;
     }
-    _bg.size.setValues(
+    _bg.size = Vector2(
       actualSize.x + _activeDialogStyle.padding.left + _activeDialogStyle.padding.right,
       actualSize.y + _activeDialogStyle.padding.top + _activeDialogStyle.padding.bottom,
     );
@@ -340,13 +336,17 @@ class DialogComponent extends PositionComponent with DialogueView, Snap, TapCall
 
   @override
   bool onHoverEnter(PointerHoverInfo info) {
-    game.mouseCursor = SystemMouseCursors.click;
+    if (isVisible) {
+      game.mouseCursor = SystemMouseCursors.click;
+    }
     return super.onHoverEnter(info);
   }
 
   @override
   bool onHoverLeave(PointerHoverInfo info) {
-    game.mouseCursor = SystemMouseCursors.basic;
+    if (isVisible) {
+      game.mouseCursor = SystemMouseCursors.basic;
+    }
     return super.onHoverLeave(info);
   }
 
@@ -369,7 +369,7 @@ class DialogComponent extends PositionComponent with DialogueView, Snap, TapCall
   }
 
   void _updatePosition() {
-    if (showing && _trackTarget != null) {
+    if (isVisible && _trackTarget != null) {
       bitmapPosition.x = _trackTarget!.position.x / game.bitmapScale.x + _trackTarget!.size.x * 0.5;
       bitmapPosition.y = _trackTarget!.position.y / game.bitmapScale.y;
     }
