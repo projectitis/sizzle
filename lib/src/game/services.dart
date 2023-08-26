@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flame/cache.dart';
 import 'package:jenny/jenny.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -13,6 +15,7 @@ typedef OnFileAccessCallback = void Function(Map<String, dynamic> data);
 /// Global services class
 class Services {
   static final _fileName = 'sizzle.json';
+  static final _imagesFolder = 'assets/';
 
   static late final SizzleGame game;
   static Map<String, dynamic> _data = {};
@@ -21,6 +24,8 @@ class Services {
   static final YarnProject yarn = YarnProject();
   static DialogueRunner? _runner;
   static Completer<void>? _dialogComplete;
+  static final Images _images = Images(prefix: _imagesFolder);
+  static AssetsCache assets = AssetsCache();
 
   static OnFileAccessCallback? _onLoad;
   static set onLoad(OnFileAccessCallback callback) {
@@ -152,5 +157,16 @@ class Services {
       }
     }
     return true;
+  }
+
+  /// Load an image from the asset bundle by file name. The
+  /// image will also be cached.
+  static Future<Image> loadImage(String fileName) {
+    return _images.load(fileName);
+  }
+
+  /// Fetch a previously loaded image from the cache.
+  static Image cachedImage(String fileName) {
+    return _images.fromCache(fileName);
   }
 }

@@ -45,10 +45,7 @@ mixin Snap on PositionComponent {
     _update();
   }
 
-  AnchorWindow get anchorWindow {
-    return _anchorWindow;
-  }
-
+  AnchorWindow get anchorWindow => _anchorWindow;
   set anchorWindow(AnchorWindow window) {
     _anchorWindow = window;
     _update();

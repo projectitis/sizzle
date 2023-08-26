@@ -127,6 +127,19 @@ class NineGridComponent extends PositionComponent {
   Rect _sizeRect = Rect.zero;
   Stopwatch stopWatch = Stopwatch();
 
+  /// Set safe size
+  set safeSize(bool value) {
+    if (_safeSize != value) {
+      _safeSize = value;
+      _needsComposing = true;
+    }
+  }
+
+  /// Call this to redraw the underlying image if it has changed
+  void changed() {
+    _needsComposing = true;
+  }
+
   /// Set the size of the nine-grid
   set grid(NineGridSize g) {
     assert(
@@ -187,6 +200,19 @@ class NineGridComponent extends PositionComponent {
     _safeSize = true;
     size = s;
     _safeSize = temp;
+  }
+
+  /// Replace the image grid in one call
+  void replace({
+    Image? image,
+    NineGridSize? grid,
+    NineGridRepeat? repeat,
+    bool useSafeSize = false,
+  }) {
+    if (image != null) _image = image;
+    if (grid != null) this.grid = grid;
+    if (repeat != null) this.repeat = repeat;
+    _safeSize = useSafeSize;
   }
 
   /// Compose the final image. Will be called by first render call
@@ -335,55 +361,24 @@ class NineGridComponent extends PositionComponent {
     } while (patch.top < dst.bottom);
   }
 
-  /*
-  /// Faster because it uses a single drawAtlas call
-  /// However, currently does not support scaling. Note that the RSTransform only supports uniform scale :(
-  void _composeRepeat(Canvas canvas, Rect src, Rect dst, Paint paint, [bool stretchX = false, bool stretchY = false]) {
-    if (src.isEmpty || dst.isEmpty) return;
-
-    double sx = stretchX ? dst.width / src.width : 1.0;
-    double sy = stretchY ? dst.height / src.height : 1.0;
-    Rect patch = Rect.fromLTWH(
-      dst.left,
-      dst.top,
-      stretchX ? dst.width : src.width,
-      stretchY ? dst.height : src.height,
-    );
-    int tx = (dst.width / patch.width).ceil();
-    int ty = (dst.height / patch.height).ceil();
-    final transforms = <RSTransform>[];
-    final rects = <Rect>[];
-    for (y = 0; y < ty; y++) {
-      for (x = 0; x < tx; x++) {
-        transforms.add(RSTransform(1.0 * sx, 0.0 * sy, dst.left + x * patch.width, dst.top + y * patch.height));
-        rects.add(src);
-      }
-    }
-    canvas.drawAtlas(_image, transforms, rects, null, null, _sizeRect, paint);
-  }
-  */
-
   @mustCallSuper
   @override
   void render(Canvas canvas) {
-    bool doRender = true;
-    if (_needsComposing) {
+    if (_needsComposing && !_isComposing) {
       compose();
-      doRender = false;
+      return;
     } else if (_isComposing || _output == null || _output?.width == 0 || _output?.height == 0) {
-      doRender = false;
+      return;
     }
 
-    if (doRender) {
-      canvas.drawImageRect(
-        _output!,
-        _sizeRect,
-        _sizeRect,
-        Paint()
-          ..blendMode = blendMode
-          ..isAntiAlias = isAntiAlias,
-      );
-    }
+    canvas.drawImageRect(
+      _output!,
+      _sizeRect,
+      _sizeRect,
+      Paint()
+        ..blendMode = blendMode
+        ..isAntiAlias = isAntiAlias,
+    );
   }
 }
 
