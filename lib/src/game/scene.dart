@@ -20,7 +20,7 @@ class Scene extends Component with HasGameRef<SizzleGame> {
     super.render(canvas);
   }
 
-  void changeScene(String scene) {
+  void changeScene(String scene, {bool replace = false}) {
     gameRef.changeScene(scene);
   }
 }

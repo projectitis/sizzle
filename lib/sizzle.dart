@@ -1,6 +1,7 @@
 /// Library for making bitmap games using flame
 library sizzle;
 
+export 'package:flutter/widgets.dart' show runApp;
 export 'package:flame/cache.dart';
 export 'package:flame/components.dart';
 export 'package:flame/effects.dart';

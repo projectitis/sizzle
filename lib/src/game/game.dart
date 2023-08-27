@@ -141,10 +141,10 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
     }
   }
 
-  /// Handle scene changes using the Flame router
-  void changeScene(String scene) {
+  /// Handle scene changes using the Flame router. It
+  void changeScene(String scene, {bool replace = false}) {
     assert(_router.routes.keys.contains(scene), 'The scene \'$scene\' does not exist');
 
-    _router.pushNamed(scene);
+    _router.pushNamed(scene, replace: replace);
   }
 }
