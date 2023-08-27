@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flame/cache.dart';
 import 'package:jenny/jenny.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -14,18 +15,30 @@ typedef OnFileAccessCallback = void Function(Map<String, dynamic> data);
 
 /// Global services class
 class Services {
-  static final _fileName = 'sizzle.json';
-  static final _imagesFolder = 'assets/';
+  Services() {
+    throw ('Do not create an instance of this class. Access static methods only.');
+  }
 
+  /// The save file name used by [load] and [save] to
+  /// persist player data between game sessions.
+  static final _savefile = 'sizzle.json';
+
+  /// Reference to the currently running game
   static late final SizzleGame game;
+
+  /// Reference to the yarn spinner project. In most
+  /// cases this does not need to be directly accessed.
+  /// Use [loadDialog] and [startDialog] with a
+  /// [DialogComponent] view instead.
+  static final YarnProject yarn = YarnProject();
+
   static Map<String, dynamic> _data = {};
   static List<String> _flags = [];
   static Directory? _dir;
-  static final YarnProject yarn = YarnProject();
   static DialogueRunner? _runner;
   static Completer<void>? _dialogComplete;
-  static final Images _images = Images(prefix: _imagesFolder);
-  static AssetsCache assets = AssetsCache();
+  static final Map<String, Image> _cachedImages = {};
+  static final Map<String, ByteData> _cachedFiles = {};
 
   static OnFileAccessCallback? _onLoad;
   static set onLoad(OnFileAccessCallback callback) {
@@ -37,30 +50,37 @@ class Services {
     _onSave = callback;
   }
 
-  /// Initialise the context
+  /// Initialise the services. SizzleGame does this
+  /// automatically during onLoad, so should not be
+  /// called again.
   static Future<void> init(SizzleGame game) async {
     Services.game = game;
-    Services.yarn.functions.addFunction1('flag', Services.checkFlagsFromYarn);
-    Services.yarn.commands.addCommand1('flag', Services.setFlagsFromYarn);
+    Services.yarn.functions.addFunction1('flag', Services._checkFlagsFromYarn);
+    Services.yarn.commands.addCommand1('flag', Services._setFlagsFromYarn);
 
     _dir ??= await getApplicationDocumentsDirectory();
     load();
   }
 
-  /// Load all data from the device
-  ///
-  /// Provide [onLoad] callback to customise data before the load operation
+  /// Load all data from the device. This includes flags
+  /// and yarn variables (dialog system). Flags are appended
+  /// or replaced. Clear the flags first if this is not desired.
+  /// Yarn variables are appended or replaced. Clear the yarn
+  /// variables using [clearDialog] if this is not desired.
+  /// Use [onLoad] callback to customise data after the load operation.
   static void load() async {
     if (_dir == null) return;
 
-    final File file = File('${_dir!.path}/$_fileName');
+    final File file = File('${_dir!.path}/$_savefile');
     if (await file.exists()) {
       _data = json.decode(file.readAsStringSync());
-      _flags = [];
+      _onLoad?.call(_data);
       if (_data.containsKey('_flags')) {
         _data['_flags'].forEach((v) => _flags.add(v as String));
       }
-      _onLoad?.call(_data);
+      if (_data.containsKey('_yarn')) {
+        yarn.variables.variables.addAll(_data['_yarn']);
+      }
     }
   }
 
@@ -71,9 +91,10 @@ class Services {
     if (_dir == null) return;
 
     _data['_flags'] = _flags;
+    _data['_yarn'] = yarn.variables.variables;
     _onSave?.call(_data);
 
-    final File file = File('${_dir!.path}/$_fileName');
+    final File file = File('${_dir!.path}/$_savefile');
     file.writeAsStringSync(json.encode(_data));
   }
 
@@ -98,6 +119,24 @@ class Services {
     return _flags;
   }
 
+  /// Load and parse one or more yarn spinner dialog [files]
+  /// ready for starting a dialog. If [replaceNodes] is true,
+  /// the already loaded yarn nodes will be deleted first. Any
+  /// characters, variables, functions are not affected.
+  static FutureOr<void> loadDialog(List<String> files, {bool replaceNodes = false}) async {
+    if (replaceNodes) {
+      yarn.nodes.clear();
+    }
+    for (final file in files) {
+      String data = await rootBundle.loadString(file);
+      yarn.parse(data);
+    }
+  }
+
+  /// Starts a dialog with the node given by [nodeName]. The
+  /// dialog should have been loaded by [loadDialog] first.
+  /// The [views] present the dialog to the user. At least
+  /// one view must be provided.
   static Future<void> startDialog(String nodeName, List<DialogueView> views) {
     assert(_runner == null, 'Trying to start dialog $nodeName but dialog already started');
     assert(views.isNotEmpty, 'Trying to start dialog $nodeName but no dialog views provided');
@@ -113,21 +152,39 @@ class Services {
     _dialogComplete = null;
   }
 
-  static FutureOr<void> loadDialog(List<String> files, {bool replaceNodes = false}) async {
-    if (replaceNodes) {
+  /// Clearing data can be useful when moving between different
+  /// areas of the game. Be default it clears nodes only, but can
+  /// be used to clear other data as well by setting [nodes],
+  /// [characters], [variables], [functions] or [commands] to true
+  /// or false. It will not clear node visit counts.
+  static void clearDialog({
+    bool nodes = true,
+    bool characters = false,
+    bool variables = false,
+    bool commands = false,
+    bool functions = false,
+  }) {
+    if (nodes) {
       yarn.nodes.clear();
     }
-    for (final file in files) {
-      String data = await rootBundle.loadString(file);
-      yarn.parse(data);
+    if (characters) {
+      //yarn.characters.clear();
+    }
+    if (variables) {
+      //yarn.variables.clear(false);
+    }
+    if (commands) {
+      //yarn.commands.clear();
+    }
+    if (functions) {
+      //yarn.functions.clear();
     }
   }
 
-  /// Set or unset flags from yarn
-  ///
+  /// Used internally to set or unset flags from yarn.
   /// Accepts a single comma delimited string for flags. Flags
   /// may be prefixed with ! to unset them. e.g. "flag1,!flag2"
-  static void setFlagsFromYarn(String f) {
+  static void _setFlagsFromYarn(String f) {
     for (String fl in f.split(',')) {
       fl = fl.trim();
       if (fl[0] == '!') {
@@ -138,12 +195,11 @@ class Services {
     }
   }
 
-  /// Check flags are set from yarn
-  ///
+  /// Used internally to check flags are set from yarn.
   /// Accepts a single comma delimited string of flags. Flags
   /// may be prefixed with ! to check if they are unset. All
   /// conditions must be true to pass. e.g. "flag1,!flag2"
-  static bool checkFlagsFromYarn(String f) {
+  static bool _checkFlagsFromYarn(String f) {
     for (String fl in f.split(',')) {
       fl = fl.trim();
       if (fl[0] == '!') {
@@ -159,14 +215,90 @@ class Services {
     return true;
   }
 
-  /// Load an image from the asset bundle by file name. The
-  /// image will also be cached.
-  static Future<Image> loadImage(String fileName) {
-    return _images.load(fileName);
+  /// Load an image from the asset bundle by [path]. If
+  /// [cache] is true, the image will also be cached so that
+  /// subsequent loads are faster. [path] is relative to the
+  /// 'assets' folder. Use [clearCache] to later remove the
+  /// image if it's nmo longer required.
+  static Future<Image> loadImage(String path, [bool cache = true]) async {
+    if (_cachedImages.containsKey(path)) {
+      return _cachedImages[path]!;
+    }
+    final data = await rootBundle.load(path);
+    final bytes = Uint8List.view(data.buffer);
+    final image = await decodeImageFromList(bytes);
+    if (cache) {
+      _cachedImages[path] = image;
+    }
+    return image;
   }
 
-  /// Fetch a previously loaded image from the cache.
-  static Image cachedImage(String fileName) {
-    return _images.fromCache(fileName);
+  /// Load a JSON file from the asset bundle by [path]. If
+  /// [cache] is true, the file will also be cached so that
+  /// subsequent loads are faster. [path] is relative to the
+  /// 'assets' folder. Use [clearCache] to later remove the
+  /// image if it's nmo longer required.
+  static Future<dynamic> loadJson(String path, [bool cache = true]) async {
+    if (_cachedFiles.containsKey(path)) {
+      return jsonDecode(_cachedFiles[path].toString());
+    }
+    final data = await rootBundle.load(path);
+    if (cache) {
+      _cachedFiles[path] = data;
+    }
+    return jsonDecode(data.toString());
+  }
+
+  /// Load a string from the asset bundle by [path]. If
+  /// [cache] is true, the file will also be cached so that
+  /// subsequent loads are faster. [path] is relative to the
+  /// 'assets' folder. Use [clearCache] to later remove the
+  /// image if it's nmo longer required.
+  static Future<String> loadString(String path, [bool cache = true]) async {
+    if (_cachedFiles.containsKey(path)) {
+      return _cachedFiles[path].toString();
+    }
+    final data = await rootBundle.load(path);
+    if (cache) {
+      _cachedFiles[path] = data;
+    }
+    return data.toString();
+  }
+
+  /// Load bytes from the asset bundle by [path]. If
+  /// [cache] is true, the file will also be cached so that
+  /// subsequent loads are faster. [path] is relative to the
+  /// 'assets' folder. Use [clearCache] to later remove the
+  /// image if it's nmo longer required.
+  static Future<ByteData> loadFile(String path, [bool cache = true]) async {
+    if (_cachedFiles.containsKey(path)) {
+      return _cachedFiles[path]!;
+    }
+    final data = await rootBundle.load(path);
+    if (cache) {
+      _cachedFiles[path] = data;
+    }
+    return data;
+  }
+
+  /// Will remove the file in [path] from the cache. If [path]
+  /// is empty, the entire cache will be cleared. By default
+  /// both the image and file cache will be affected. This can
+  /// be changed by setting [images] and/or [files] to false.
+  void clearCache({String path = '', bool images = true, bool files = true}) {
+    if (images) {
+      if (path == '') {
+        _cachedImages.clear();
+      } else {
+        _cachedImages.remove(path);
+      }
+    }
+    if (files) {
+      if (path == '') {
+        _cachedFiles.clear();
+      } else {
+        _cachedFiles.remove(path);
+      }
+    }
   }
 }

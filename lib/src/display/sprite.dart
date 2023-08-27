@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flame/cache.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
+import 'package:sizzle/src/game/services.dart';
 
 import 'snap.dart';
 
@@ -13,9 +13,14 @@ import 'snap.dart';
 ///
 /// Sizzle includes a script that allows exporting ply-sprites from Aseprite.
 class PlySpriteComponent extends PositionComponent with Snap {
-  PlySpriteComponent(this.name);
+  PlySpriteComponent(String path) {
+    if (path.lastIndexOf('.') >= 0) {
+      path = path.substring(0, path.lastIndexOf('.'));
+    }
+    _path = path;
+  }
 
-  final String name;
+  late final String _path;
   late final Image _image;
   late final _PlySpriteData _data;
   final Paint _paint = Paint();
@@ -37,8 +42,8 @@ class PlySpriteComponent extends PositionComponent with Snap {
 
   @override
   FutureOr<void> onLoad() async {
-    _image = await Images().load("$name.png");
-    _data = await _PlySpriteData.create(name);
+    _image = await Services.loadImage("$_path.png");
+    _data = await _PlySpriteData.create(_path);
     _anim = _data.animations.values.first;
     width = _data.width;
     height = _data.height;
@@ -200,13 +205,14 @@ class _PlyAnimation {
 class _PlySpriteData {
   static final Map<String, _PlySpriteData> _cache = {};
 
-  static FutureOr<_PlySpriteData> create(String name) async {
-    if (!_cache.containsKey(name)) {
-      final json = jsonDecode(await rootBundle.loadString("${Images().prefix}$name.json"));
+  static FutureOr<_PlySpriteData> create(String path) async {
+    if (!_cache.containsKey(path)) {
+      final json = await Services.assets.readJson("$path.json");
+      //final json = jsonDecode(await rootBundle.loadString("$path.json"));
       final data = _PlySpriteData(json);
-      _cache[name] = data;
+      _cache[path] = data;
     }
-    return _cache[name]!;
+    return _cache[path]!;
   }
 
   _PlySpriteData(dynamic json) {
