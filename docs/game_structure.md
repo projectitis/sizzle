@@ -1,4 +1,14 @@
-# game structure
+# Structure of a game 
+[:arrow_left: Back to documentation](index.md)
+
+- [Typical game example](#typical-game-example)
+- [Scenes](#scenes)
+- [Screen size](#screen-size)
+- [Letterbox](#letterbox)
+- [Pixel size](#pixel-size)
+
+
+## Typical game example
 
 A typical Sizzle game might look something like this.
 
@@ -31,7 +41,7 @@ void main() {
 One of the first things you may notice is that a Sizzle game is scene-based.
 The user defines the scenes in the game, optionally specified the starting
 scene (otherwise the first scene is used), and the scenes are then managed
-by the `SizzleGame`.
+by the [`SizzleGame`][SizzleGame].
 
 Pass a list of scenes into the constructor using `scenes`, or if you only
 have a single scene, pass it in with `scene`.
@@ -40,15 +50,16 @@ Different parts of the game, such as the into, achievements, settings, etc
 would normally each be a different scene. games that have varied play - such
 as mini-games for example - could also be implemented as scenes.
 
-Scenes are implemented as classes that extend `Scene`. Each scene has a
-factory method called `create` to construct a new instance. This is because
-an instance of a scene is not created until it is required.
+Scenes are implemented as classes that extend [`Scene`][Scene]. Each scene
+has a factory method called `create` to construct a new instance. This is
+because an instance of a scene is not created until it is required.
 
-Calling `changeScene` from within a `Scene`, or from within `SizzleGame`, will
-change the scene.
+Calling [`SizzleGame`][SizzleGame] from within a [`Scene`][Scene], or from
+within [`SizzleGame`][SizzleGame], will change the scene.
 
 Scenes use the Flame `RouterComponent` behind the scenes (no pun intended),
-but all the work is managed for you. Each `Scene` is a flame `Component`.
+but all the work is managed for you. Each [`Scene`][Scene] is a flame
+`Component`.
 
 ## Screen size
 
@@ -91,3 +102,7 @@ across -for example, each game pixel could be 4.5x4.5 screen pixels in
 width/height. If this is not the effect that you are after, try setting
 `scaleToWholePixels` to `true` in the constructor. This will ensure that pixels
 in your game are always a whole number of real pixels.
+
+<!-- links -->
+[SizzleGame]: ../lib/src/game/game.dart
+[Scene]: ../lib/src/game/scene.dart

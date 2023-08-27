@@ -1,12 +1,14 @@
 ![sizzle](sizzle-logo.png "sizzle")
 
-A bitmap/pixel game engine based on Flame.
+__A bitmap/pixel game engine based on Flame__
 
 <!--<a title="Pub" href="https://pub.dev/packages/sizzle"><img src="https://img.shields.io/badge/pub-v0.1-blue"/></a>-->
 
-> This package is in alpha and not yet production ready. Use at own risk!
+```{warn}
+This package is in alpha and not yet production ready. Use at own risk!
+```
 
-This package takes all the hard work out of making a perfect pixelart game. It's compatible with other Flame features, so you can make use of audio, bloc, forge2d etc.
+This package takes all the hard work out of making a perfect pixel-art game. It's compatible with other Flame features, so you can make use of audio, bloc, forge2d etc. The maintainers of this package also regularly contribute to Flame itself.
 
 ## Features
 
@@ -16,6 +18,10 @@ This package takes all the hard work out of making a perfect pixelart game. It's
 - Speech bubble dialog system based on yarn spinner (jenny)
 - Persist game state (saves to local device)
 - Central management of asset loading, saving and caching
+
+## Documentation
+
+[Documentation](/docs/index.md) can be found in the docs folder.
 
 ## Getting started
 
