@@ -146,7 +146,7 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
 
     // Set active dialog
     _bg = NineGridComponent(
-      Services.cachedImage(_activeDialogStyle.imageName),
+      Services.loadedImage(_activeDialogStyle.imageName),
       dialogSize,
       grid: _activeDialogStyle.grid,
       repeat: _activeDialogStyle.repeat,
@@ -204,7 +204,7 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
     if (_dialogStyles.containsKey(styleName) && _activeDialogStyle.name != styleName) {
       _activeDialogStyle = _dialogStyles[styleName]!;
       _bg.replace(
-        image: Services.cachedImage(_activeDialogStyle.imageName),
+        image: Services.loadedImage(_activeDialogStyle.imageName),
         grid: _activeDialogStyle.grid,
         repeat: _activeDialogStyle.repeat,
         useSafeSize: _activeDialogStyle.safeRepeat,
