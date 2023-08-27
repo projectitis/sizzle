@@ -23,6 +23,9 @@ class Services {
   /// persist player data between game sessions.
   static final _savefile = 'sizzle.json';
 
+  /// The path to the root asset folder
+  static final _assetFolder = 'assets/';
+
   /// Reference to the currently running game
   static late final SizzleGame game;
 
@@ -128,7 +131,7 @@ class Services {
       yarn.nodes.clear();
     }
     for (final file in files) {
-      String data = await rootBundle.loadString(file);
+      String data = await loadString(file, false);
       yarn.parse(data);
     }
   }
@@ -224,7 +227,7 @@ class Services {
     if (_cachedImages.containsKey(path)) {
       return _cachedImages[path]!;
     }
-    final data = await rootBundle.load(path);
+    final data = await rootBundle.load(_assetFolder + path);
     final bytes = Uint8List.view(data.buffer);
     final image = await decodeImageFromList(bytes);
     if (cache) {
@@ -233,36 +236,14 @@ class Services {
     return image;
   }
 
-  /// Load a JSON file from the asset bundle by [path]. If
-  /// [cache] is true, the file will also be cached so that
-  /// subsequent loads are faster. [path] is relative to the
-  /// 'assets' folder. Use [clearCache] to later remove the
-  /// image if it's nmo longer required.
-  static Future<dynamic> loadJson(String path, [bool cache = true]) async {
-    if (_cachedFiles.containsKey(path)) {
-      return jsonDecode(_cachedFiles[path].toString());
-    }
-    final data = await rootBundle.load(path);
-    if (cache) {
-      _cachedFiles[path] = data;
-    }
-    return jsonDecode(data.toString());
-  }
-
-  /// Load a string from the asset bundle by [path]. If
-  /// [cache] is true, the file will also be cached so that
-  /// subsequent loads are faster. [path] is relative to the
-  /// 'assets' folder. Use [clearCache] to later remove the
-  /// image if it's nmo longer required.
-  static Future<String> loadString(String path, [bool cache = true]) async {
-    if (_cachedFiles.containsKey(path)) {
-      return _cachedFiles[path].toString();
-    }
-    final data = await rootBundle.load(path);
-    if (cache) {
-      _cachedFiles[path] = data;
-    }
-    return data.toString();
+  /// Return an image previously loaded and cached with
+  /// [loadImage]. The image must be fully loaded. This method
+  /// is only recommended if it can be guaranteed the image
+  /// has loaded, and async is not possible. Instead,
+  /// consider calling and awaiting [loadImage] as a safer
+  /// alternative.
+  static Image loadedImage(String path) {
+    return _cachedImages[path]!;
   }
 
   /// Load bytes from the asset bundle by [path]. If
@@ -274,11 +255,61 @@ class Services {
     if (_cachedFiles.containsKey(path)) {
       return _cachedFiles[path]!;
     }
-    final data = await rootBundle.load(path);
+    final data = await rootBundle.load(_assetFolder + path);
     if (cache) {
       _cachedFiles[path] = data;
     }
     return data;
+  }
+
+  /// Return a file previously loaded and cached with
+  /// [loadFile]. The file must be fully loaded. This method
+  /// is only recommended if it can be guaranteed the image
+  /// has loaded, and async is not possible. Instead,
+  /// consider calling and awaiting [loadFile] as a safer
+  /// alternative.
+  static ByteData loadedFile(String path) {
+    return _cachedFiles[path]!;
+  }
+
+  /// Load a string from the asset bundle by [path]. If
+  /// [cache] is true, the file will also be cached so that
+  /// subsequent loads are faster. [path] is relative to the
+  /// 'assets' folder. Use [clearCache] to later remove the
+  /// image if it's nmo longer required.
+  static Future<String> loadString(String path, [bool cache = true]) async {
+    final buffer = (await loadFile(path, cache)).buffer;
+    return utf8.decode(buffer.asUint8List(0, buffer.lengthInBytes));
+  }
+
+  /// Return a string previously loaded and cached with
+  /// [loadString]. The file must be fully loaded. This method
+  /// is only recommended if it can be guaranteed the image
+  /// has loaded, and async is not possible. Instead,
+  /// consider calling and awaiting [loadString] as a safer
+  /// alternative.
+  static String loadedString(String path) {
+    final buffer = _cachedFiles[path]!.buffer;
+    return utf8.decode(buffer.asUint8List(0, buffer.lengthInBytes));
+  }
+
+  /// Load a JSON file from the asset bundle by [path]. If
+  /// [cache] is true, the file will also be cached so that
+  /// subsequent loads are faster. [path] is relative to the
+  /// 'assets' folder. Use [clearCache] to later remove the
+  /// image if it's nmo longer required.
+  static Future<dynamic> loadJson(String path, [bool cache = true]) async {
+    return jsonDecode(await loadString(path, cache));
+  }
+
+  /// Return a JSON file previously loaded and cached with
+  /// [loadJson]. The file must be fully loaded. This method
+  /// is only recommended if it can be guaranteed the image
+  /// has loaded, and async is not possible. Instead,
+  /// consider calling and awaiting [loadJson] as a safer
+  /// alternative.
+  static dynamic loadedJson(String path) {
+    return jsonDecode(_cachedFiles[path].toString());
   }
 
   /// Will remove the file in [path] from the cache. If [path]

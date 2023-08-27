@@ -207,9 +207,7 @@ class _PlySpriteData {
 
   static FutureOr<_PlySpriteData> create(String path) async {
     if (!_cache.containsKey(path)) {
-      final json = await Services.assets.readJson("$path.json");
-      //final json = jsonDecode(await rootBundle.loadString("$path.json"));
-      final data = _PlySpriteData(json);
+      final data = _PlySpriteData(await Services.loadJson("$path.json"));
       _cache[path] = data;
     }
     return _cache[path]!;
