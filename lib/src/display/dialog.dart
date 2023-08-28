@@ -374,8 +374,7 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
 
   void _updatePosition() {
     if (isVisible && _trackTarget != null) {
-      position.x = _trackTarget!.position.x + _trackTarget!.size.x * 0.5;
-      position.y = _trackTarget!.position.y;
+      position.setFrom(_trackTarget!.position);
     }
   }
 
@@ -393,23 +392,5 @@ class SnapDialogComponent extends DialogComponent with Snap {
     required List<DialogTextStyle> textStyles,
   }) : super(dialogStyles: dialogStyles, textStyles: textStyles) {
     anchorWindow = AnchorWindow.viewWindow;
-  }
-
-  @override
-  bool _updateTrackTarget(String targetName) {
-    if (super._updateTrackTarget(targetName)) {
-      anchorWindow = _trackTarget!.anchorWindow;
-      return true;
-    }
-    return false;
-  }
-
-  @override
-  void _updatePosition() {
-    if (isVisible && _trackTarget != null) {
-      anchorWindow = _trackTarget!.anchorWindow;
-      snapPosition.x = _trackTarget!.position.x / game.snapScale.x + _trackTarget!.size.x * 0.5;
-      snapPosition.y = _trackTarget!.position.y / game.snapScale.y;
-    }
   }
 }

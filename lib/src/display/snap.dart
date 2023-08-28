@@ -1,19 +1,24 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:flame/game.dart';
 
 import 'package:sizzle/src/game/services.dart';
 import 'package:sizzle/src/game/game.dart';
 
 enum AnchorWindow {
-  /// The maximum game window (some parts may not be visible)
-  gameWindow,
+  /// The maximum game window (some parts may not be visible). This
+  /// corresponds to the `maxSize` passed in to the `SizzleGame`
+  /// constructor.
+  maxWindow,
 
-  /// The viewable game area. Somewhere between game and safe window
+  /// The viewable game area. Somewhere between game and target window
   viewWindow,
 
-  /// The smallest visible area, always guaranteed to be visible
-  safeWindow,
+  /// The smallest visible area, always guaranteed to be visible. This
+  /// corresponds to the `targetSize` passed in to the `SizzleGame`
+  /// constructor.
+  targetWindow,
 }
 
 mixin Snap on PositionComponent {
@@ -24,16 +29,24 @@ mixin Snap on PositionComponent {
   bool snap = true;
 
   /// Always snap position to the nearest whole pixel
-  Vector2 snapPosition = Vector2.zero();
+  final Vector2 _snapPosition = Vector2.zero();
 
   /// Where to base coordinates on
-  AnchorWindow _anchorWindow = AnchorWindow.gameWindow;
+  AnchorWindow _anchorWindow = AnchorWindow.maxWindow;
 
   /// Calculations for anchor window
   final Vector2 _anchorOffset = Vector2.zero();
 
   /// Getter for game instance
   SizzleGame get game => Services.game;
+
+  @override
+  set position(Vector2 position) {
+    super.position = position;
+    if (snap) {
+      _snapPosition.setFrom(position);
+    }
+  }
 
   @override
   void onMount() {
@@ -58,7 +71,7 @@ mixin Snap on PositionComponent {
       scale = game.snapScale;
     }
     switch (anchorWindow) {
-      case AnchorWindow.safeWindow:
+      case AnchorWindow.targetWindow:
         _anchorOffset.setValues(
           game.safeWindow.left,
           game.safeWindow.top,
@@ -70,7 +83,7 @@ mixin Snap on PositionComponent {
           game.gameWindow.top,
         );
         break;
-      case AnchorWindow.gameWindow:
+      case AnchorWindow.maxWindow:
       default:
         _anchorOffset.setZero();
         break;
@@ -86,8 +99,8 @@ mixin Snap on PositionComponent {
   @override
   void update(double dt) {
     position.setValues(
-      _anchorOffset.x + (snap ? snapPosition.x.round() : snapPosition.x) * scale.x,
-      _anchorOffset.y + (snap ? snapPosition.y.round() : snapPosition.y) * scale.y,
+      _anchorOffset.x + (snap ? _snapPosition.x.round() : _snapPosition.x) * scale.x,
+      _anchorOffset.y + (snap ? _snapPosition.y.round() : _snapPosition.y) * scale.y,
     );
     super.update(dt);
   }
