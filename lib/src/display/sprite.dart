@@ -406,13 +406,13 @@ class PlySpriteComponent extends PositionComponent {
   }
 }
 
-class BitmapPlySpriteComponent extends PlySpriteComponent with Snap {
-  BitmapPlySpriteComponent(PlySprite sprite) : super(sprite);
+class SnapPlySpriteComponent extends PlySpriteComponent with Snap {
+  SnapPlySpriteComponent(PlySprite sprite) : super(sprite);
 
-  /// Create a new BitmapPlySpriteComponent from an asset. A PlySprite consist of a
+  /// Create a new SnapPlySpriteComponent from an asset. A PlySprite consist of a
   /// PNG image and a JSON file with matching names (for example `mysprite.png`
   /// and `mysprite.json`).
-  static Future<BitmapPlySpriteComponent> fromPath(String path) async {
-    return BitmapPlySpriteComponent(await PlySprite.fromPath(path));
+  static Future<SnapPlySpriteComponent> fromPath(String path) async {
+    return SnapPlySpriteComponent(await PlySprite.fromPath(path));
   }
 }

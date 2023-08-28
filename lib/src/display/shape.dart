@@ -2,8 +2,8 @@ import 'package:flame/components.dart';
 
 import 'snap.dart';
 
-class BitmapRectangleComponent extends RectangleComponent with Snap {
-  BitmapRectangleComponent({
+class SnapRectangleComponent extends RectangleComponent with Snap {
+  SnapRectangleComponent({
     super.position,
     super.size,
     super.angle,

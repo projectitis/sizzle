@@ -21,9 +21,9 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
 
   /// The size of each pixel once the view window has been scaled. This is used
   /// by bitmap sprites to display at the correct scale and to snap to whole pixels.
-  final Vector2 bitmapScale = Vector2.all(1.0);
+  final Vector2 snapScale = Vector2.all(1.0);
 
-  /// Always ensure that the [bitmapScale] is in whole pixels
+  /// Always ensure that the [snapScale] is in whole pixels
   bool scaleToWholePixels = false;
 
   /// The visible game window inside the letterbox
@@ -76,7 +76,7 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
     Services.init(this);
   }
 
-  /// Calculate new view window size and bitmap scaling when the game resizes
+  /// Calculate new view window size and snap scaling when the game resizes
   @override
   void onGameResize(Vector2 canvasSize) {
     if (_targetSize.x != 0) {
@@ -88,7 +88,7 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
       double yMin = _targetSize.y * s;
       double w = min(canvasSize.x, xMax);
       double h = min(canvasSize.y, yMax);
-      bitmapScale.setValues(s, s);
+      snapScale.setValues(s, s);
       viewWindow.setValues(
         (canvasSize.x - w) * 0.5,
         (canvasSize.y - h) * 0.5,

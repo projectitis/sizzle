@@ -36,7 +36,7 @@ class Services {
   static final YarnProject yarn = YarnProject();
 
   static Map<String, dynamic> _data = {};
-  static List<String> _flags = [];
+  static final List<String> _flags = [];
   static Directory? _dir;
   static DialogueRunner? _runner;
   static Completer<void>? _dialogComplete;

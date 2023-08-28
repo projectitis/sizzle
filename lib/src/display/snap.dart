@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flame/components.dart';
 
 import 'package:sizzle/src/game/services.dart';
@@ -15,14 +17,14 @@ enum AnchorWindow {
 }
 
 mixin Snap on PositionComponent {
-  /// Scale automatically to game.bitmapScale
-  bool useBitmapScale = true;
+  /// Scale automatically to game.snapScale
+  bool useSnapScale = true;
 
   /// Always snap position to the nearest whole pixel
   bool snap = true;
 
   /// Always snap position to the nearest whole pixel
-  Vector2 bitmapPosition = Vector2.zero();
+  Vector2 snapPosition = Vector2.zero();
 
   /// Where to base coordinates on
   AnchorWindow _anchorWindow = AnchorWindow.gameWindow;
@@ -52,8 +54,8 @@ mixin Snap on PositionComponent {
   }
 
   void _update() {
-    if (useBitmapScale) {
-      scale = game.bitmapScale;
+    if (useSnapScale) {
+      scale = game.snapScale;
     }
     switch (anchorWindow) {
       case AnchorWindow.safeWindow:
@@ -84,8 +86,8 @@ mixin Snap on PositionComponent {
   @override
   void update(double dt) {
     position.setValues(
-      _anchorOffset.x + (snap ? bitmapPosition.x.round() : bitmapPosition.x) * scale.x,
-      _anchorOffset.y + (snap ? bitmapPosition.y.round() : bitmapPosition.y) * scale.y,
+      _anchorOffset.x + (snap ? snapPosition.x.round() : snapPosition.x) * scale.x,
+      _anchorOffset.y + (snap ? snapPosition.y.round() : snapPosition.y) * scale.y,
     );
     super.update(dt);
   }
@@ -93,11 +95,26 @@ mixin Snap on PositionComponent {
   @override
   bool containsLocalPoint(Vector2 point) {
     point.setValues(
-      point.x + game.gameWindowOffset.x / game.bitmapScale.x,
-      point.y + game.gameWindowOffset.y / game.bitmapScale.y,
+      point.x + game.gameWindowOffset.x / game.snapScale.x,
+      point.y + game.gameWindowOffset.y / game.snapScale.y,
     );
     return super.containsLocalPoint(point);
   }
 }
 
-class BitmapSpriteComponent extends SpriteComponent with Snap {}
+class SnapSpriteComponent extends SpriteComponent with Snap {
+  SnapSpriteComponent({
+    Sprite? sprite,
+    bool? autoResize,
+    Paint? paint,
+    super.position,
+    Vector2? size,
+    super.scale,
+    super.angle,
+    super.nativeAngle,
+    super.anchor,
+    super.children,
+    super.priority,
+    super.key,
+  }) : super(sprite: sprite, autoResize: autoResize, paint: paint, size: size);
+}
