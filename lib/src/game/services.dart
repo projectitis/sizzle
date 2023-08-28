@@ -54,15 +54,12 @@ class Services {
   }
 
   /// Initialise the services. SizzleGame does this
-  /// automatically during onLoad, so should not be
+  /// automatically during constructor, and should not be
   /// called again.
-  static Future<void> init(SizzleGame game) async {
+  static void init(SizzleGame game) {
     Services.game = game;
-    Services.yarn.functions.addFunction1('flag', Services._checkFlagsFromYarn);
+    Services.yarn.functions.addFunction1('flagged', Services._checkFlagsFromYarn);
     Services.yarn.commands.addCommand1('flag', Services._setFlagsFromYarn);
-
-    _dir ??= await getApplicationDocumentsDirectory();
-    load();
   }
 
   /// Load all data from the device. This includes flags
@@ -72,6 +69,7 @@ class Services {
   /// variables using [clearDialog] if this is not desired.
   /// Use [onLoad] callback to customise data after the load operation.
   static void load() async {
+    _dir ??= await getApplicationDocumentsDirectory();
     if (_dir == null) return;
 
     final File file = File('${_dir!.path}/$_savefile');
@@ -91,6 +89,7 @@ class Services {
   ///
   /// Override [saveCustom] to customise data before the save operation
   static void save() async {
+    _dir ??= await getApplicationDocumentsDirectory();
     if (_dir == null) return;
 
     _data['_flags'] = _flags;

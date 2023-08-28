@@ -71,14 +71,9 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
       routes['default'] = Route(scene);
     }
     add(_router = RouterComponent(initialRoute: routes.keys.first, routes: routes));
-  }
 
-  /// Ensure services are initialized
-  @override
-  FutureOr<void> onLoad() async {
-    await Services.init(this);
-
-    return super.onLoad();
+    // Set up services
+    Services.init(this);
   }
 
   /// Calculate new view window size and bitmap scaling when the game resizes
@@ -141,7 +136,12 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
     }
   }
 
-  /// Handle scene changes using the Flame router. It
+  /// Handle scene changes using the Flame router.
+  ///
+  /// Pushes the route specified by [name] to the top of the navigation stack. If the route is already on the stack,
+  /// it will just be moved to the top. Otherwise the route will be mounted and added at the top. We will also initiate building the
+  /// route's page if it hasn't been built before. If the route is already on top of the stack, this method will do
+  /// nothing.
   void changeScene(String scene, {bool replace = false}) {
     assert(_router.routes.keys.contains(scene), 'The scene \'$scene\' does not exist');
 
