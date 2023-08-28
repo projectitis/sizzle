@@ -3,9 +3,7 @@
 
 The `Services` are static methods that can be accessed from anywhere within
 your code, much like a global variable. Since they're static there's no need
-to create an instance of the services - however, the game initialises the
-services in the `onLoad` method of the [`SizzleGame`][SizzleGame], so
-using any of the service methods may fail before that.
+to create an instance of the services.
 
 - [Loading assets](#loading-assets)
 - [Managing dialog](#managing-dialog)

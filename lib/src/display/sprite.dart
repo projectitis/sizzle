@@ -9,21 +9,54 @@ import 'package:sizzle/src/game/services.dart';
 
 import 'snap.dart';
 
-/// A ply-sprite (sprite made up of many layers)
+/// A PlySprite is an animated sprite made up of many layers. The format is
+/// very space-efficient because it re-uses a lot of parts that make up the
+/// sprite, resulting in a much smaller image (sprite sheet).
+///
+/// A 'part' of a PlySprite can be re-used on many frames. A single part
+/// can also be rotated (in 90 degree steps) and re-used without making the
+/// sprite sheet (image) bigger.
+///
+/// The format was originally intended for systems that have much smaller
+/// memory (such as microcontrollers), but is useful for any purpose that
+/// benefits from a smaller memory or bundle size. It's especially handy for
+/// reasonably small sprites (like you get in pixel-art games) and if you
+/// have a character with a large number of animations (walk, jump, pick-up,
+/// talk, etc). The resulting sprite sheet will be much, much smaller.
 ///
 /// Sizzle includes a script that allows exporting ply-sprites from Aseprite.
-class PlySpriteComponent extends PositionComponent with Snap {
-  PlySpriteComponent(String path) {
+/// See the comments in `/scripts/aseprite/ply-sprite.lua` for how to use it.
+///
+/// The format is quite straight-forward and exporters could be implemented quite
+/// easily for other applications.
+class PlySprite {
+  /// Create a new PlySprite given the source [image] and the associated
+  /// [jsonData]. Use the factory method [fromPath] to load a PlySprite
+  /// directly from the assets.
+  PlySprite._(this._image, this._data) {
+    _anim = _data.animations.values.first;
+    _size.x = _data.width;
+    _size.y = _data.height;
+    _reset();
+  }
+
+  /// Create a new PlySprite from an asset. A PlySprite consist of a PNG image
+  /// and a JSON file with matching names (for example `mysprite.png` and
+  /// `mysprite.json`).
+  static Future<PlySprite> fromPath(String path) async {
     if (path.lastIndexOf('.') >= 0) {
       path = path.substring(0, path.lastIndexOf('.'));
     }
-    _path = path;
+    final image = await Services.loadImage("$path.png");
+    final data = await _PlySpriteData.create(path);
+    return PlySprite._(image, data);
   }
 
-  late final String _path;
   late final Image _image;
   late final _PlySpriteData _data;
+  final Vector2 _size = Vector2.zero();
   final Paint _paint = Paint();
+  Anchor _anchor = Anchor.topLeft;
 
   late _PlyAnimation _anim;
   bool _animForward = true;
@@ -40,20 +73,8 @@ class PlySpriteComponent extends PositionComponent with Snap {
   static int directionReverse = 1;
   static int directionPingpong = 2;
 
-  @override
-  FutureOr<void> onLoad() async {
-    _image = await Services.loadImage("$_path.png");
-    _data = await _PlySpriteData.create(_path);
-    _anim = _data.animations.values.first;
-    width = _data.width;
-    height = _data.height;
-    reset();
-    play(nextAnimation);
-    return super.onLoad();
-  }
-
   /// Reset current animation back to the start
-  void reset() {
+  void _reset() {
     _animForward = _anim.direction != directionReverse;
     if (_animForward) {
       _frameIndex = 0;
@@ -62,28 +83,37 @@ class PlySpriteComponent extends PositionComponent with Snap {
     }
     _frame = _anim.frames[_frameIndex];
     _framePos = 0;
-    anchor = Anchor(_anim.anchor.x / width, _anim.anchor.y / height);
+    _anchor = Anchor(_anim.anchor.x / _size.x, _anim.anchor.y / _size.y);
   }
 
-  /// Play an animation by [name]. If no [name] is specified will continue
-  /// playing the current animation. By default this is the first animation
-  /// in the file.
-  void play([String? name]) {
-    if (name != null) {
-      if (!isLoaded) {
-        nextAnimation = name;
-      } else {
-        final anim = _data.animations[name] ?? _data.animations.values.first;
-        if (anim != _anim) {
-          _anim = anim;
-          reset();
-        }
+  /// Play the [animation]. If no [animation] is specified it will start or
+  /// continue playing the current animation queue and will ignore [queue].
+  /// If no animation has been played previously, by default this is the first
+  /// animation in the file.
+  ///
+  /// Calling play with an [animation], and [queue] set to `false`, will stop
+  /// all current animations and clear the queue. If [queue] is set to `true`,
+  /// the [animation] will be added to the end of the queue and will play in
+  /// sequence.
+  void play(String? animation, {bool queue = false}) {
+    if (animation != null) {
+      final anim = _data.animations[animation] ?? _data.animations.values.first;
+      if (anim != _anim) {
+        _anim = anim;
+        _reset();
       }
     }
     _playing = true;
   }
 
-  /// Stop playing an animation
+  /// Play all [animations]. This will stop all current animations and clear
+  /// the queue. If [queue] is set to `true`, the [animations] will be added
+  /// to the end of the queue and will play in sequence.
+  void playAll(List<String> animations, {bool queue = false}) {
+    assert(false, 'Not yet implemented');
+  }
+
+  /// Stop playing an animation. To continue again
   void stop() {
     _playing = false;
   }
@@ -147,18 +177,12 @@ class PlySpriteComponent extends PositionComponent with Snap {
     }
   }
 
-  @override
   void update(double dt) {
     if (_playing) scrub(dt, true);
-    super.update(dt);
   }
 
-  @override
   void render(Canvas canvas) {
-    if (isLoaded) {
-      canvas.drawAtlas(_image, _frame.transforms, _frame.rects, null, null, null, _paint);
-    }
-    super.render(canvas);
+    canvas.drawAtlas(_image, _frame.transforms, _frame.rects, null, null, null, _paint);
   }
 }
 
@@ -318,4 +342,77 @@ class _PlySpriteData {
   late final double height;
   final List<Rect> parts = [];
   final Map<String, _PlyAnimation> animations = {};
+}
+
+class PlySpriteComponent extends PositionComponent {
+  PlySpriteComponent(this.sprite) {
+    anchor = sprite._anchor;
+    size = sprite._size;
+  }
+
+  /// Create a new PlySpriteComponent from an asset. A PlySprite consist of a
+  /// PNG image and a JSON file with matching names (for example `mysprite.png`
+  /// and `mysprite.json`).
+  static Future<PlySpriteComponent> fromPath(String path) async {
+    return PlySpriteComponent(await PlySprite.fromPath(path));
+  }
+
+  final PlySprite sprite;
+
+  /// Play the [animation]. If no [animation] is specified it will start or
+  /// continue playing the current animation queue and will ignore [queue].
+  /// If no animation has been played previously, by default this is the first
+  /// animation in the file.
+  ///
+  /// Calling play with an [animation], and [queue] set to `false`, will stop
+  /// all current animations and clear the queue. If [queue] is set to `true`,
+  /// the [animation] will be added to the end of the queue and will play in
+  /// sequence.
+  void play(String? animation, {bool queue = false}) {
+    sprite.play(animation, queue: queue);
+    // Each animation can have a different anchor
+    // TODO: When queue is implemented, this needs to be done onAnimationStart
+    anchor = sprite._anchor;
+  }
+
+  /// Play all [animations]. This will stop all current animations and clear
+  /// the queue. If [queue] is set to `true`, the [animations] will be added
+  /// to the end of the queue and will play in sequence.
+  void playAll(List<String> animations, {bool queue = false}) {
+    sprite.playAll(animations, queue: queue);
+  }
+
+  /// Stop playing an animation. To continue again
+  void stop() {
+    sprite.stop();
+  }
+
+  /// Set the position to [pos]. If [advance] is true, will advance
+  /// from the current position.
+  void scrub(double pos, [bool advance = false]) {
+    sprite.scrub(pos, advance);
+  }
+
+  @override
+  void update(double dt) {
+    sprite.update(dt);
+    super.update(dt);
+  }
+
+  @override
+  void render(Canvas canvas) {
+    sprite.render(canvas);
+    super.render(canvas);
+  }
+}
+
+class SnapPlySpriteComponent extends PlySpriteComponent with Snap {
+  SnapPlySpriteComponent(PlySprite sprite) : super(sprite);
+
+  /// Create a new SnapPlySpriteComponent from an asset. A PlySprite consist of a
+  /// PNG image and a JSON file with matching names (for example `mysprite.png`
+  /// and `mysprite.json`).
+  static Future<SnapPlySpriteComponent> fromPath(String path) async {
+    return SnapPlySpriteComponent(await PlySprite.fromPath(path));
+  }
 }

@@ -21,9 +21,9 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
 
   /// The size of each pixel once the view window has been scaled. This is used
   /// by bitmap sprites to display at the correct scale and to snap to whole pixels.
-  final Vector2 bitmapScale = Vector2.all(1.0);
+  final Vector2 snapScale = Vector2.all(1.0);
 
-  /// Always ensure that the [bitmapScale] is in whole pixels
+  /// Always ensure that the [snapScale] is in whole pixels
   bool scaleToWholePixels = false;
 
   /// The visible game window inside the letterbox
@@ -71,17 +71,12 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
       routes['default'] = Route(scene);
     }
     add(_router = RouterComponent(initialRoute: routes.keys.first, routes: routes));
+
+    // Set up services
+    Services.init(this);
   }
 
-  /// Ensure services are initialized
-  @override
-  FutureOr<void> onLoad() async {
-    await Services.init(this);
-
-    return super.onLoad();
-  }
-
-  /// Calculate new view window size and bitmap scaling when the game resizes
+  /// Calculate new view window size and snap scaling when the game resizes
   @override
   void onGameResize(Vector2 canvasSize) {
     if (_targetSize.x != 0) {
@@ -93,7 +88,7 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
       double yMin = _targetSize.y * s;
       double w = min(canvasSize.x, xMax);
       double h = min(canvasSize.y, yMax);
-      bitmapScale.setValues(s, s);
+      snapScale.setValues(s, s);
       viewWindow.setValues(
         (canvasSize.x - w) * 0.5,
         (canvasSize.y - h) * 0.5,
@@ -141,7 +136,12 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
     }
   }
 
-  /// Handle scene changes using the Flame router. It
+  /// Handle scene changes using the Flame router.
+  ///
+  /// Pushes the route specified by [name] to the top of the navigation stack. If the route is already on the stack,
+  /// it will just be moved to the top. Otherwise the route will be mounted and added at the top. We will also initiate building the
+  /// route's page if it hasn't been built before. If the route is already on top of the stack, this method will do
+  /// nothing.
   void changeScene(String scene, {bool replace = false}) {
     assert(_router.routes.keys.contains(scene), 'The scene \'$scene\' does not exist');
 

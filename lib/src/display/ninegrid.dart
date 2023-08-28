@@ -382,8 +382,8 @@ class NineGridComponent extends PositionComponent {
   }
 }
 
-class BitmapNineGridComponent extends NineGridComponent with Snap {
-  BitmapNineGridComponent(
+class SnapNineGridComponent extends NineGridComponent with Snap {
+  SnapNineGridComponent(
     Image image,
     Vector2 size, {
     NineGridSize? grid,

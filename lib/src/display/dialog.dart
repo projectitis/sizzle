@@ -60,7 +60,7 @@ class DialogTextStyle {
 ///
 /// Uses yarn spinner to process and display conversation. Add
 /// a component to the tree, then pass it to `Services.startDialog`.
-class DialogComponent extends PositionComponent with DialogueView, TapCallbacks, Hoverable, Snap, HasVisibility {
+class DialogComponent extends PositionComponent with DialogueView, TapCallbacks, Hoverable, HasVisibility {
   Vector2 dialogSize;
   Snap? _trackTarget;
   final List<String> characters = [];
@@ -72,7 +72,7 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
 
   final DialogOptions options = DialogOptions();
   late NineGridComponent _bg;
-  final List<TextArea> _text = [];
+  final List<TextAreaComponent> _text = [];
 
   /// Called by the dialog to locate a character in the scene
   /// so that the bubble can be positioned correctly.
@@ -121,7 +121,6 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
   }) : super(size: dialogSize) {
     assert(dialogStyles.isNotEmpty, 'At least one dialog style must be provided');
     assert(textStyles.isNotEmpty, 'At least one text style must be provided');
-    anchorWindow = AnchorWindow.viewWindow;
     for (final s in dialogStyles) {
       assert(s.name != '', 'A dialog style must have a name');
       assert(!_dialogStyles.containsKey(s.name), 'All dialog styles must have a unique name');
@@ -169,7 +168,7 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
 
     _clearTextAreas();
     _trackTarget = null;
-    game.mouseCursor = SystemMouseCursors.basic;
+    Services.game.mouseCursor = SystemMouseCursors.basic;
 
     isVisible = false;
   }
@@ -234,9 +233,7 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
     if (options.displayCharacterName) {
       _addTextArea(textStyle.captionStyle, line.character!.name);
     }
-    _trackTarget = onFindCharacterPosition?.call(line.character!.name);
-    if (_trackTarget != null) {
-      anchorWindow = _trackTarget!.anchorWindow;
+    if (_updateTrackTarget(line.character!.name)) {
       _updatePosition();
     }
     _addTextArea(textStyle.textStyle, line.text);
@@ -266,9 +263,7 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
           if (options.displayCharacterName) {
             _addTextArea(textStyle.captionStyle, option.character!.name);
           }
-          _trackTarget = onFindCharacterPosition?.call(option.character!.name);
-          if (_trackTarget != null) {
-            anchorWindow = _trackTarget!.anchorWindow;
+          if (_updateTrackTarget(option.character!.name)) {
             _updatePosition();
           }
         }
@@ -299,11 +294,11 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
   /// Add a new text area to the bubble
   /// TODO: Object pooling?
   void _addTextArea(TextStyle style, String s, {Color? color}) {
-    final t = TextArea(
+    final t = TextAreaComponent(
       text: s,
       maxWidth: dialogSize.x - _activeDialogStyle.padding.left - _activeDialogStyle.padding.right,
       style: color != null ? style.copyWith(color: color) : style,
-    )..useBitmapScale = false;
+    );
     _bg.add(t);
     _text.add(t);
   }
@@ -311,18 +306,18 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
   /// Arrange text areas correctly within the bubble and resize
   /// the background to fit them.
   void _prepare(bool choices) {
-    TextArea? lt;
+    TextAreaComponent? lt;
     Vector2 actualSize = Vector2.zero();
     for (final t in _text) {
       if (t == _text.first) {
-        t.bitmapPosition.setFrom(_activeDialogStyle.padding.topLeft.toVector2());
+        t.position.setFrom(_activeDialogStyle.padding.topLeft.toVector2());
       }
       t.prepare();
       actualSize.x = max(actualSize.x, t.size.x);
       actualSize.y += t.size.y;
       if (lt != null) {
-        t.bitmapPosition.x = lt.bitmapPosition.x;
-        t.bitmapPosition.y = lt.bitmapPosition.y + lt.size.y + options.paddingBetweenChoices;
+        t.position.x = lt.position.x;
+        t.position.y = lt.position.y + lt.size.y + options.paddingBetweenChoices;
         actualSize.y += options.paddingBetweenChoices;
       }
       lt = t;
@@ -337,7 +332,7 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
   @override
   bool onHoverEnter(PointerHoverInfo info) {
     if (isVisible) {
-      game.mouseCursor = SystemMouseCursors.click;
+      Services.game.mouseCursor = SystemMouseCursors.click;
     }
     return super.onHoverEnter(info);
   }
@@ -345,7 +340,7 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
   @override
   bool onHoverLeave(PointerHoverInfo info) {
     if (isVisible) {
-      game.mouseCursor = SystemMouseCursors.basic;
+      Services.game.mouseCursor = SystemMouseCursors.basic;
     }
     return super.onHoverLeave(info);
   }
@@ -368,10 +363,18 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
     }
   }
 
+  bool _updateTrackTarget(String targetName) {
+    final target = onFindCharacterPosition?.call(targetName);
+    if (target != null && target != _trackTarget) {
+      _trackTarget = target;
+      return true;
+    }
+    return false;
+  }
+
   void _updatePosition() {
     if (isVisible && _trackTarget != null) {
-      bitmapPosition.x = _trackTarget!.position.x / game.bitmapScale.x + _trackTarget!.size.x * 0.5;
-      bitmapPosition.y = _trackTarget!.position.y / game.bitmapScale.y;
+      position.setFrom(_trackTarget!.position);
     }
   }
 
@@ -379,5 +382,15 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
   void update(double dt) {
     _updatePosition();
     super.update(dt);
+  }
+}
+
+class SnapDialogComponent extends DialogComponent with Snap {
+  SnapDialogComponent({
+    required super.dialogSize,
+    required List<DialogStyle> dialogStyles,
+    required List<DialogTextStyle> textStyles,
+  }) : super(dialogStyles: dialogStyles, textStyles: textStyles) {
+    anchorWindow = AnchorWindow.viewWindow;
   }
 }

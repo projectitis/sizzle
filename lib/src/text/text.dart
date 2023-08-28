@@ -76,7 +76,7 @@ class CharCode {
 }
 
 /// Text area
-class TextArea extends PositionComponent with Snap {
+class TextAreaComponent extends PositionComponent {
   TextPaint _renderer;
   bool _needsPrepare = true;
   final List<TextAreaLine> _lines = [];
@@ -117,7 +117,7 @@ class TextArea extends PositionComponent with Snap {
 
   /// Create a new text area with a fixed [maxWidth] and the given [style].
   /// The text can be aligned left, right or center with [align].
-  TextArea({
+  TextAreaComponent({
     String? text,
     required TextStyle style,
     required double maxWidth,
@@ -240,4 +240,18 @@ class TextArea extends PositionComponent with Snap {
       pos.y += _lineHeight;
     }
   }
+}
+
+class SnapTextAreaComponent extends TextAreaComponent with Snap {
+  SnapTextAreaComponent({
+    String? text,
+    required TextStyle style,
+    required double maxWidth,
+    TextAlign align = TextAlign.left,
+  }) : super(
+          text: text,
+          style: style,
+          maxWidth: maxWidth,
+          align: align,
+        );
 }
