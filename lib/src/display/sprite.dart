@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
@@ -34,6 +35,7 @@ class PlySprite {
   /// [jsonData]. Use the factory method [fromPath] to load a PlySprite
   /// directly from the assets.
   PlySprite._(this._image, this._data) {
+    _animName = _data.animations.keys.first;
     _anim = _data.animations.values.first;
     _size.x = _data.width;
     _size.y = _data.height;
@@ -52,19 +54,44 @@ class PlySprite {
     return PlySprite._(image, data);
   }
 
+  /// Called when an animation starts
+  PlySpriteAnimationCallback? onAnimationStart;
+
+  /// Called when an animation ends
+  PlySpriteAnimationCallback? onAnimationEnd;
+
+  /// Called when an animation is looping and starts a subsequent loop. A looping
+  /// animation (repeat=3) will undergo a life cycle like this:
+  ///   onAnimationStart  ->
+  ///   onAnimationLoop   ->
+  ///   onAnimationLoop   ->
+  ///   onAnimationEnd    !
+  /// A looping ping-pong animation (repeat=3) will look like this:
+  ///   onAnimationStart  ->
+  ///   onAnimationLoop   <-
+  ///   onAnimationLoop   ->
+  ///   onAnimationEnd    !
+  PlySpriteAnimationLoopCallback? onAnimationLoop;
+
+  /// Called after [onAnimationEnd] and when there are no more animations in the
+  /// queue.
+  PlySpriteAnimationCallback? onAnimationQueueEmpty;
+
   late final Image _image;
   late final _PlySpriteData _data;
   final Vector2 _size = Vector2.zero();
-  final Paint _paint = Paint();
   Anchor _anchor = Anchor.topLeft;
 
   late _PlyAnimation _anim;
+  String _animName = '';
   bool _animForward = true;
-  String? nextAnimation;
+  final ListQueue<String> _queue = ListQueue<String>();
 
   late _PlyFrame _frame;
   int _frameIndex = 0;
   double _framePos = 0;
+  double _animPos = 0;
+  int _repeat = 0;
 
   bool _playing = false;
   get isPlaying => _playing;
@@ -72,6 +99,7 @@ class PlySprite {
   static int directionForward = 0;
   static int directionReverse = 1;
   static int directionPingpong = 2;
+  static int directionPongping = 3;
 
   /// Reset current animation back to the start
   void _reset() {
@@ -83,46 +111,105 @@ class PlySprite {
     }
     _frame = _anim.frames[_frameIndex];
     _framePos = 0;
+    _animPos = 0;
     _anchor = Anchor(_anim.anchor.x / _size.x, _anim.anchor.y / _size.y);
   }
 
   /// Play the [animation]. If no [animation] is specified it will start or
   /// continue playing the current animation queue and will ignore [queue].
-  /// If no animation has been played previously, by default this is the first
-  /// animation in the file.
+  /// If no animation has been played previously, by default it will play the
+  /// first animation in the file.
   ///
   /// Calling play with an [animation], and [queue] set to `false`, will stop
   /// all current animations and clear the queue. If [queue] is set to `true`,
   /// the [animation] will be added to the end of the queue and will play in
   /// sequence.
   void play(String? animation, {bool queue = false}) {
-    if (animation != null) {
-      final anim = _data.animations[animation] ?? _data.animations.values.first;
-      if (anim != _anim) {
-        _anim = anim;
-        _reset();
+    if (animation == null) {
+      if (!_playing) {
+        if (_animPos == 0) {
+          onAnimationStart?.call(this, _animName);
+        }
+        _playing = true;
       }
+    } else {
+      if (!queue) {
+        _queue.clear();
+        if (_playing) _stop();
+      }
+      _queue.add(animation);
+      if (!_playing) _playNext();
     }
-    _playing = true;
   }
 
   /// Play all [animations]. This will stop all current animations and clear
   /// the queue. If [queue] is set to `true`, the [animations] will be added
   /// to the end of the queue and will play in sequence.
   void playAll(List<String> animations, {bool queue = false}) {
-    assert(false, 'Not yet implemented');
+    if (!queue) {
+      _queue.clear();
+    }
+    _queue.addAll(animations);
+    if (!_playing) _playNext();
   }
 
-  /// Stop playing an animation. To continue again
+  bool _playNext() {
+    if (_queue.isNotEmpty) {
+      _animName = _queue.removeFirst();
+      final anim = _data.animations[_animName];
+
+      if (anim != null) {
+        _anim = anim;
+        _repeat = 0;
+        _reset();
+        _playing = true;
+        onAnimationStart?.call(this, _animName);
+        return true;
+      }
+    } else {
+      onAnimationQueueEmpty?.call(this, '');
+    }
+    return false;
+  }
+
+  void _stop() {
+    onAnimationEnd?.call(this, _animName);
+    _playing = false;
+  }
+
+  void _loop() {
+    onAnimationLoop?.call(this, _animName, _repeat);
+  }
+
+  /// Stop playing an animation. To continue again, call [play] with
+  /// no arguments.
   void stop() {
     _playing = false;
   }
 
+  /// Will clear the animation queue. Any current animation will continue to play.
+  void clear() {
+    _queue.clear();
+  }
+
   /// Set the position to [pos]. If [advance] is true, will advance
   /// from the current position.
+  ///
+  /// Lifecycle events will be triggered, and animations will advanced through the queue. For
+  /// example, consider the following queue:
+  /// "Walk" - 1 second, loop twice
+  /// "Yawn" - 1 second
+  /// "Run" = 5 seconds
+  ///
+  /// If you call `scrub(4.0)` (i.e. move 4 seconds into the animation) the following will happen:
+  /// "walk" will start, loop and end
+  /// "Yawn" will start and end
+  /// "Run" will start
+  /// Although the animation will be skipped, the callbacks will still be triggered.
   void scrub(double pos, [bool advance = false]) {
     int newIndex = _frameIndex;
-    if (!advance) {
+
+    void calcNewIndex() {
       _framePos = 0;
       if (_anim.direction == directionReverse) {
         newIndex = _anim.frames.length - 1;
@@ -136,14 +223,34 @@ class PlySprite {
         _frame = _anim.frames[_frameIndex];
       }
     }
+
+    if (!advance) {
+      calcNewIndex();
+    }
     double r;
     while (pos > 0) {
       r = (_frame.duration - _framePos) - pos;
       if (r < 0) {
+        _framePos = 0;
+        pos += r;
         if (_animForward) {
           newIndex++;
           if (newIndex >= _anim.frames.length) {
-            if (_anim.direction == directionPingpong) {
+            // Looping
+            if (_anim.repeats > 0) {
+              _repeat++;
+              if (_repeat >= _anim.repeats) {
+                if (!_playNext()) {
+                  _stop();
+                  return;
+                } else {
+                  _loop();
+                  calcNewIndex();
+                  continue;
+                }
+              }
+            }
+            if (_anim.direction == directionPingpong || _anim.direction == directionPongping) {
               newIndex = _anim.frames.length - 2;
               if (newIndex < 0) newIndex = 0;
               _animForward = false;
@@ -154,7 +261,21 @@ class PlySprite {
         } else {
           newIndex--;
           if (newIndex < 0) {
-            if (_anim.direction == directionPingpong) {
+            // Looping
+            if (_anim.repeats > 0) {
+              _repeat++;
+              if (_repeat >= _anim.repeats) {
+                if (!_playNext()) {
+                  _stop();
+                  return;
+                } else {
+                  _loop();
+                  calcNewIndex();
+                  continue;
+                }
+              }
+            }
+            if (_anim.direction == directionPingpong || _anim.direction == directionPongping) {
               newIndex = 1;
               if (_anim.frames.length < 2) newIndex = 0;
               _animForward = true;
@@ -164,8 +285,6 @@ class PlySprite {
           }
         }
         _frame = _anim.frames[newIndex];
-        _framePos = 0;
-        pos += r;
       } else {
         _framePos += pos;
         pos = -1.0;
@@ -178,11 +297,20 @@ class PlySprite {
   }
 
   void update(double dt) {
-    if (_playing) scrub(dt, true);
+    if (_playing) {
+      _animPos += dt;
+      scrub(dt, true);
+    }
   }
 
   void render(Canvas canvas) {
-    canvas.drawAtlas(_image, _frame.transforms, _frame.rects, null, null, null, _paint);
+    if (_anim.renderPartsIndividually) {
+      for (var i = 0; i < _frame.transforms.length; i++) {
+        canvas.drawAtlas(_image, [_frame.transforms[i]], [_frame.rects[i]], null, null, null, _frame.paints[i]);
+      }
+    } else {
+      canvas.drawAtlas(_image, _frame.transforms, _frame.rects, null, null, null, _frame.paints[0]);
+    }
   }
 }
 
@@ -191,8 +319,9 @@ class _PlyFrame {
   final double duration;
   final List<RSTransform> transforms = [];
   final List<Rect> rects = [];
+  final List<Paint> paints = [];
 
-  void addPly(Rect part, int orientation, double x, double y) {
+  void addPly(Rect part, int orientation, double x, double y, int alpha, int blendmode) {
     double rot = 0;
     double ox = 0;
     double oy = 0;
@@ -216,14 +345,81 @@ class _PlyFrame {
       translateY: y + oy,
     ));
     rects.add(part);
+    paints.add(createPaint(alpha, blendmode));
+  }
+
+  Paint createPaint(int alpha, int blendmode) {
+    final p = Paint()..color = Color.fromARGB(alpha, 0, 0, 0);
+    switch (blendmode) {
+      case 14:
+        p.blendMode = BlendMode.multiply;
+        break;
+      case 15:
+        p.blendMode = BlendMode.screen;
+        break;
+      case 16:
+        p.blendMode = BlendMode.overlay;
+        break;
+      case 17:
+        p.blendMode = BlendMode.darken;
+        break;
+      case 18:
+        p.blendMode = BlendMode.lighten;
+        break;
+      case 19:
+        p.blendMode = BlendMode.colorDodge;
+        break;
+      case 20:
+        p.blendMode = BlendMode.colorBurn;
+        break;
+      case 21:
+        p.blendMode = BlendMode.hardLight;
+        break;
+      case 22:
+        p.blendMode = BlendMode.softLight;
+        break;
+      case 23:
+        p.blendMode = BlendMode.difference;
+        break;
+      case 24:
+        p.blendMode = BlendMode.exclusion;
+        break;
+      case 25:
+        p.blendMode = BlendMode.hue;
+        break;
+      case 26:
+        p.blendMode = BlendMode.saturation;
+        break;
+      case 27:
+        p.blendMode = BlendMode.color;
+        break;
+      case 28:
+        p.blendMode = BlendMode.luminosity;
+        break;
+      case 29:
+        p.blendMode = BlendMode.plus; // addition ?
+        break;
+      case 30:
+        p.blendMode = BlendMode.srcOver; // subtract ?
+        break;
+      case 31:
+        p.blendMode = BlendMode.srcOver; // divide (opposite of subtract) ?
+        break;
+      default: // 3
+        p.blendMode = BlendMode.srcOver; // normal
+        break;
+    }
+    return p;
   }
 }
 
 class _PlyAnimation {
-  _PlyAnimation(this.direction, double x, double y) : anchor = Vector2(x, y);
+  _PlyAnimation(this.direction, this.repeats, double x, double y) : anchor = Vector2(x, y);
   final Vector2 anchor;
   final int direction;
+  final int repeats;
   final List<_PlyFrame> frames = [];
+  bool renderPartsIndividually = false;
 }
 
 class _PlySpriteData {
@@ -238,19 +434,16 @@ class _PlySpriteData {
   }
 
   _PlySpriteData(dynamic json) {
+    bool first = true;
+    int alpha = 0;
+    int blendmode = 0;
+
     /// Verbose JSON
     if (json is Map) {
-      assert(json.containsKey('width'), 'root.width not found');
-      assert(json.containsKey('height'), 'root.height not found');
-      assert(json['parts'] is List, 'root.parts must be an array');
       width = json['width'].toDouble();
       height = json['height'].toDouble();
 
       for (final part in json['parts']) {
-        assert(part.containsKey('x'), 'root.parts[n].x not found');
-        assert(part.containsKey('y'), 'root.parts[n].y not found');
-        assert(part.containsKey('width'), 'root.parts[n].width not found');
-        assert(part.containsKey('height'), 'root.parts[n].height not found');
         parts.add(Rect.fromLTWH(
           part['x'].toDouble(),
           part['y'].toDouble(),
@@ -259,11 +452,10 @@ class _PlySpriteData {
         ));
       }
 
-      assert(json.containsKey('animations'), 'root.animations array not found');
-      assert(json['animations'] is Map, 'root.animations must be an object');
       json['animations'].forEach((name, animData) {
         final anim = _PlyAnimation(
-          animData['direction'],
+          animData['direction'] as int,
+          animData['repeats'] as int,
           animData['anchor']['x'].toDouble(),
           animData['anchor']['y'].toDouble(),
         );
@@ -272,11 +464,22 @@ class _PlySpriteData {
           final frame = _PlyFrame(frameData['duration']);
           frameData['parts'].forEach((partData) {
             frame.addPly(
-              parts[partData['index']],
-              partData['orientation'],
+              parts[partData['index'] as int],
+              partData['orientation'] as int,
               partData['x'].toDouble(),
               partData['y'].toDouble(),
+              partData['alpha'] as int,
+              partData['blendmode'] as int,
             );
+            if (first) {
+              alpha = partData['alpha'] as int;
+              blendmode = partData['blendmode'] as int;
+              first = false;
+            } else {
+              if (alpha != (partData['alpha'] as int) || blendmode != (partData['blendmode'] as int)) {
+                anim.renderPartsIndividually = true;
+              }
+            }
           });
           anim.frames.add(frame);
         });
@@ -286,14 +489,10 @@ class _PlySpriteData {
 
     /// Condensed JSON
     else {
-      assert(json.length == 3, 'root: 3 arrays expected [[], [], []]');
-      assert(json[0] is List && json[0].length == 2, 'root[0]: size of sprite expected [int, int]');
       width = json[0][0].toDouble();
       height = json[0][1].toDouble();
 
-      assert(json[1] is List, 'root[1]: parts array expected [...]');
       for (final part in json[1]) {
-        assert(part is List && part.length == 4, 'root[1][n]: part array expected [int, int, int, int]');
         parts.add(Rect.fromLTWH(
           part[0].toDouble(),
           part[1].toDouble(),
@@ -302,38 +501,42 @@ class _PlySpriteData {
         ));
       }
 
-      assert(json[2] is List, 'root[2]: animation array expected []');
       for (final a in json[2]) {
-        assert(a is List && a.length == 4, 'root[2][n]: animation array expected [string, int, [int, int], [...]]');
-        assert(a[0] is String, 'root[2][n][0]: animation name expected. string');
-        assert(a[1] is num, 'root[2][n][1]: animation direction expected. int');
-        assert(a[2] is List && a[2].length == 2, 'root[2][n][2]: animation anchor expected [int, int]');
         final anim = _PlyAnimation(
-          a[1],
-          a[2][0].toDouble(),
-          a[2][1].toDouble(),
+          a[1] as int,
+          a[2] as int,
+          a[3][0].toDouble(),
+          a[3][1].toDouble(),
         );
 
-        assert(a[3] is List, 'root[2][n][3]: animation frames array expected [...]');
-        for (final f in a[3]) {
-          assert(f is List && f.length == 2, 'root[2][n][3][n]: frame array expected [double, [...]]');
-          final frame = _PlyFrame(f[0].toDouble());
+        for (final f in a[4]) {
+          final frame = _PlyFrame(f[0] as double);
 
-          assert(f[1] is List, 'root[2][n][3][n][1]: ply array expected [...]');
           for (final p in f[1]) {
-            assert(p is List && p.length == 4, 'root[2][n][3][n][1][n]: ply array expected [int, int, int, int]');
             frame.addPly(
-              parts[p[0]],
-              p[1],
-              p[2].toDouble(),
-              p[3].toDouble(),
+              parts[p[0] as int], // Part
+              p[1] as int, // Orientation
+              p[2].toDouble(), // x
+              p[3].toDouble(), // y
+              p[4] as int, // Alpha
+              p[5] as int, // BlendMode
             );
+            if (first) {
+              alpha = p[4] as int;
+              blendmode = p[5] as int;
+              first = false;
+            } else {
+              if (alpha != (p[4] as int) || blendmode != (p[5] as int)) {
+                anim.renderPartsIndividually = true;
+                print('Render parts individually for "${a[0]}"');
+              }
+            }
           }
 
           anim.frames.add(frame);
         }
 
-        animations[a[0]] = anim;
+        animations[a[0] as String] = anim;
       }
     }
   }
@@ -344,6 +547,12 @@ class _PlySpriteData {
   final Map<String, _PlyAnimation> animations = {};
 }
 
+typedef PlySpriteAnimationCallback = void Function(PlySprite sprite, String animation);
+typedef PlySpriteAnimationLoopCallback = void Function(PlySprite sprite, String animation, int loop);
+
+/// TODO: Consider removing PlySpriteComponent and renaming PlySprite to
+/// PlySpriteComponent in the future? Is there ever a use-case where the
+/// non-component version is required?
 class PlySpriteComponent extends PositionComponent {
   PlySpriteComponent(this.sprite) {
     anchor = sprite._anchor;

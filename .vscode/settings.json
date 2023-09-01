@@ -8,12 +8,15 @@
         ],
     },
     "cSpell.words": [
+        "blendmode",
         "customise",
         "Initialise",
         "LTWH",
+        "LTRB",
         "ninegrid",
         "pingpong",
         "plys",
+        "Pongping",
         "rects",
         "savefile"
     ]
