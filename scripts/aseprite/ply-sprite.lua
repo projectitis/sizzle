@@ -50,6 +50,11 @@ else
     end
 end
 
+-- Slugify a string
+slugify = function(str)
+    return string.gsub(string.gsub(string.lower(str),"[^ a-z0-9-_]",""),"[ ]+","-")
+end
+
 -- Output names
 local outputId = slugify(app.fs.fileTitle(sprite.filename))
 local outputName = app.fs.joinPath(app.fs.filePath(sprite.filename), outputId)
@@ -64,11 +69,6 @@ local output = {
     parts = {},
     animations = {}
 }
-
--- Slugify a string
-slugify = function(str)
-    return string.gsub(string.gsub(string.lower(str),"[^ a-z0-9]",""),"[ ]+","-")
-end
 
 -- Function to compare images
 ImageCompare = {
@@ -177,7 +177,7 @@ end
 -- Step tags (animations)
 for _,tag in ipairs(tags) do
     print("  Processing animation "..tag.name)
-    animation = {name = tag.name, direction = tag.aniDir, frames = {}}
+    animation = {name = tag.name, direction = tag.aniDir, repeats = tag.repeats, frames = {}}
     local gotAnchor = false
     local anchor = {x=0, y=0}
 
@@ -262,6 +262,8 @@ for _,tag in ipairs(tags) do
                 x = bounds.x,
                 y = bounds.y,
                 orientation = orientation,
+                blendmode = layer.blendMode,
+                alpha = layer.opacity,
             }
             table.insert(layeredSprite.parts, sharedPart)
 
@@ -385,13 +387,13 @@ if outputJson then
         table.insert(condensedOutput, parts)
         local anims = {}
         for _, a in pairs(output.animations) do
-            local anim = {a.name, a.direction, {a.anchor.x, a.anchor.y}}
+            local anim = {a.name, a.direction, a.repeats, {a.anchor.x, a.anchor.y}}
             local frames = {}
             for _, f in pairs(a.frames) do
                 local frame = {f.duration}
                 local parts = {}
                 for _, p in pairs(f.parts) do
-                    table.insert(parts, {p.index, p.orientation, p.x, p.y})
+                    table.insert(parts, {p.index, p.orientation, p.x, p.y, p.alpha, p.blendmode})
                 end
                 table.insert(frame, parts)
                 table.insert(frames, frame)
@@ -479,6 +481,8 @@ if outputCppHeader then
             return "AnimationDirection::Reverse"
         elseif index == 2 then
             return "AnimationDirection::PingPong"
+        elseif index == 3 then
+            return "AnimationDirection::PongPing"
         end
         return "AnimationDirection::Forward"
     end
@@ -612,6 +616,7 @@ if outputCppHeader then
         header = header.."\t// Animation '"..a.name.."'\n"
         header = header.."\t{\n"
         header = header.."\t\t.direction = "..animDirectionEnum(a.direction)..",\n"
+        header = header.."\t\t.repeats = "..animDirectionEnum(a.repeats)..",\n"
         header = header.."\t\t.anchorX = "..string.format("%.4f", a.anchor.x)..",\n"
         header = header.."\t\t.anchorY = "..string.format("%.4f", a.anchor.y)..",\n"
         header = header.."\t\t.frameCount = "..#a.frames..",\n"

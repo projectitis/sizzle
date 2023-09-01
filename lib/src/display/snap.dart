@@ -115,6 +115,20 @@ mixin Snap on PositionComponent {
   }
 }
 
+class SnapPositionComponent extends PositionComponent with Snap {
+  SnapPositionComponent({
+    Vector2? position,
+    Vector2? size,
+    Vector2? scale,
+    double? angle,
+    super.nativeAngle = 0,
+    Anchor? anchor,
+    super.children,
+    super.priority,
+    super.key,
+  }) : super(position: position, size: size, scale: scale, angle: angle, anchor: anchor);
+}
+
 class SnapSpriteComponent extends SpriteComponent with Snap {
   SnapSpriteComponent({
     Sprite? sprite,
