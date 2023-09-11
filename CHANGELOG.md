@@ -1,7 +1,20 @@
+# Changes
+
+
+## 0.1.2
+
+- Dialog
+- NineGrid
+  - Advanced NineGrid implementation
+- PlySprite
+  - Animation queue
+  - Callback events
+
+
 ## 0.1.1
 
 - SizzleGame
-  - Support for single scene
+  - Add support for single scene
 
 
 ## 0.1.0
@@ -11,11 +24,6 @@
   - Target and max view window
   - Manage scaling and letterboxing
   - Scenes (based on Flame Routes)
-
-
-- Scene
-    -
-
 - BitmapSpriteComponent
   - Snapping to pixels
 - Services
