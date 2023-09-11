@@ -71,14 +71,28 @@ can't always guarantee the size of the screen the user will be playing the game
 on! In order to support a range of screen sizes across these platforms, use
 `targetSize` and `maxSize`.
 
+The following image shows the same `targetSize` and `maxSize` on screens with
+different aspect ratios.
+
+```dart
+targetSize: Vector2(240, 180)
+maxSize: Vector2(360, 180)
+```
+
+![screen sizes](img/screen-sizes.png "screen sizes")
+
 No matter what the screen size is set to, Sizzle will ensure that the area
 given by `targetSize` is always visible. As the screen is resized (for example,
 the user is resizing the browser) Sizzle will maintain the target area is
-visible and will scale the pixel size automatically.
+visible and will scale the pixel size automatically. Note how the target area in
+all the examples above is always visible.
 
 Depending on the screen size, your game may be drawn outside the target area
 as well. You can set `maxSize` to determine the maximum screen area that should
-be drawn.
+be drawn. This is shown in the 16:9 and 4:3 examples.
+
+If the screen size is very large, Sizzle will draw a letter box. This is shown in
+the 5:2 example.
 
 As a developer you need to make sure your game is visible and looks good up to
 'max' area, but that anything outside of the 'target' area might be obscured

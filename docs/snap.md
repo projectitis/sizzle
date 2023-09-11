@@ -20,7 +20,7 @@ Components with `Snap` should never be nested inside each other. i.e. a componen
 never be a child (or a descendant) of another component with `Snap`. Scaling will be applied
 multiple times, and your object will be huge!
 
-Instead, your base component should have `Snap` and all child components should be unscaled.
+Only your base component should have `Snap` and all child components should be unscaled.
 
 
 ## Components with snap
