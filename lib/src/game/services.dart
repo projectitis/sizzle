@@ -58,7 +58,8 @@ class Services {
   /// called again.
   static void init(SizzleGame game) {
     Services.game = game;
-    Services.yarn.functions.addFunction1('flagged', Services._checkFlagsFromYarn);
+    Services.yarn.functions
+        .addFunction1('flagged', Services._checkFlagsFromYarn);
     Services.yarn.commands.addCommand1('flag', Services._setFlagsFromYarn);
   }
 
@@ -125,7 +126,8 @@ class Services {
   /// ready for starting a dialog. If [replaceNodes] is true,
   /// the already loaded yarn nodes will be deleted first. Any
   /// characters, variables, functions are not affected.
-  static FutureOr<void> loadDialog(List<String> files, {bool replaceNodes = false}) async {
+  static FutureOr<void> loadDialog(List<String> files,
+      {bool replaceNodes = false,}) async {
     if (replaceNodes) {
       yarn.nodes.clear();
     }
@@ -140,8 +142,10 @@ class Services {
   /// The [views] present the dialog to the user. At least
   /// one view must be provided.
   static Future<void> startDialog(String nodeName, List<DialogueView> views) {
-    assert(_runner == null, 'Trying to start dialog $nodeName but dialog already started');
-    assert(views.isNotEmpty, 'Trying to start dialog $nodeName but no dialog views provided');
+    assert(_runner == null,
+        'Trying to start dialog $nodeName but dialog already started',);
+    assert(views.isNotEmpty,
+        'Trying to start dialog $nodeName but no dialog views provided',);
     _runner = DialogueRunner(yarnProject: yarn, dialogueViews: views);
     _runner!.startDialogue(nodeName).whenComplete(_dialogEnded);
     _dialogComplete = Completer();

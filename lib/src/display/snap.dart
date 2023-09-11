@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:flame/game.dart';
 
 import 'package:sizzle/src/game/services.dart';
 import 'package:sizzle/src/game/game.dart';
@@ -12,7 +11,10 @@ enum AnchorWindow {
   /// constructor.
   maxWindow,
 
-  /// The viewable game area. Somewhere between game and target window
+  /// The currently viewable game area. Somewhere between game and target
+  /// window. On platforms that allow resizing the screen, this window can
+  /// change zie throughout the lifetime of the game. This window is best
+  /// used for aligning UI elements.
   viewWindow,
 
   /// The smallest visible area, always guaranteed to be visible. This
@@ -99,8 +101,10 @@ mixin Snap on PositionComponent {
   @override
   void update(double dt) {
     position.setValues(
-      _anchorOffset.x + (snap ? _snapPosition.x.round() : _snapPosition.x) * scale.x,
-      _anchorOffset.y + (snap ? _snapPosition.y.round() : _snapPosition.y) * scale.y,
+      _anchorOffset.x +
+          (snap ? _snapPosition.x.round() : _snapPosition.x) * scale.x,
+      _anchorOffset.y +
+          (snap ? _snapPosition.y.round() : _snapPosition.y) * scale.y,
     );
     super.update(dt);
   }
@@ -126,7 +130,12 @@ class SnapPositionComponent extends PositionComponent with Snap {
     super.children,
     super.priority,
     super.key,
-  }) : super(position: position, size: size, scale: scale, angle: angle, anchor: anchor);
+  }) : super(
+            position: position,
+            size: size,
+            scale: scale,
+            angle: angle,
+            anchor: anchor,);
 }
 
 class SnapSpriteComponent extends SpriteComponent with Snap {

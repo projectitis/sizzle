@@ -58,7 +58,10 @@ class CharCode {
   }
 
   static bool isBreakableBefore(int c) {
-    return c == braceOpen || c == bracketOpen || c == squareBracketOpen || c == dollarSign;
+    return c == braceOpen ||
+        c == bracketOpen ||
+        c == squareBracketOpen ||
+        c == dollarSign;
   }
 
   static bool isBreakableAfter(int c) {
@@ -138,7 +141,7 @@ class TextAreaComponent extends PositionComponent {
     final expectedSize = _renderer.getLineMetrics(_text.substring(
       start,
       min(end, _text.length),
-    ));
+    ),);
     _lineHeight = max(_lineHeight, expectedSize.height);
     _actualWidth = max(_actualWidth, expectedSize.width);
     return expectedSize.width;

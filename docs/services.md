@@ -1,4 +1,5 @@
 # Game services
+
 [:arrow_left: Back to documentation](index.md)
 
 The `Services` are static methods that can be accessed from anywhere within
@@ -9,6 +10,7 @@ to create an instance of the services.
 - [Managing dialog](#managing-dialog)
 - [Tracking player actions with flags](#flags)
 - [Save games](#save-games)
+
 
 ## Loading assets
 
@@ -24,6 +26,7 @@ The following methods are available:
 - [Services.loadJson](../lib/src/game/services.dart#:~:text=loadJson) for loading an parsing a JSON file
 - [Services.clearCache](../lib/src/game/services.dart#:~:text=clearCache) for clearing some or all of the cached files
 
+
 ## Managing dialog
 
 Yarn Spinner is a popular and powerful dialog system. Sizzle wraps the yarn spinner 'jenny' package provided by Flame, and gives us some easy-to-use utility methods. Use the Sizzle
@@ -34,6 +37,7 @@ Dialog (and Yarn Spinner) is it's own whole topic, which covered here (coming so
 - [Services.loadDialog](../lib/src/game/services.dart#:~:text=loadDialog) for loading yarn file assets
 - [Services.startDialog](../lib/src/game/services.dart#:~:text=startDialog) for starting a dialog interaction
 - [Services.clearDialog](../lib/src/game/services.dart#:~:text=startDialog) for clearing yarn nodes, variables etc
+
 
 ## Flags
 
@@ -62,6 +66,7 @@ the user saves the game progress (see [save games](#save-games)).
 - [Services.flag](../lib/src/game/services.dart#:~:text=flag) set or unset a flag
 - [Services.flagged](../lib/src/game/services.dart#:~:text=flagged) check if flag is set
 
+
 ## Save games
 
 User data can be saved and later reloaded. Sizzle provides hooks into both the
@@ -76,4 +81,3 @@ maintained.
 - [Services.load](../lib/src/game/services.dart#:~:text=load) load session from the device
 
 [DialogComponent]: ../lib/src/display/dialog.dart
-[SizzleGame]: ../lib/src/game/game.dart

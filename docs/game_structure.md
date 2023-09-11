@@ -1,4 +1,5 @@
-# Structure of a game 
+# Structure of a game
+
 [:arrow_left: Back to documentation](index.md)
 
 - [Typical game example](#typical-game-example)
@@ -36,6 +37,7 @@ void main() {
 }
 ```
 
+
 ## Scenes
 
 One of the first things you may notice is that a Sizzle game is scene-based.
@@ -60,6 +62,7 @@ within [`SizzleGame`][SizzleGame], will change the scene.
 Scenes use the Flame `RouterComponent` behind the scenes (no pun intended),
 but all the work is managed for you. Each [`Scene`][Scene] is a flame
 `Component`.
+
 
 ## Screen size
 
@@ -86,11 +89,13 @@ Setting the `maxSize` equal to the `targetSize` is often a good idea. This
 means you don't have to deal with anything outside of the 'target' area and
 can guarantee that anything within the 'target' are is always visible.
 
+
 ## Letterbox
 
 Outside of `maxSize` the game will be letterboxed. By default the area outside
 the letterbox is black, but this can be changed by passing `letterBoxColor`
 into the constructor of the game.
+
 
 ## Pixel size
 

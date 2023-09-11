@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:flutter/services.dart';
 import 'package:sizzle/src/game/services.dart';
 
 import 'snap.dart';
@@ -30,35 +28,36 @@ import 'snap.dart';
 ///
 /// The format is quite straight-forward and exporters could be implemented quite
 /// easily for other applications.
-class PlySprite {
+class PlySpriteComponent extends PositionComponent {
   /// Create a new PlySprite given the source [image] and the associated
   /// [jsonData]. Use the factory method [fromPath] to load a PlySprite
   /// directly from the assets.
-  PlySprite._(this._image, this._data) {
-    _animName = _data.animations.keys.first;
-    _anim = _data.animations.values.first;
-    _size.x = _data.width;
-    _size.y = _data.height;
+  PlySpriteComponent._(this._image, this._data) {
+    _queue.add(PlyAnimProps(_data.animations.keys.first));
+    _next();
     _reset();
+    size.x = _data.width;
+    size.y = _data.height;
   }
 
-  /// Create a new PlySprite from an asset. A PlySprite consist of a PNG image
-  /// and a JSON file with matching names (for example `mysprite.png` and
-  /// `mysprite.json`).
-  static Future<PlySprite> fromPath(String path) async {
+  /// Create a new PlySpriteComponent from an asset. A PlySprite consist of a
+  /// PNG image and a JSON file with matching names (for example `mysprite.png`
+  /// and `mysprite.json`). Provide the path to the assets without the
+  /// extension (for example `images/mysprite`).
+  static Future<PlySpriteComponent> fromPath(String path) async {
     if (path.lastIndexOf('.') >= 0) {
       path = path.substring(0, path.lastIndexOf('.'));
     }
     final image = await Services.loadImage("$path.png");
     final data = await _PlySpriteData.create(path);
-    return PlySprite._(image, data);
+    return PlySpriteComponent._(image, data);
   }
 
   /// Called when an animation starts
-  PlySpriteAnimationCallback? onAnimationStart;
+  PlyCallback? onAnimationStart;
 
   /// Called when an animation ends
-  PlySpriteAnimationCallback? onAnimationEnd;
+  PlyCallback? onAnimationEnd;
 
   /// Called when an animation is looping and starts a subsequent loop. A looping
   /// animation (repeat=3) will undergo a life cycle like this:
@@ -71,246 +70,316 @@ class PlySprite {
   ///   onAnimationLoop   <-
   ///   onAnimationLoop   ->
   ///   onAnimationEnd    !
-  PlySpriteAnimationLoopCallback? onAnimationLoop;
+  PlyLoopCallback? onAnimationLoop;
 
   /// Called after [onAnimationEnd] and when there are no more animations in the
   /// queue.
-  PlySpriteAnimationCallback? onAnimationQueueEmpty;
+  PlyCallback? onAnimationQueueEmpty;
 
   late final Image _image;
   late final _PlySpriteData _data;
-  final Vector2 _size = Vector2.zero();
-  Anchor _anchor = Anchor.topLeft;
 
-  late _PlyAnimation _anim;
-  String _animName = '';
-  bool _animForward = true;
-  final ListQueue<String> _queue = ListQueue<String>();
+  _PlyAnimation? _anim;
+  PlyAnimProps? _current;
+  int _animStep = 1;
+  final ListQueue<PlyAnimProps> _queue = ListQueue<PlyAnimProps>();
 
   late _PlyFrame _frame;
   int _frameIndex = 0;
   double _framePos = 0;
-  double _animPos = 0;
   int _repeat = 0;
+
+  double _animPos = 0;
+  get animPosition => _animPos;
 
   bool _playing = false;
   get isPlaying => _playing;
 
-  static int directionForward = 0;
-  static int directionReverse = 1;
-  static int directionPingpong = 2;
-  static int directionPongping = 3;
-
-  /// Reset current animation back to the start
   void _reset() {
-    _animForward = _anim.direction != directionReverse;
-    if (_animForward) {
+    if (_anim == null || _current == null) {
+      return;
+    }
+    _animStep = _current!.direction == PlyDirection.reverse ||
+            _current!.direction == PlyDirection.pongping
+        ? -1
+        : 1;
+    if (_animStep > 0) {
       _frameIndex = 0;
     } else {
-      _frameIndex = _anim.frames.length - 1;
+      _frameIndex = _anim!.frames.length - 1;
     }
-    _frame = _anim.frames[_frameIndex];
+    _frame = _anim!.frames[_frameIndex];
     _framePos = 0;
     _animPos = 0;
-    _anchor = Anchor(_anim.anchor.x / _size.x, _anim.anchor.y / _size.y);
+    _repeat = 0;
+    anchor = Anchor(_anim!.anchor.x / size.x, _anim!.anchor.y / size.y);
   }
 
-  /// Play the [animation]. If no [animation] is specified it will start or
-  /// continue playing the current animation queue and will ignore [queue].
-  /// If no animation has been played previously, by default it will play the
-  /// first animation in the file.
+  /// Play the supplied [animation] by name.
   ///
-  /// Calling play with an [animation], and [queue] set to `false`, will stop
-  /// all current animations and clear the queue. If [queue] is set to `true`,
-  /// the [animation] will be added to the end of the queue and will play in
-  /// sequence.
-  void play(String? animation, {bool queue = false}) {
-    if (animation == null) {
-      if (!_playing) {
-        if (_animPos == 0) {
-          onAnimationStart?.call(this, _animName);
-        }
-        _playing = true;
-      }
-    } else {
-      if (!queue) {
-        _queue.clear();
-        if (_playing) _stop();
-      }
-      _queue.add(animation);
-      if (!_playing) _playNext();
+  /// Any of the animation properties can be overwritten by supplying a new animation [directions], a number of
+  /// [repeats] for looping, or adjust the [speed]. A speed of `1.0` is normal. `1.2` is 20% faster, and `0.5` is
+  /// half-speed.
+  ///
+  /// If [addToQueue] is false, any current animation will immediately stop playing (note: no callbacks will be
+  /// triggered) and the queue will cleared before playing this animation.
+  ///
+  /// If [addToQueue] is true, the animation will be added to the end of any existing animations on the queue, and any
+  /// playing animation will continue.
+  ///
+  /// Also see [playAll]
+  void play(String animation,
+      {int direction = -1,
+      int repeats = -1,
+      double speed = 1.0,
+      bool addToQueue = false,}) {
+    final anim = PlyAnimProps(animation,
+        direction: direction, repeats: repeats, speed: speed,);
+    if (!addToQueue) {
+      _queue.clear();
+      _playing = false;
     }
+    _queue.add(anim);
+    _play(true);
   }
 
-  /// Play all [animations]. This will stop all current animations and clear
-  /// the queue. If [queue] is set to `true`, the [animations] will be added
-  /// to the end of the queue and will play in sequence.
-  void playAll(List<String> animations, {bool queue = false}) {
-    if (!queue) {
+  /// Play all [animations] one after the other.
+  ///
+  /// If [addToQueue] is false, any current animation will immediately stop playing (note: no callbacks will be
+  /// triggered) and the queue will be replaced completely by [animations].
+  ///
+  /// If [addToQueue] is true, the [animations] will be added to any existing animations on the queue, and any
+  /// playing animation will continue.
+  ///
+  /// Also see [play]
+  void playAll(List<PlyAnimProps> animations, {bool addToQueue = false}) {
+    if (!addToQueue) {
       _queue.clear();
+      _playing = false;
     }
     _queue.addAll(animations);
-    if (!_playing) _playNext();
+    _play(true);
   }
 
-  bool _playNext() {
-    if (_queue.isNotEmpty) {
-      _animName = _queue.removeFirst();
-      final anim = _data.animations[_animName];
+  /// Pause the current animation. Use [resume] to continue after pausing.
+  void pause() {
+    _playing = false;
+  }
 
-      if (anim != null) {
-        _anim = anim;
-        _repeat = 0;
-        _reset();
-        _playing = true;
-        onAnimationStart?.call(this, _animName);
-        return true;
-      }
-    } else {
-      onAnimationQueueEmpty?.call(this, '');
+  /// Resume an animation that was paused using [pause] or [stop]
+  void resume() {
+    _playing = true;
+  }
+
+  /// Stop playing the current animation and remove it from the queue. Since the animation didn't naturally complete,
+  /// no callbacks will be triggered.
+  ///
+  /// If [clearQueue] is `false` then the rest of the queue will not be affected. Use [resume], [play] or [playAll] to
+  /// play more animations.
+  ///
+  /// If [clearQueue] is `true` then the queue will be cleared. Use [play] or [playAll] to play more animations.
+  void stop({bool clearQueue = false}) {
+    if (clearQueue) {
+      clear();
     }
-    return false;
-  }
-
-  void _stop() {
-    onAnimationEnd?.call(this, _animName);
     _playing = false;
   }
 
-  void _loop() {
-    onAnimationLoop?.call(this, _animName, _repeat);
-  }
-
-  /// Stop playing an animation. To continue again, call [play] with
-  /// no arguments.
-  void stop() {
-    _playing = false;
-  }
-
-  /// Will clear the animation queue. Any current animation will continue to play.
+  /// Clear the animation queue. Any current animation will continue to play. Also see [stop].
   void clear() {
     _queue.clear();
   }
 
-  /// Set the position to [pos]. If [advance] is true, will advance
-  /// from the current position.
+  /// Set the animation [position] in seconds. If [fromStart] is `true` the position will be set from the start of the
+  /// current animation. If [fromStart] is `false` then the position will advance from the current position.
   ///
-  /// Lifecycle events will be triggered, and animations will advanced through the queue. For
+  /// Lifecycle events will be triggered, and animations will loop and advance through the queue. For
   /// example, consider the following queue:
-  /// "Walk" - 1 second, loop twice
-  /// "Yawn" - 1 second
-  /// "Run" = 5 seconds
+  /// - "Walk" - 1 second, loop twice
+  /// - "Yawn" - 1 second
+  /// - "Run" = 5 seconds
   ///
-  /// If you call `scrub(4.0)` (i.e. move 4 seconds into the animation) the following will happen:
-  /// "walk" will start, loop and end
-  /// "Yawn" will start and end
-  /// "Run" will start
-  /// Although the animation will be skipped, the callbacks will still be triggered.
-  void scrub(double pos, [bool advance = false]) {
+  /// If you call `advance(4.0, fromStart: true)` (i.e. move 4 seconds into the animation) the following will happen:
+  /// - "walk" will start, loop and end
+  /// - "Yawn" will start and end
+  /// - "Run" will start
+  ///
+  /// If the animation is playing when [advance] is called callbacks will be triggered. If the animation is not playing,
+  /// callbacks will not be triggered.
+  void advance(double position, [bool fromStart = false]) {
+    if (_anim == null || _current == null) return;
     int newIndex = _frameIndex;
 
-    void calcNewIndex() {
-      _framePos = 0;
-      if (_anim.direction == directionReverse) {
-        newIndex = _anim.frames.length - 1;
-        _animForward = false;
-      } else {
-        newIndex = 0;
-        _animForward = true;
-      }
-      if (newIndex != _frameIndex) {
-        _frameIndex = newIndex;
-        _frame = _anim.frames[_frameIndex];
-      }
+    if (fromStart) {
+      _reset();
     }
 
-    if (!advance) {
-      calcNewIndex();
-    }
-    double r;
-    while (pos > 0) {
-      r = (_frame.duration - _framePos) - pos;
-      if (r < 0) {
+    double r; // time remaining for frame
+    while (position > 0) {
+      r = _frame.duration - _framePos;
+      if ((r - position) < 0) {
+        // reached end of frame
         _framePos = 0;
-        pos += r;
-        if (_animForward) {
-          newIndex++;
-          if (newIndex >= _anim.frames.length) {
+        position -= r;
+        _animPos += r;
+        newIndex += _animStep;
+        if (newIndex >= _anim!.frames.length || newIndex < 0) {
+          // reached end of animation
+          if ((_current!.repeats == 0) || ++_repeat < _current!.repeats) {
             // Looping
-            if (_anim.repeats > 0) {
-              _repeat++;
-              if (_repeat >= _anim.repeats) {
-                if (!_playNext()) {
-                  _stop();
-                  return;
-                } else {
-                  _loop();
-                  calcNewIndex();
-                  continue;
-                }
-              }
+            _loop();
+            // Reverse direction if required
+            if (_current!.direction == PlyDirection.pingpong ||
+                _current!.direction == PlyDirection.pongping) {
+              _animStep = -_animStep;
             }
-            if (_anim.direction == directionPingpong || _anim.direction == directionPongping) {
-              newIndex = _anim.frames.length - 2;
-              if (newIndex < 0) newIndex = 0;
-              _animForward = false;
+            // Calc new frame
+            if (_animStep > 0) {
+              newIndex = 0;
+            } else {
+              newIndex = _anim!.frames.length - 1;
+            }
+          }
+          // Not looping. Go to next anim in queue
+          else if (_play(false)) {
+            // Calc first frame
+            if (_current!.direction == PlyDirection.reverse ||
+                _current!.direction == PlyDirection.pongping) {
+              newIndex = _anim!.frames.length - 1;
+              _animStep = -1;
             } else {
               newIndex = 0;
+              _animStep = 1;
             }
           }
-        } else {
-          newIndex--;
-          if (newIndex < 0) {
-            // Looping
-            if (_anim.repeats > 0) {
-              _repeat++;
-              if (_repeat >= _anim.repeats) {
-                if (!_playNext()) {
-                  _stop();
-                  return;
-                } else {
-                  _loop();
-                  calcNewIndex();
-                  continue;
-                }
-              }
-            }
-            if (_anim.direction == directionPingpong || _anim.direction == directionPongping) {
-              newIndex = 1;
-              if (_anim.frames.length < 2) newIndex = 0;
-              _animForward = true;
-            } else {
-              newIndex = _anim.frames.length - 1;
-            }
+          // Stop
+          else {
+            _stop();
+            return;
           }
         }
-        _frame = _anim.frames[newIndex];
+        _frame = _anim!.frames[newIndex];
       } else {
-        _framePos += pos;
-        pos = -1.0;
+        _framePos += position;
+        _animPos += position;
+        position = -1.0;
       }
     }
     if (newIndex != _frameIndex) {
       _frameIndex = newIndex;
-      _frame = _anim.frames[_frameIndex];
+      _frame = _anim!.frames[_frameIndex];
     }
   }
 
+  bool _play(bool allowStart) {
+    if (_playing) {
+      onAnimationEnd?.call(this, _current!.name);
+    }
+    if (_next()) {
+      if (_playing || (!_playing && allowStart)) {
+        _playing = true;
+        onAnimationStart?.call(this, _current!.name);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  bool _next() {
+    if (!_queue.isEmpty) {
+      _current = _queue.removeFirst();
+      final anim = _data.animations[_current!.name];
+
+      if (anim != null) {
+        _anim = anim;
+        _current!._applyData(_anim!);
+        _reset();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  void _stop() {
+    if (_playing) {
+      _playing = false;
+      if (_queue.isEmpty) {
+        onAnimationQueueEmpty?.call(this, '');
+      }
+    }
+  }
+
+  void _loop() {
+    if (_playing) {
+      onAnimationLoop?.call(this, _current!.name, _repeat);
+    }
+  }
+
+  @override
   void update(double dt) {
     if (_playing) {
-      _animPos += dt;
-      scrub(dt, true);
+      advance(dt);
     }
+    super.update(dt);
   }
 
+  @override
   void render(Canvas canvas) {
-    if (_anim.renderPartsIndividually) {
-      for (var i = 0; i < _frame.transforms.length; i++) {
-        canvas.drawAtlas(_image, [_frame.transforms[i]], [_frame.rects[i]], null, null, null, _frame.paints[i]);
+    if (_anim != null) {
+      if (_anim!.renderPartsIndividually) {
+        for (var i = 0; i < _frame.transforms.length; i++) {
+          canvas.drawAtlas(_image, [_frame.transforms[i]], [_frame.rects[i]],
+              null, null, null, _frame.paints[i],);
+        }
+      } else {
+        canvas.drawAtlas(_image, _frame.transforms, _frame.rects, null, null,
+            null, _frame.paints[0],);
       }
-    } else {
-      canvas.drawAtlas(_image, _frame.transforms, _frame.rects, null, null, null, _frame.paints[0]);
     }
+    super.render(canvas);
+  }
+}
+
+typedef PlyCallback = void Function(
+    PlySpriteComponent sprite, String animation,);
+
+typedef PlyLoopCallback = void Function(
+    PlySpriteComponent sprite, String animation, int loop,);
+
+class PlyDirection {
+  static const forward = 0;
+  static const reverse = 1;
+  static const pingpong = 2;
+  static const pongping = 3;
+}
+
+/// Settings for an animation to play. Provide at least the [name] of the animation. You can override specific settings
+/// for the animation. Set [direction] to change the animation direction (see [PlyDirection]), set [repeats] to
+/// change the number of times the animation loops, and set [speed] to change the animation playback speed by a factor.
+/// For example, `speed = 1.0` is default, `speed = 0.9` plays it at 90% of the original speed, and `speed = 0.5` will
+/// play it at half speed.
+class PlyAnimProps {
+  PlyAnimProps(this.name,
+      {this.direction = -1, this.repeats = -1, double speed = 1.0,})
+      : _speed = max(0, speed);
+  String name;
+  int direction;
+  int repeats;
+  double _speed;
+
+  void copy(PlyAnimProps anim) {
+    name = anim.name;
+    direction = anim.direction;
+    repeats = anim.repeats;
+    _speed = anim._speed;
+  }
+
+  void _applyData(_PlyAnimation anim) {
+    if (direction < 0) direction = anim.direction;
+    if (repeats < 0) repeats = anim.repeats;
+    print(
+        "PlyAnimProps $name, dir: $direction, repeats: $repeats, speed: $_speed",);
   }
 }
 
@@ -321,7 +390,8 @@ class _PlyFrame {
   final List<Rect> rects = [];
   final List<Paint> paints = [];
 
-  void addPly(Rect part, int orientation, double x, double y, int alpha, int blendmode) {
+  void addPly(Rect part, int orientation, double x, double y, int alpha,
+      int blendmode,) {
     double rot = 0;
     double ox = 0;
     double oy = 0;
@@ -343,7 +413,7 @@ class _PlyFrame {
       anchorY: 0.0,
       translateX: x + ox,
       translateY: y + oy,
-    ));
+    ),);
     rects.add(part);
     paints.add(createPaint(alpha, blendmode));
   }
@@ -414,7 +484,8 @@ class _PlyFrame {
 }
 
 class _PlyAnimation {
-  _PlyAnimation(this.direction, this.repeats, double x, double y) : anchor = Vector2(x, y);
+  _PlyAnimation(this.direction, this.repeats, double x, double y)
+      : anchor = Vector2(x, y);
   final Vector2 anchor;
   final int direction;
   final int repeats;
@@ -449,7 +520,7 @@ class _PlySpriteData {
           part['y'].toDouble(),
           part['width'].toDouble(),
           part['height'].toDouble(),
-        ));
+        ),);
       }
 
       json['animations'].forEach((name, animData) {
@@ -476,7 +547,8 @@ class _PlySpriteData {
               blendmode = partData['blendmode'] as int;
               first = false;
             } else {
-              if (alpha != (partData['alpha'] as int) || blendmode != (partData['blendmode'] as int)) {
+              if (alpha != (partData['alpha'] as int) ||
+                  blendmode != (partData['blendmode'] as int)) {
                 anim.renderPartsIndividually = true;
               }
             }
@@ -498,7 +570,7 @@ class _PlySpriteData {
           part[1].toDouble(),
           part[2].toDouble(),
           part[3].toDouble(),
-        ));
+        ),);
       }
 
       for (final a in json[2]) {
@@ -528,7 +600,6 @@ class _PlySpriteData {
             } else {
               if (alpha != (p[4] as int) || blendmode != (p[5] as int)) {
                 anim.renderPartsIndividually = true;
-                print('Render parts individually for "${a[0]}"');
               }
             }
           }
@@ -547,81 +618,20 @@ class _PlySpriteData {
   final Map<String, _PlyAnimation> animations = {};
 }
 
-typedef PlySpriteAnimationCallback = void Function(PlySprite sprite, String animation);
-typedef PlySpriteAnimationLoopCallback = void Function(PlySprite sprite, String animation, int loop);
-
-/// TODO: Consider removing PlySpriteComponent and renaming PlySprite to
-/// PlySpriteComponent in the future? Is there ever a use-case where the
-/// non-component version is required?
-class PlySpriteComponent extends PositionComponent {
-  PlySpriteComponent(this.sprite) {
-    anchor = sprite._anchor;
-    size = sprite._size;
-  }
-
-  /// Create a new PlySpriteComponent from an asset. A PlySprite consist of a
-  /// PNG image and a JSON file with matching names (for example `mysprite.png`
-  /// and `mysprite.json`).
-  static Future<PlySpriteComponent> fromPath(String path) async {
-    return PlySpriteComponent(await PlySprite.fromPath(path));
-  }
-
-  final PlySprite sprite;
-
-  /// Play the [animation]. If no [animation] is specified it will start or
-  /// continue playing the current animation queue and will ignore [queue].
-  /// If no animation has been played previously, by default this is the first
-  /// animation in the file.
-  ///
-  /// Calling play with an [animation], and [queue] set to `false`, will stop
-  /// all current animations and clear the queue. If [queue] is set to `true`,
-  /// the [animation] will be added to the end of the queue and will play in
-  /// sequence.
-  void play(String? animation, {bool queue = false}) {
-    sprite.play(animation, queue: queue);
-    // Each animation can have a different anchor
-    // TODO: When queue is implemented, this needs to be done onAnimationStart
-    anchor = sprite._anchor;
-  }
-
-  /// Play all [animations]. This will stop all current animations and clear
-  /// the queue. If [queue] is set to `true`, the [animations] will be added
-  /// to the end of the queue and will play in sequence.
-  void playAll(List<String> animations, {bool queue = false}) {
-    sprite.playAll(animations, queue: queue);
-  }
-
-  /// Stop playing an animation. To continue again
-  void stop() {
-    sprite.stop();
-  }
-
-  /// Set the position to [pos]. If [advance] is true, will advance
-  /// from the current position.
-  void scrub(double pos, [bool advance = false]) {
-    sprite.scrub(pos, advance);
-  }
-
-  @override
-  void update(double dt) {
-    sprite.update(dt);
-    super.update(dt);
-  }
-
-  @override
-  void render(Canvas canvas) {
-    sprite.render(canvas);
-    super.render(canvas);
-  }
-}
-
 class SnapPlySpriteComponent extends PlySpriteComponent with Snap {
-  SnapPlySpriteComponent(PlySprite sprite) : super(sprite);
+  SnapPlySpriteComponent._(Image image, _PlySpriteData data)
+      : super._(image, data);
 
   /// Create a new SnapPlySpriteComponent from an asset. A PlySprite consist of a
   /// PNG image and a JSON file with matching names (for example `mysprite.png`
-  /// and `mysprite.json`).
+  /// and `mysprite.json`). Provide the path to the assets without the
+  /// extension (for example `images/mysprite`).
   static Future<SnapPlySpriteComponent> fromPath(String path) async {
-    return SnapPlySpriteComponent(await PlySprite.fromPath(path));
+    if (path.lastIndexOf('.') >= 0) {
+      path = path.substring(0, path.lastIndexOf('.'));
+    }
+    final image = await Services.loadImage("$path.png");
+    final data = await _PlySpriteData.create(path);
+    return SnapPlySpriteComponent._(image, data);
   }
 }
