@@ -28,7 +28,7 @@ mixin Snap on PositionComponent {
   bool useSnapScale = true;
 
   /// Always snap position to the nearest whole pixel
-  bool snap = true;
+  bool useSnap = true;
 
   /// Always snap position to the nearest whole pixel
   final Vector2 _snapPosition = Vector2.zero();
@@ -45,7 +45,7 @@ mixin Snap on PositionComponent {
   @override
   set position(Vector2 position) {
     super.position = position;
-    if (snap) {
+    if (useSnap) {
       _snapPosition.setFrom(position);
     }
   }
@@ -90,7 +90,7 @@ mixin Snap on PositionComponent {
         _anchorOffset.setZero();
         break;
     }
-    if (snap) {
+    if (useSnap) {
       _anchorOffset.setValues(
         (_anchorOffset.x / scale.x).round() * scale.x,
         (_anchorOffset.y / scale.y).round() * scale.y,
@@ -102,9 +102,9 @@ mixin Snap on PositionComponent {
   void update(double dt) {
     position.setValues(
       _anchorOffset.x +
-          (snap ? _snapPosition.x.round() : _snapPosition.x) * scale.x,
+          (useSnap ? _snapPosition.x.round() : _snapPosition.x) * scale.x,
       _anchorOffset.y +
-          (snap ? _snapPosition.y.round() : _snapPosition.y) * scale.y,
+          (useSnap ? _snapPosition.y.round() : _snapPosition.y) * scale.y,
     );
     super.update(dt);
   }
@@ -131,11 +131,12 @@ class SnapPositionComponent extends PositionComponent with Snap {
     super.priority,
     super.key,
   }) : super(
-            position: position,
-            size: size,
-            scale: scale,
-            angle: angle,
-            anchor: anchor,);
+          position: position,
+          size: size,
+          scale: scale,
+          angle: angle,
+          anchor: anchor,
+        );
 }
 
 class SnapSpriteComponent extends SpriteComponent with Snap {

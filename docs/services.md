@@ -21,30 +21,37 @@ up memory. Caching is optional.
 The following methods are available:
 
 - [Services.loadImage](../lib/src/game/services.dart#:~:text=loadImage) for loading `Image` objects
-- [Services.loadFile](../lib/src/game/services.dart#:~:text=loadFile) for loading a file as `ByteData`
-- [Services.loadString](../lib/src/game/services.dart#:~:text=loadString) for loading a file as a `String`
-- [Services.loadJson](../lib/src/game/services.dart#:~:text=loadJson) for loading an parsing a JSON file
-- [Services.clearCache](../lib/src/game/services.dart#:~:text=clearCache) for clearing some or all of the cached files
+- [Services.loadFile](../lib/src/game/services.dart#:~:text=loadFile) for loading a file as
+`ByteData`
+- [Services.loadString](../lib/src/game/services.dart#:~:text=loadString) for loading a file as a
+`String`
+- [Services.loadJson](../lib/src/game/services.dart#:~:text=loadJson) for loading an parsing a JSON
+file
+- [Services.clearCache](../lib/src/game/services.dart#:~:text=clearCache) for clearing some or all
+of the cached files
 
 
 ## Managing dialog
 
-Yarn Spinner is a popular and powerful dialog system. Sizzle wraps the yarn spinner 'jenny' package provided by Flame, and gives us some easy-to-use utility methods. Use the Sizzle
+Yarn Spinner is a popular and powerful dialog system. Sizzle wraps the yarn spinner 'jenny' package
+provided by Flame, and gives us some easy-to-use utility methods. Use the Sizzle
 [`DialogComponent`][DialogComponent] for a speech bubble-like dialog window.
 
 Dialog (and Yarn Spinner) is it's own whole topic, which covered here (coming soon).
 
-- [Services.loadDialog](../lib/src/game/services.dart#:~:text=loadDialog) for loading yarn file assets
-- [Services.startDialog](../lib/src/game/services.dart#:~:text=startDialog) for starting a dialog interaction
-- [Services.clearDialog](../lib/src/game/services.dart#:~:text=startDialog) for clearing yarn nodes, variables etc
+- [Services.loadDialog](../lib/src/game/services.dart#:~:text=loadDialog) for loading yarn file
+assets
+- [Services.startDialog](../lib/src/game/services.dart#:~:text=startDialog) for starting a dialog
+interaction
+- [Services.clearDialog](../lib/src/game/services.dart#:~:text=startDialog) for clearing yarn nodes,
+variables etc
 
 
 ## Flags
 
-Flags are the preferred way to keep track of events within a Sizzle game. They
-are simple boolean values (actually- they either exist, or they don't). They
-can be used for tracking if specific game actions have taken place or not. For
-example:
+Flags are the preferred way to keep track of events within a Sizzle game. They are simple boolean
+values (actually- they either exist, or they don't). They can be used for tracking if specific game
+actions have taken place or not. For example:
 
 ```dart
 // Player has opened a chest that has the castle key
@@ -59,9 +66,9 @@ if (Services.flagged('castle_key')){
 }
 ```
 
-Support for flags is included throughout Sizzle. You can set and check flags
-directly from Yarn Spinner dialog, and they are automatically saved/loaded when
-the user saves the game progress (see [save games](#save-games)).
+Support for flags is included throughout Sizzle. You can set and check flags directly from Yarn
+Spinner dialog, and they are automatically saved/loaded when the user saves the game progress (see
+[save games](#save-games)).
 
 - [Services.flag](../lib/src/game/services.dart#:~:text=flag) set or unset a flag
 - [Services.flagged](../lib/src/game/services.dart#:~:text=flagged) check if flag is set
