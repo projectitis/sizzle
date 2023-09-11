@@ -94,15 +94,22 @@ be drawn. This is shown in the 16:9 and 4:3 examples.
 If the screen size is very large, Sizzle will draw a letter box. This is shown in
 the 5:2 example.
 
-As a developer you need to make sure your game is visible and looks good up to
-'max' area, but that anything outside of the 'target' area might be obscured
-for some people. Make sure that the UI and all important actions happen within
-the target area.
-
 Setting the `maxSize` equal to the `targetSize` is often a good idea. This
 means you don't have to deal with anything outside of the 'target' area and
 can guarantee that anything within the 'target' are is always visible.
 
+
+## Windows
+
+based on the screen sizes above, there are 3 possible 'windows'. They are the 
+target window, the max window, and the view window.
+
+![windows](img/windows.png "windows")
+
+As a developer you need to make sure your game is visible and looks good up to
+'max' window, but realize that not all of the max window may be visible. Anything
+outside of the 'target' window might be obscured for some people. Make sure that
+the UI and all important actions happen within the target window and/or view window.
 
 ## Letterbox
 
