@@ -99,17 +99,22 @@ means you don't have to deal with anything outside of the 'target' area and
 can guarantee that anything within the 'target' are is always visible.
 
 
-## Windows
+### Windows
 
-based on the screen sizes above, there are 3 possible 'windows'. They are the 
-target window, the max window, and the view window.
+The combination of `targetSize` and `maxSize` result in 3 different 'windows'. They
+are the **target** window, the **max** window, and the **view** window.
 
 ![windows](img/windows.png "windows")
 
+In the example above, the target window is fully visible (it is __always__ fully
+visible) and the max window is partially hidden. The view window is somewhere between
+the target window and the max window.
+
 As a developer you need to make sure your game is visible and looks good up to
-'max' window, but realize that not all of the max window may be visible. Anything
-outside of the 'target' window might be obscured for some people. Make sure that
-the UI and all important actions happen within the target window and/or view window.
+max window, but realize that not all of the max window may be visible. Anything
+outside of the target window might be obscured for some people. Make sure that
+the UI and all important actions happen within the target window or view window.
+
 
 ## Letterbox
 
