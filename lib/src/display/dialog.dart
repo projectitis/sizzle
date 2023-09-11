@@ -60,7 +60,8 @@ class DialogTextStyle {
 ///
 /// Uses yarn spinner to process and display conversation. Add
 /// a component to the tree, then pass it to `Services.startDialog`.
-class DialogComponent extends PositionComponent with DialogueView, TapCallbacks, Hoverable, HasVisibility {
+class DialogComponent extends PositionComponent
+    with DialogueView, TapCallbacks, Hoverable, HasVisibility {
   Vector2 dialogSize;
   Snap? _trackTarget;
   final List<String> characters = [];
@@ -119,17 +120,21 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
     required List<DialogStyle> dialogStyles,
     required List<DialogTextStyle> textStyles,
   }) : super(size: dialogSize) {
-    assert(dialogStyles.isNotEmpty, 'At least one dialog style must be provided');
+    assert(
+        dialogStyles.isNotEmpty, 'At least one dialog style must be provided',);
     assert(textStyles.isNotEmpty, 'At least one text style must be provided');
     for (final s in dialogStyles) {
       assert(s.name != '', 'A dialog style must have a name');
-      assert(!_dialogStyles.containsKey(s.name), 'All dialog styles must have a unique name');
+      assert(!_dialogStyles.containsKey(s.name),
+          'All dialog styles must have a unique name',);
       _dialogStyles[s.name] = s;
     }
-    _activeDialogStyle = _dialogStyles['default'] ?? _dialogStyles.entries.first.value;
+    _activeDialogStyle =
+        _dialogStyles['default'] ?? _dialogStyles.entries.first.value;
     for (final s in textStyles) {
       assert(s.name != '', 'A text style must have a name');
-      assert(!_textStyles.containsKey(s.name), 'All text styles must have a unique name');
+      assert(!_textStyles.containsKey(s.name),
+          'All text styles must have a unique name',);
       _textStyles[s.name] = s;
     }
     anchor = _activeDialogStyle.anchor;
@@ -200,7 +205,8 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
         styleName = _dialogStyles.entries.first.key;
       }
     }
-    if (_dialogStyles.containsKey(styleName) && _activeDialogStyle.name != styleName) {
+    if (_dialogStyles.containsKey(styleName) &&
+        _activeDialogStyle.name != styleName) {
       _activeDialogStyle = _dialogStyles[styleName]!;
       _bg.replace(
         image: Services.loadedImage(_activeDialogStyle.imageName),
@@ -223,7 +229,8 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
 
   @override
   FutureOr<bool> onLineStart(DialogueLine line) async {
-    if (line.character == null || (characters.isNotEmpty && !characters.contains(line.character?.name))) {
+    if (line.character == null ||
+        (characters.isNotEmpty && !characters.contains(line.character?.name))) {
       return true;
     }
 
@@ -252,7 +259,9 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
   FutureOr<int?> onChoiceStart(DialogueChoice choice) async {
     for (final option in choice.options) {
       bool characterMatches = true;
-      if (option.character == null || (characters.isNotEmpty && !characters.contains(option.character?.name))) {
+      if (option.character == null ||
+          (characters.isNotEmpty &&
+              !characters.contains(option.character?.name))) {
         characterMatches = false;
       }
       if (option.isAvailable && characterMatches) {
@@ -296,7 +305,9 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
   void _addTextArea(TextStyle style, String s, {Color? color}) {
     final t = TextAreaComponent(
       text: s,
-      maxWidth: dialogSize.x - _activeDialogStyle.padding.left - _activeDialogStyle.padding.right,
+      maxWidth: dialogSize.x -
+          _activeDialogStyle.padding.left -
+          _activeDialogStyle.padding.right,
       style: color != null ? style.copyWith(color: color) : style,
     );
     _bg.add(t);
@@ -317,14 +328,19 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
       actualSize.y += t.size.y;
       if (lt != null) {
         t.position.x = lt.position.x;
-        t.position.y = lt.position.y + lt.size.y + options.paddingBetweenChoices;
+        t.position.y =
+            lt.position.y + lt.size.y + options.paddingBetweenChoices;
         actualSize.y += options.paddingBetweenChoices;
       }
       lt = t;
     }
     _bg.size = Vector2(
-      actualSize.x + _activeDialogStyle.padding.left + _activeDialogStyle.padding.right,
-      actualSize.y + _activeDialogStyle.padding.top + _activeDialogStyle.padding.bottom,
+      actualSize.x +
+          _activeDialogStyle.padding.left +
+          _activeDialogStyle.padding.right,
+      actualSize.y +
+          _activeDialogStyle.padding.top +
+          _activeDialogStyle.padding.bottom,
     );
     size.setFrom(_bg.size);
   }
@@ -355,7 +371,8 @@ class DialogComponent extends PositionComponent with DialogueView, TapCallbacks,
         if (t == _text.first && options.displayCharacterName) {
           continue;
         }
-        if ((event.localPosition.y >= t.position.y) && (event.localPosition.y < (t.position.y + t.height))) {
+        if ((event.localPosition.y >= t.position.y) &&
+            (event.localPosition.y < (t.position.y + t.height))) {
           _choiceCompleter.complete(index);
         }
         index = index + 1;

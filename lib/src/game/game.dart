@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:sizzle/sizzle.dart';
@@ -27,13 +26,16 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
   bool scaleToWholePixels = false;
 
   /// The visible game window inside the letterbox
-  final MutableRectangle<double> viewWindow = MutableRectangle(0.0, 0.0, 320.0, 240.0);
+  final MutableRectangle<double> viewWindow =
+      MutableRectangle(0.0, 0.0, 320.0, 240.0);
 
   /// The maximum size of the game. Not all parts may be visible
-  final MutableRectangle<double> gameWindow = MutableRectangle(0.0, 0.0, 320.0, 240.0);
+  final MutableRectangle<double> gameWindow =
+      MutableRectangle(0.0, 0.0, 320.0, 240.0);
 
   /// The visible safe window. May be smaller than the view window, but guaranteed to be visible
-  final MutableRectangle<double> safeWindow = MutableRectangle(0.0, 0.0, 320.0, 240.0);
+  final MutableRectangle<double> safeWindow =
+      MutableRectangle(0.0, 0.0, 320.0, 240.0);
 
   final Vector2 gameWindowOffset = Vector2.zero();
 
@@ -52,10 +54,12 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
       Vector2? targetSize,
       Vector2? maxSize,
       Color letterBoxColor = const Color(0xff000000),
-      this.scaleToWholePixels = false})
+      this.scaleToWholePixels = false,})
       : super() {
-    assert(scene != null || scenes != null, 'A scene or scenes must be provided');
-    assert(!(scene != null && scenes != null), 'Provide either a scene or list of scenes, not both');
+    assert(
+        scene != null || scenes != null, 'A scene or scenes must be provided',);
+    assert(!(scene != null && scenes != null),
+        'Provide either a scene or list of scenes, not both',);
 
     if (targetSize != null) _targetSize.setFrom(targetSize);
     _maxSize.setFrom(maxSize ?? _targetSize);
@@ -70,7 +74,8 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
     } else if (scene != null) {
       routes['default'] = Route(scene);
     }
-    add(_router = RouterComponent(initialRoute: routes.keys.first, routes: routes));
+    add(_router =
+        RouterComponent(initialRoute: routes.keys.first, routes: routes),);
 
     // Set up services
     Services.init(this);
@@ -80,7 +85,8 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
   @override
   void onGameResize(Vector2 canvasSize) {
     if (_targetSize.x != 0) {
-      double s = min(canvasSize.x / _targetSize.x, canvasSize.y / _targetSize.y);
+      double s =
+          min(canvasSize.x / _targetSize.x, canvasSize.y / _targetSize.y);
       if (scaleToWholePixels) s = max(s.floorToDouble(), 1.0);
       double xMax = _maxSize.x * s;
       double yMax = _maxSize.y * s;
@@ -120,16 +126,24 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
   void renderTree(Canvas c) {
     if (_targetSize.x != 0) {
       c.save();
-      c.translate(viewWindow.left - gameWindow.left, viewWindow.top - gameWindow.top);
+      c.translate(
+          viewWindow.left - gameWindow.left, viewWindow.top - gameWindow.top,);
       super.renderTree(c);
       c.restore();
 
       if (viewWindow.width < size.x) {
-        c.drawRect(Rect.fromLTWH(0.0, 0.0, viewWindow.left, viewWindow.height), _letterBoxPaint!);
-        c.drawRect(Rect.fromLTWH(viewWindow.right, 0.0, viewWindow.left, viewWindow.height), _letterBoxPaint!);
+        c.drawRect(Rect.fromLTWH(0.0, 0.0, viewWindow.left, viewWindow.height),
+            _letterBoxPaint,);
+        c.drawRect(
+            Rect.fromLTWH(
+                viewWindow.right, 0.0, viewWindow.left, viewWindow.height,),
+            _letterBoxPaint,);
       } else if (viewWindow.height < size.y) {
-        c.drawRect(Rect.fromLTWH(0.0, 0.0, size.x, viewWindow.top), _letterBoxPaint!);
-        c.drawRect(Rect.fromLTWH(0.0, viewWindow.bottom, size.x, viewWindow.top), _letterBoxPaint!);
+        c.drawRect(
+            Rect.fromLTWH(0.0, 0.0, size.x, viewWindow.top), _letterBoxPaint,);
+        c.drawRect(
+            Rect.fromLTWH(0.0, viewWindow.bottom, size.x, viewWindow.top),
+            _letterBoxPaint,);
       }
     } else {
       super.renderTree(c);
@@ -143,7 +157,8 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
   /// route's page if it hasn't been built before. If the route is already on top of the stack, this method will do
   /// nothing.
   void changeScene(String scene, {bool replace = false}) {
-    assert(_router.routes.keys.contains(scene), 'The scene \'$scene\' does not exist');
+    assert(_router.routes.keys.contains(scene),
+        'The scene \'$scene\' does not exist',);
 
     _router.pushNamed(scene, replace: replace);
   }

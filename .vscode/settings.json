@@ -1,10 +1,10 @@
 {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "Dart-Code.flutter",
-    "dart.lineLength": 120,
+    "dart.lineLength": 80,
     "[dart]": {
         "editor.rulers": [
-            120
+            80
         ],
     },
     "cSpell.words": [

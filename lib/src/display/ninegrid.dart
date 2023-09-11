@@ -74,7 +74,12 @@ class NineGridRepeat {
   }
 
   bool isAll(NineGridRepeatType type) {
-    return (left == type && top == type && right == type && bottom == type && centerH == type && centerV == type);
+    return (left == type &&
+        top == type &&
+        right == type &&
+        bottom == type &&
+        centerH == type &&
+        centerV == type);
   }
 }
 
@@ -259,12 +264,13 @@ class NineGridComponent extends PositionComponent {
             Rect.fromLTWH(0.0, 0.0, _grid.left, _grid.top),
             Rect.fromLTWH(srcCenter.right, 0.0, _grid.right, _grid.top),
             Rect.fromLTWH(0.0, srcCenter.bottom, _grid.left, _grid.bottom),
-            Rect.fromLTWH(srcCenter.right, srcCenter.bottom, _grid.right, _grid.bottom),
+            Rect.fromLTWH(
+                srcCenter.right, srcCenter.bottom, _grid.right, _grid.bottom,),
           ],
           null,
           null,
           null,
-          paint);
+          paint,);
 
       // Top
       _composeRepeat(
@@ -298,8 +304,10 @@ class NineGridComponent extends PositionComponent {
       // Right
       _composeRepeat(
         canvas,
-        Rect.fromLTWH(srcCenter.right, srcCenter.top, _grid.right, srcCenter.height),
-        Rect.fromLTWH(dstCenter.right, dstCenter.top, _grid.right, dstCenter.height),
+        Rect.fromLTWH(
+            srcCenter.right, srcCenter.top, _grid.right, srcCenter.height,),
+        Rect.fromLTWH(
+            dstCenter.right, dstCenter.top, _grid.right, dstCenter.height,),
         paint,
         false,
         repeat.right == NineGridRepeatType.stretch,
@@ -308,14 +316,16 @@ class NineGridComponent extends PositionComponent {
       // Bottom
       _composeRepeat(
         canvas,
-        Rect.fromLTWH(srcCenter.left, srcCenter.bottom, srcCenter.width, _grid.bottom),
-        Rect.fromLTWH(dstCenter.left, dstCenter.bottom, dstCenter.width, _grid.bottom),
+        Rect.fromLTWH(
+            srcCenter.left, srcCenter.bottom, srcCenter.width, _grid.bottom,),
+        Rect.fromLTWH(
+            dstCenter.left, dstCenter.bottom, dstCenter.width, _grid.bottom,),
         paint,
         repeat.bottom == NineGridRepeatType.stretch,
       );
 
       stopWatch.stop();
-      print('canvas operations took ${stopWatch.elapsedMicroseconds}');
+      //print('canvas operations took ${stopWatch.elapsedMicroseconds}');
     }
 
     // Create image
@@ -326,7 +336,8 @@ class NineGridComponent extends PositionComponent {
     });
   }
 
-  void _composeRepeat(Canvas canvas, Rect src, Rect dst, Paint paint, [bool stretchX = false, bool stretchY = false]) {
+  void _composeRepeat(Canvas canvas, Rect src, Rect dst, Paint paint,
+      [bool stretchX = false, bool stretchY = false,]) {
     if (src.isEmpty || dst.isEmpty) return;
 
     Rect start = Rect.fromLTWH(
@@ -367,7 +378,10 @@ class NineGridComponent extends PositionComponent {
     if (_needsComposing && !_isComposing) {
       compose();
       return;
-    } else if (_isComposing || _output == null || _output?.width == 0 || _output?.height == 0) {
+    } else if (_isComposing ||
+        _output == null ||
+        _output?.width == 0 ||
+        _output?.height == 0) {
       return;
     }
 
