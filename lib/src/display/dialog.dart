@@ -347,7 +347,7 @@ class DialogComponent extends PositionComponent
       actualSize.y +
           _activeDialogStyle.padding.top +
           _activeDialogStyle.padding.bottom,
-    );
+    )..ceil();
     size.setFrom(_bg.size);
   }
 
