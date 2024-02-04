@@ -61,7 +61,7 @@ class DialogTextStyle {
 /// Uses yarn spinner to process and display conversation. Add
 /// a component to the tree, then pass it to `Services.startDialog`.
 class DialogComponent extends PositionComponent
-    with DialogueView, TapCallbacks, Hoverable, HasVisibility {
+    with DialogueView, TapCallbacks, HoverCallbacks, HasVisibility {
   Vector2 dialogSize;
   Snap? _trackTarget;
   final List<String> characters = [];
@@ -121,20 +121,26 @@ class DialogComponent extends PositionComponent
     required List<DialogTextStyle> textStyles,
   }) : super(size: dialogSize) {
     assert(
-        dialogStyles.isNotEmpty, 'At least one dialog style must be provided',);
+      dialogStyles.isNotEmpty,
+      'At least one dialog style must be provided',
+    );
     assert(textStyles.isNotEmpty, 'At least one text style must be provided');
     for (final s in dialogStyles) {
       assert(s.name != '', 'A dialog style must have a name');
-      assert(!_dialogStyles.containsKey(s.name),
-          'All dialog styles must have a unique name',);
+      assert(
+        !_dialogStyles.containsKey(s.name),
+        'All dialog styles must have a unique name',
+      );
       _dialogStyles[s.name] = s;
     }
     _activeDialogStyle =
         _dialogStyles['default'] ?? _dialogStyles.entries.first.value;
     for (final s in textStyles) {
       assert(s.name != '', 'A text style must have a name');
-      assert(!_textStyles.containsKey(s.name),
-          'All text styles must have a unique name',);
+      assert(
+        !_textStyles.containsKey(s.name),
+        'All text styles must have a unique name',
+      );
       _textStyles[s.name] = s;
     }
     anchor = _activeDialogStyle.anchor;
@@ -346,19 +352,19 @@ class DialogComponent extends PositionComponent
   }
 
   @override
-  bool onHoverEnter(PointerHoverInfo info) {
+  void onHoverEnter() {
     if (isVisible) {
       Services.game.mouseCursor = SystemMouseCursors.click;
     }
-    return super.onHoverEnter(info);
+    super.onHoverEnter();
   }
 
   @override
-  bool onHoverLeave(PointerHoverInfo info) {
+  void onHoverExit() {
     if (isVisible) {
       Services.game.mouseCursor = SystemMouseCursors.basic;
     }
-    return super.onHoverLeave(info);
+    super.onHoverExit();
   }
 
   @override

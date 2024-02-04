@@ -1,9 +1,10 @@
 import 'dart:math';
 
+import 'package:flame/events.dart';
 import 'package:sizzle/sizzle.dart';
 import 'package:flutter/material.dart' hide Route;
 
-class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
+class SizzleGame extends FlameGame with SingleGameInstance, TapCallbacks {
   /// Router component to manage scenes
   late RouterComponent _router;
 
@@ -48,18 +49,22 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
   /// the first scene in the list. Set a target screen size using [targetSize], and
   /// use [maxSize] to support a larger game area. Set the color of the letterbox with
   /// [letterBoxColor].
-  SizzleGame(
-      {Map<String, Component Function()>? scenes,
-      Component Function()? scene,
-      Vector2? targetSize,
-      Vector2? maxSize,
-      Color letterBoxColor = const Color(0xff000000),
-      this.scaleToWholePixels = false,})
-      : super() {
+  SizzleGame({
+    Map<String, Component Function()>? scenes,
+    Component Function()? scene,
+    Vector2? targetSize,
+    Vector2? maxSize,
+    Color letterBoxColor = const Color(0xff000000),
+    this.scaleToWholePixels = false,
+  }) : super() {
     assert(
-        scene != null || scenes != null, 'A scene or scenes must be provided',);
-    assert(!(scene != null && scenes != null),
-        'Provide either a scene or list of scenes, not both',);
+      scene != null || scenes != null,
+      'A scene or scenes must be provided',
+    );
+    assert(
+      !(scene != null && scenes != null),
+      'Provide either a scene or list of scenes, not both',
+    );
 
     if (targetSize != null) _targetSize.setFrom(targetSize);
     _maxSize.setFrom(maxSize ?? _targetSize);
@@ -74,8 +79,10 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
     } else if (scene != null) {
       routes['default'] = Route(scene);
     }
-    add(_router =
-        RouterComponent(initialRoute: routes.keys.first, routes: routes),);
+    add(
+      _router =
+          RouterComponent(initialRoute: routes.keys.first, routes: routes),
+    );
 
     // Set up services
     Services.init(this);
@@ -127,23 +134,35 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
     if (_targetSize.x != 0) {
       c.save();
       c.translate(
-          viewWindow.left - gameWindow.left, viewWindow.top - gameWindow.top,);
+        viewWindow.left - gameWindow.left,
+        viewWindow.top - gameWindow.top,
+      );
       super.renderTree(c);
       c.restore();
 
       if (viewWindow.width < size.x) {
-        c.drawRect(Rect.fromLTWH(0.0, 0.0, viewWindow.left, viewWindow.height),
-            _letterBoxPaint,);
         c.drawRect(
-            Rect.fromLTWH(
-                viewWindow.right, 0.0, viewWindow.left, viewWindow.height,),
-            _letterBoxPaint,);
+          Rect.fromLTWH(0.0, 0.0, viewWindow.left, viewWindow.height),
+          _letterBoxPaint,
+        );
+        c.drawRect(
+          Rect.fromLTWH(
+            viewWindow.right,
+            0.0,
+            viewWindow.left,
+            viewWindow.height,
+          ),
+          _letterBoxPaint,
+        );
       } else if (viewWindow.height < size.y) {
         c.drawRect(
-            Rect.fromLTWH(0.0, 0.0, size.x, viewWindow.top), _letterBoxPaint,);
+          Rect.fromLTWH(0.0, 0.0, size.x, viewWindow.top),
+          _letterBoxPaint,
+        );
         c.drawRect(
-            Rect.fromLTWH(0.0, viewWindow.bottom, size.x, viewWindow.top),
-            _letterBoxPaint,);
+          Rect.fromLTWH(0.0, viewWindow.bottom, size.x, viewWindow.top),
+          _letterBoxPaint,
+        );
       }
     } else {
       super.renderTree(c);
@@ -157,8 +176,10 @@ class SizzleGame extends FlameGame with SingleGameInstance, HasHoverables {
   /// route's page if it hasn't been built before. If the route is already on top of the stack, this method will do
   /// nothing.
   void changeScene(String scene, {bool replace = false}) {
-    assert(_router.routes.keys.contains(scene),
-        'The scene \'$scene\' does not exist',);
+    assert(
+      _router.routes.keys.contains(scene),
+      'The scene \'$scene\' does not exist',
+    );
 
     _router.pushNamed(scene, replace: replace);
   }
