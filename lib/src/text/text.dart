@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' show max, min;
 
 import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
@@ -61,7 +61,8 @@ class CharCode {
     return c == braceOpen ||
         c == bracketOpen ||
         c == squareBracketOpen ||
-        c == dollarSign;
+        c == dollarSign ||
+        isWhitespace(c);
   }
 
   static bool isBreakableAfter(int c) {
@@ -74,7 +75,8 @@ class CharCode {
         c == braceClose ||
         c == bracketClose ||
         c == squareBracketClose ||
-        c == percent;
+        c == percent ||
+        c == minus;
   }
 }
 
@@ -136,17 +138,6 @@ class TextAreaComponent extends PositionComponent {
     _needsPrepare = true;
   }
 
-  /// Calculate the width of a substring
-  double _calculateWidth(int start, int end) {
-    final expectedSize = _renderer.getLineMetrics(_text.substring(
-      start,
-      min(end, _text.length),
-    ),);
-    _lineHeight = max(_lineHeight, expectedSize.height);
-    _actualWidth = max(_actualWidth, expectedSize.width);
-    return expectedSize.width;
-  }
-
   /// Calculate each line of the text area
   void prepare() {
     if (!_needsPrepare) return;
@@ -156,36 +147,27 @@ class TextAreaComponent extends PositionComponent {
     int startPos = 0;
     int breakPos = 0;
     bool isBreak = false;
+    int pos = 0;
+    double width = 0;
+    double widthAtBreakPos = 0;
 
-    void addLine(int pos, double offset) {
-      _lines.add(TextAreaLine(startPos, pos, offset));
-      isBreak = true;
-      startPos = pos;
-      breakPos = pos;
-    }
-
-    int? prepareLine(int pos, [bool forceBreak = false]) {
-      double w = _calculateWidth(startPos, pos);
-      if (w > _width || forceBreak) {
-        if (!forceBreak) {
-          w = _calculateWidth(startPos, breakPos);
-        }
-        double offset = 0;
-        if (_align == TextAlign.right || _align == TextAlign.end) {
-          offset = _width - w;
-        } else if (_align == TextAlign.center) {
-          offset = (_width - w) * 0.5;
-        }
-        addLine(breakPos, offset);
-        return breakPos;
-      } else {
-        breakPos = max(breakPos, pos);
+    void addLine() {
+      double offset = 0;
+      if (_align == TextAlign.right || _align == TextAlign.end) {
+        offset = _width - widthAtBreakPos;
+      } else if (_align == TextAlign.center) {
+        offset = (_width - widthAtBreakPos) * 0.5;
       }
-      return null;
+      _lines.add(TextAreaLine(startPos, breakPos, offset));
+      isBreak = true;
+      pos = breakPos;
+      startPos = pos;
+      _actualWidth = max(_actualWidth, widthAtBreakPos);
+      width = 0;
+      widthAtBreakPos = 0;
     }
 
     _lines.clear();
-    int pos = 0;
     while (pos < _text.length) {
       int c = _text.codeUnitAt(pos++);
 
@@ -198,37 +180,38 @@ class TextAreaComponent extends PositionComponent {
 
       // Force break
       if (c == CharCode.newline) {
-        addLine(pos, 0);
+        addLine();
       }
       // Allow break before
       else if (CharCode.isBreakableBefore(c)) {
-        pos = prepareLine(pos - 1) ?? pos;
+        breakPos = pos - 1;
+        widthAtBreakPos = width;
       }
-      // Allow break
-      else if (CharCode.isWhitespace(c)) {
-        pos = prepareLine(pos - 1) ?? pos;
+
+      // Break line if too long
+      final charSize = _renderer.getLineMetrics(String.fromCharCode(c));
+      width += charSize.width;
+      _lineHeight = max(_lineHeight, charSize.height);
+      if (width >= _width) {
+        addLine();
+        startPos = pos;
       }
+
       // Allow break after
-      else if (CharCode.isBreakableAfter(c)) {
-        pos = prepareLine(pos) ?? pos;
+      if (CharCode.isBreakableAfter(c)) {
+        breakPos = pos;
+        widthAtBreakPos = width;
       }
-      // No break
     }
     // Add last line
-    //breakPos = pos;
-    pos = prepareLine(pos) ?? pos;
-    breakPos = pos;
-    prepareLine(_text.length, true);
+    if (!isBreak) {
+      breakPos = pos;
+      widthAtBreakPos = width;
+      addLine();
+    }
 
     // Total size
     size.setValues(_actualWidth, _lineHeight * _lines.length);
-
-    /*
-    print('Size $_width x ($_lineHeight x ${_lines.length}) = $size');
-    for (final l in _lines) {
-      print('"${_text.substring(l.start, l.end)}" (${_width - l.offset})');
-    }
-    */
   }
 
   @override
