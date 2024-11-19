@@ -16,13 +16,15 @@
         "blendmode",
         "customise",
         "Initialise",
-        "LTWH",
+        "lerp",
         "LTRB",
+        "LTWH",
         "ninegrid",
         "pingpong",
         "plys",
         "Pongping",
         "rects",
         "savefile"
-    ]
+    ],
+    "cmake.configureOnOpen": false
 }

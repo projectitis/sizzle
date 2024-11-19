@@ -6,11 +6,11 @@ import 'package:flame/events.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:sizzle/src/display/ninegrid.dart';
-import 'package:sizzle/src/game/services.dart';
 
-import 'package:sizzle/src/text/text.dart';
-import 'snap.dart';
+import '../display/ninegrid.dart';
+import '../utils/services.dart';
+import '../text/text.dart';
+import './snap.dart';
 
 /// Options available to the speech bubble
 class DialogOptions {

@@ -1,7 +1,8 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:sizzle/src/game/game.dart';
+
+import '../game/game.dart';
 
 class Scene extends Component with HasGameRef<SizzleGame> {
   bool paused = false;

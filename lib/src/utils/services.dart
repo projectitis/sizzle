@@ -9,14 +9,15 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:jenny/jenny.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:sizzle/src/game/game.dart';
+import '../game/game.dart';
+import './logger.dart';
 
 typedef OnFileAccessCallback = void Function(Map<String, dynamic> data);
 
 /// Global services class
 class Services {
   Services() {
-    throw ('Do not create an instance of this class. Access static methods only.');
+    assert(false, 'Use static methods only. Do not create an instance.');
   }
 
   /// The save file name used by [load] and [save] to
@@ -53,6 +54,9 @@ class Services {
     _onSave = callback;
   }
 
+  // Logger
+  static Logger log = PrintLogger();
+
   /// Initialise the services. SizzleGame does this
   /// automatically during constructor, and should not be
   /// called again.
@@ -69,7 +73,7 @@ class Services {
   /// Yarn variables are appended or replaced. Clear the yarn
   /// variables using [clearDialog] if this is not desired.
   /// Use [onLoad] callback to customise data after the load operation.
-  static void load() async {
+  static FutureOr<void> load() async {
     _dir ??= await getApplicationDocumentsDirectory();
     if (_dir == null) return;
 
@@ -89,7 +93,7 @@ class Services {
   /// Save all data to the device
   ///
   /// Override [saveCustom] to customise data before the save operation
-  static void save() async {
+  static FutureOr<void> save() async {
     _dir ??= await getApplicationDocumentsDirectory();
     if (_dir == null) return;
 
@@ -126,8 +130,10 @@ class Services {
   /// ready for starting a dialog. If [replaceNodes] is true,
   /// the already loaded yarn nodes will be deleted first. Any
   /// characters, variables, functions are not affected.
-  static FutureOr<void> loadDialog(List<String> files,
-      {bool replaceNodes = false,}) async {
+  static FutureOr<void> loadDialog(
+    List<String> files, {
+    bool replaceNodes = false,
+  }) async {
     if (replaceNodes) {
       yarn.nodes.clear();
     }
@@ -142,10 +148,14 @@ class Services {
   /// The [views] present the dialog to the user. At least
   /// one view must be provided.
   static Future<void> startDialog(String nodeName, List<DialogueView> views) {
-    assert(_runner == null,
-        'Trying to start dialog $nodeName but dialog already started',);
-    assert(views.isNotEmpty,
-        'Trying to start dialog $nodeName but no dialog views provided',);
+    assert(
+      _runner == null,
+      'Trying to start dialog $nodeName but dialog already started',
+    );
+    assert(
+      views.isNotEmpty,
+      'Trying to start dialog $nodeName but no dialog views provided',
+    );
     _runner = DialogueRunner(yarnProject: yarn, dialogueViews: views);
     _runner!.startDialogue(nodeName).whenComplete(_dialogEnded);
     _dialogComplete = Completer();
@@ -319,7 +329,8 @@ class Services {
   /// is empty, the entire cache will be cleared. By default
   /// both the image and file cache will be affected. This can
   /// be changed by setting [images] and/or [files] to false.
-  void clearCache({String path = '', bool images = true, bool files = true}) {
+  static void clearCache(
+      {String path = '', bool images = true, bool files = true}) {
     if (images) {
       if (path == '') {
         _cachedImages.clear();

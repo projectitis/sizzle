@@ -1,9 +1,7 @@
-import 'dart:ui';
-
 import 'package:flame/components.dart';
 
-import 'package:sizzle/src/game/services.dart';
-import 'package:sizzle/src/game/game.dart';
+import '../utils/services.dart';
+import '../game/game.dart';
 
 enum AnchorWindow {
   /// The maximum game window (some parts may not be visible). This
@@ -86,7 +84,6 @@ mixin Snap on PositionComponent {
         );
         break;
       case AnchorWindow.maxWindow:
-      default:
         _anchorOffset.setZero();
         break;
     }
@@ -121,31 +118,25 @@ mixin Snap on PositionComponent {
 
 class SnapPositionComponent extends PositionComponent with Snap {
   SnapPositionComponent({
-    Vector2? position,
-    Vector2? size,
-    Vector2? scale,
-    double? angle,
+    super.position,
+    super.size,
+    super.scale,
+    super.angle,
     super.nativeAngle = 0,
-    Anchor? anchor,
+    super.anchor,
     super.children,
     super.priority,
     super.key,
-  }) : super(
-          position: position,
-          size: size,
-          scale: scale,
-          angle: angle,
-          anchor: anchor,
-        );
+  });
 }
 
 class SnapSpriteComponent extends SpriteComponent with Snap {
   SnapSpriteComponent({
-    Sprite? sprite,
-    bool? autoResize,
-    Paint? paint,
+    super.sprite,
+    super.autoResize,
+    super.paint,
     super.position,
-    Vector2? size,
+    super.size,
     super.scale,
     super.angle,
     super.nativeAngle,
@@ -153,5 +144,5 @@ class SnapSpriteComponent extends SpriteComponent with Snap {
     super.children,
     super.priority,
     super.key,
-  }) : super(sprite: sprite, autoResize: autoResize, paint: paint, size: size);
+  });
 }

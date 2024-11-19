@@ -1,8 +1,9 @@
-import 'dart:math' show max, min;
+import 'dart:math' show max;
 
 import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
-import 'package:sizzle/src/display/snap.dart';
+
+import '../display/snap.dart';
 
 /// Details of a line of text
 class TextAreaLine {

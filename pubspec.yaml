@@ -2,17 +2,18 @@ name: sizzle
 description: A bitmap/pixel game engine based on Flame
 version: 0.1.0
 repository: https://github.com/projectitis/sizzle
+publish_to: 'none' # Remove this line once ready to publish to pub.dev
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
-  flame:
-    path: D:/Projects/flutter/flame/packages/flame
+#  flame:
+#    path: D:/Projects/flutter/flame/packages/flame
 #    git:
 #      url: https://github.com/flame-engine/flame.git
 #      path: packages/flame
-#  flame: ^1.8.2
+  flame: ^1.8.2
   jenny:
     path: D:/Projects/flutter/flame/packages/flame_jenny/jenny
   flutter:

@@ -6,7 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 
-import 'snap.dart';
+import './snap.dart';
 
 /// A nine-tile grid implementation
 ///
@@ -253,24 +253,29 @@ class NineGridComponent extends PositionComponent {
 
       // First draw all corners as an atlas (faster than drawing one by one)
       canvas.drawAtlas(
-          _image,
-          <RSTransform>[
-            RSTransform(1.0, 0.0, 0.0, 0.0),
-            RSTransform(1.0, 0.0, dstCenter.right, 0.0),
-            RSTransform(1.0, 0.0, 0.0, dstCenter.bottom),
-            RSTransform(1.0, 0.0, dstCenter.right, dstCenter.bottom),
-          ],
-          <Rect>[
-            Rect.fromLTWH(0.0, 0.0, _grid.left, _grid.top),
-            Rect.fromLTWH(srcCenter.right, 0.0, _grid.right, _grid.top),
-            Rect.fromLTWH(0.0, srcCenter.bottom, _grid.left, _grid.bottom),
-            Rect.fromLTWH(
-                srcCenter.right, srcCenter.bottom, _grid.right, _grid.bottom,),
-          ],
-          null,
-          null,
-          null,
-          paint,);
+        _image,
+        <RSTransform>[
+          RSTransform(1.0, 0.0, 0.0, 0.0),
+          RSTransform(1.0, 0.0, dstCenter.right, 0.0),
+          RSTransform(1.0, 0.0, 0.0, dstCenter.bottom),
+          RSTransform(1.0, 0.0, dstCenter.right, dstCenter.bottom),
+        ],
+        <Rect>[
+          Rect.fromLTWH(0.0, 0.0, _grid.left, _grid.top),
+          Rect.fromLTWH(srcCenter.right, 0.0, _grid.right, _grid.top),
+          Rect.fromLTWH(0.0, srcCenter.bottom, _grid.left, _grid.bottom),
+          Rect.fromLTWH(
+            srcCenter.right,
+            srcCenter.bottom,
+            _grid.right,
+            _grid.bottom,
+          ),
+        ],
+        null,
+        null,
+        null,
+        paint,
+      );
 
       // Top
       _composeRepeat(
@@ -305,9 +310,17 @@ class NineGridComponent extends PositionComponent {
       _composeRepeat(
         canvas,
         Rect.fromLTWH(
-            srcCenter.right, srcCenter.top, _grid.right, srcCenter.height,),
+          srcCenter.right,
+          srcCenter.top,
+          _grid.right,
+          srcCenter.height,
+        ),
         Rect.fromLTWH(
-            dstCenter.right, dstCenter.top, _grid.right, dstCenter.height,),
+          dstCenter.right,
+          dstCenter.top,
+          _grid.right,
+          dstCenter.height,
+        ),
         paint,
         false,
         repeat.right == NineGridRepeatType.stretch,
@@ -317,9 +330,17 @@ class NineGridComponent extends PositionComponent {
       _composeRepeat(
         canvas,
         Rect.fromLTWH(
-            srcCenter.left, srcCenter.bottom, srcCenter.width, _grid.bottom,),
+          srcCenter.left,
+          srcCenter.bottom,
+          srcCenter.width,
+          _grid.bottom,
+        ),
         Rect.fromLTWH(
-            dstCenter.left, dstCenter.bottom, dstCenter.width, _grid.bottom,),
+          dstCenter.left,
+          dstCenter.bottom,
+          dstCenter.width,
+          _grid.bottom,
+        ),
         paint,
         repeat.bottom == NineGridRepeatType.stretch,
       );
@@ -336,8 +357,14 @@ class NineGridComponent extends PositionComponent {
     });
   }
 
-  void _composeRepeat(Canvas canvas, Rect src, Rect dst, Paint paint,
-      [bool stretchX = false, bool stretchY = false,]) {
+  void _composeRepeat(
+    Canvas canvas,
+    Rect src,
+    Rect dst,
+    Paint paint, [
+    bool stretchX = false,
+    bool stretchY = false,
+  ]) {
     if (src.isEmpty || dst.isEmpty) return;
 
     Rect start = Rect.fromLTWH(
