@@ -28,6 +28,15 @@ mixin Movement on PositionComponent {
   /// The angular acceleration in radians per second squared
   double angularAcceleration = 0;
 
+  /// The rotation velocity in radians per second
+  double rotationVelocity = 0;
+
+  /// The min and max limits of rotation velocity
+  final Range rotationVelocityRange = Range.infinite;
+
+  /// The rotation acceleration in radians per second squared
+  double rotationAcceleration = 0;
+
   /// The next position of this component. Used during update
   final Vector2 _nextPosition = Vector2.zero();
 
@@ -37,6 +46,12 @@ mixin Movement on PositionComponent {
   /// if the next position does not collide.
   @override
   void update(double dt) {
+    rotationVelocity += rotationAcceleration * dt;
+    if (rotationVelocityRange.isNotInfinite) {
+      rotationVelocity = rotationVelocityRange.clamp(rotationVelocity);
+    }
+    angle += rotationVelocity * dt;
+
     angularVelocity += angularAcceleration * dt;
     if (angularVelocityRange.isNotInfinite) {
       angularVelocity = angularVelocityRange.clamp(angularVelocity);

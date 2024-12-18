@@ -4,6 +4,8 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:sizzle/src/utils/services/file_service.dart';
+import 'package:sizzle/src/utils/services/image_service.dart';
 
 import '../utils/services.dart';
 import './snap.dart';
@@ -48,7 +50,7 @@ class PlySpriteComponent extends PositionComponent {
     if (path.lastIndexOf('.') >= 0) {
       path = path.substring(0, path.lastIndexOf('.'));
     }
-    final image = await Services.loadImage("$path.png");
+    final image = await Services.images.load(path: "$path.png");
     final data = await _PlySpriteData.create(path);
     return PlySpriteComponent._(image, data);
   }
@@ -535,7 +537,9 @@ class _PlySpriteData {
 
   static FutureOr<_PlySpriteData> create(String path) async {
     if (!_cache.containsKey(path)) {
-      final data = _PlySpriteData(await Services.loadJson("$path.json"));
+      final data = _PlySpriteData(
+        await Services.files.loadJson(path: "$path.json"),
+      );
       _cache[path] = data;
     }
     return _cache[path]!;
@@ -671,7 +675,7 @@ class SnapPlySpriteComponent extends PlySpriteComponent with Snap {
     if (path.lastIndexOf('.') >= 0) {
       path = path.substring(0, path.lastIndexOf('.'));
     }
-    final image = await Services.loadImage("$path.png");
+    final image = await Services.images.load(path: "$path.png");
     final data = await _PlySpriteData.create(path);
     return SnapPlySpriteComponent._(image, data);
   }

@@ -32,8 +32,20 @@ class Range {
   /// Return a zero range, where both min and max are 0
   static Range get zero => Range(0, 0);
 
+  /// Set the range to 0
+  void setZero() {
+    _min = 0;
+    _max = 0;
+  }
+
   /// Return a range between negative infinity and infinity
   static Range get infinite => Range(double.negativeInfinity, double.infinity);
+
+  /// Set the range to infinite
+  void setInfinite() {
+    _min = double.negativeInfinity;
+    _max = double.infinity;
+  }
 
   /// The minimum value of the range
   double get min => _min;
@@ -100,5 +112,10 @@ class Range {
   /// Check if this range is not infinite
   bool get isNotInfinite {
     return min != double.negativeInfinity || max != double.infinity;
+  }
+
+  /// Return a random number within this range
+  double random() {
+    return Random().nextDouble() * (max - min) + min;
   }
 }

@@ -1,6 +1,7 @@
 /// Library for making bitmap games using flame
 library sizzle;
 
+/// External exports
 export 'package:flutter/widgets.dart' show runApp;
 export 'package:flame/cache.dart';
 export 'package:flame/collisions.dart';
@@ -13,6 +14,8 @@ export 'package:flame/sprite.dart';
 export 'package:flame/text.dart';
 export 'package:flame/timer.dart';
 export 'package:flame/events.dart';
+
+/// Sizzle exports
 export 'src/game/game.dart';
 export 'src/game/scene.dart';
 export 'src/display/dialog.dart';
@@ -27,4 +30,5 @@ export 'src/physics/movement.dart';
 export 'src/text/text.dart';
 export 'src/utils/device.dart';
 export 'src/utils/logger.dart';
+export 'src/utils/pool.dart';
 export 'src/utils/services.dart';

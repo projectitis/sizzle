@@ -1,8 +1,14 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart' hide Route;
+import 'package:flame/components.dart';
+import 'package:flame/events.dart';
+import 'package:flame/extensions.dart';
+import 'package:flame/game.dart';
 
-import '../../sizzle.dart';
+import '../math/math.dart';
+import '../utils/services.dart';
 
 class SizzleGame extends FlameGame
     with SingleGameInstance, TapCallbacks, KeyboardEvents {
@@ -44,15 +50,18 @@ class SizzleGame extends FlameGame
   final MutableRectangle<double> safeWindow =
       MutableRectangle(0.0, 0.0, 320.0, 240.0);
 
+  /// The offset of the game window from the top left of the screen
   final Vector2 gameWindowOffset = Vector2.zero();
 
   /// The paint used to draw the letterbox. Only the color is used.
   /// Usually black.
   final Paint _letterBoxPaint = Paint();
 
-  /// Limit framerate (low-end devices, like watches)
-  double _renderPeriod = 0.0;
-  double _elapsedTime = 0.0;
+  /// User-defined cleanup function
+  Function? onCleanup;
+
+  /// Flag to indicate if the game has been disposed already
+  bool _isDisposed = false;
 
   /// Create a new sizzle game
   ///
@@ -90,10 +99,6 @@ class SizzleGame extends FlameGame
 
     _letterBoxPaint.color = letterBoxColor;
 
-    if (maxFPS != null) {
-      this.maxFPS = maxFPS;
-    }
-
     final Map<String, Route> routes = {};
     if (scenes != null) {
       scenes.forEach((key, value) {
@@ -109,6 +114,17 @@ class SizzleGame extends FlameGame
 
     // Set up services
     Services.init(this);
+
+    // Handle game exit
+    AppLifecycleListener(
+      onDetach: () {
+        onDispose();
+      },
+      onExitRequested: () async {
+        onDispose();
+        return AppExitResponse.exit;
+      },
+    );
   }
 
   /// Calculate new view window size and snap scaling when the game resizes
@@ -201,25 +217,6 @@ class SizzleGame extends FlameGame
     }
   }
 
-  /// Set the maximum framerate for the game. Set to `null` to disable.
-  set maxFPS(double? fps) {
-    if (fps == null) {
-      _renderPeriod = 0.0;
-      return;
-    }
-    _renderPeriod = 1.0 / fps;
-  }
-
-  /// Ensure the framerate doesn't exceed maximum
-  @override
-  void updateTree(double dt) {
-    _elapsedTime += dt;
-    if (_elapsedTime >= _renderPeriod) {
-      super.updateTree(_elapsedTime);
-      _elapsedTime = 0.0;
-    }
-  }
-
   /// Handle scene changes using the Flame router.
   ///
   /// Pushes the route specified by [name] to the top of the navigation stack.
@@ -240,4 +237,16 @@ class SizzleGame extends FlameGame
   Scene? get currentScene => _router.currentRoute.hasChildren
       ? _router.currentRoute.lastChild() as Scene
       : null;
+
+  /// Handle dispose and cleanup
+  @override
+  void onDispose() {
+    // Ensure game is only disposed once. Different lifecycle events may end
+    // up calling this method multiple times on certain platforms.
+    if (!_isDisposed) {
+      onCleanup?.call();
+      super.onDispose();
+      _isDisposed = true;
+    }
+  }
 }

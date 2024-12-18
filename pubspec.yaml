@@ -20,6 +20,7 @@ dependencies:
     sdk: flutter
   path_provider: ^2.1.0
   meta: ^1.10.0
+  jx: ^1.0.5
 
 dev_dependencies:
   lints: ^3.0.0

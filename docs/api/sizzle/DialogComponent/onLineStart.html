@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the onLineStart method from the DialogComponent class, for the Dart programming language.">
+  <title>onLineStart method - DialogComponent class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle">sizzle.dart</a></li>
+    <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
+    <li class="self-crumb">onLineStart method</li>
+  </ol>
+  <div class="self-name">onLineStart</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;DialogComponent-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">onLineStart</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@override</li>
+    </ol>
+  </div>
+<span class="returntype">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">bool</span>&gt;</span></span>
+<span class="name ">onLineStart</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="onLineStart-param-line"><span class="type-annotation">DialogueLine</span> <span class="parameter-name">line</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Called when the next dialogue <code>line</code> should be presented to the user.</p>
+<p>The <code>DialogueView</code> may decide to present the <code>line</code> in whatever way it
+wants, or to not present the line at all. For example, the dialogue view
+may: augment the line object, render the line at a certain place on the
+screen, render only the character's name, show the portrait of whoever is
+speaking, show the text within a chat bubble, play a voice-over audio
+file, store the text into the player's conversation log, move the camera
+to show the speaker, etc.</p>
+<p>Some of these methods of delivery can be considered "primary", while
+others are "auxiliary". A "primary" <code>DialogueView</code> should return <code>true</code>,
+while all others <code>false</code> (especially if a dialogue view ignores the line
+completely). This is used as a robustness check: if none of the dialogue
+views return <code>true</code>, then a <code>DialogueError</code> will be thrown because the
+line was not shown to the user in a meaningful way.</p>
+<p>If this method returns a future, then the dialogue runner will wait for
+that future to complete before advancing to the next line. If multiple
+<code>DialogueView</code>s return such futures, then the dialogue runner will wait
+for all of them to complete before proceeding.</p>
+<p>Returning a future is quite common for non-trivial <code>DialogueView</code>s. After
+all, if this method were to return immediately, the dialogue runner would
+immediately advance to the next line, and the player wouldn't have time
+to read the first one. A common scenario then is to reveal the line
+gradually, and then wait some time before returning; or, alternatively,
+return a <code>Completer</code>-based future that completes based on some user action
+such as clicking a button or pressing a keyboard key.</p>
+<p>Note that this method is supposed to only <em>show</em> the line to the player,
+so do not try to hide it at the end -- for that, there is a dedicated
+method <a href="../../sizzle/DialogComponent/onLineFinish.html">onLineFinish</a>.</p>
+<p>Also, given that this method may take a significant amount of time, there
+are two additional methods that may attempt to interfere into this
+process: <a href="../../sizzle/DialogComponent/onLineSignal.html">onLineSignal</a> and <a href="../../sizzle/DialogComponent/onLineStop.html">onLineStop</a>.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+FutureOr&lt;bool&gt; onLineStart(DialogueLine line) async {
+  if (line.character == null ||
+      (characters.isNotEmpty &amp;&amp; !characters.contains(line.character?.name))) {
+    return true;
+  }
+
+  await _show();
+  DialogTextStyle textStyle = _setStyles(line.tags, false);
+
+  if (options.displayCharacterName) {
+    _addTextArea(textStyle.captionStyle, line.character!.name);
+  }
+  if (_updateTrackTarget(line.character!.name)) {
+    _updatePosition();
+  }
+  _addTextArea(textStyle.textStyle, line.text);
+  _prepare(false);
+
+  _lineCompleter = Completer();
+  return _lineCompleter.future;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle">sizzle</a></li>
+    <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
+    <li class="self-crumb">onLineStart method</li>
+</ol>
+
+    <h5>DialogComponent class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

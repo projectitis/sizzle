@@ -1,6 +1,9 @@
 import 'dart:io';
+import 'dart:ui';
 
+import 'package:flame/extensions.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 class Device {
   static String get os => Platform.operatingSystemVersion.toLowerCase();
@@ -17,4 +20,17 @@ class Device {
   static bool get isDesktop => isWindows || isLinux || isMacOS;
   static bool get isWatch =>
       (isAndroid && os.contains('wear')) || (isIOS && os.contains('watch'));
+
+  static FlutterView? _view;
+  static FlutterView get view {
+    if (_view == null) {
+      WidgetsFlutterBinding.ensureInitialized();
+      _view = WidgetsBinding.instance.platformDispatcher.views.first;
+    }
+    return _view!;
+  }
+
+  static Vector2 get screenSize => view.physicalSize.toVector2();
+
+  static double get pixelRatio => view.devicePixelRatio;
 }

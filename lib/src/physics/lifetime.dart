@@ -1,4 +1,4 @@
-import 'package:sizzle/sizzle.dart';
+import 'package:flame/components.dart';
 
 /// Add lifetime to a [PositionComponent]. This mixin will add a time-to-live
 /// to the component. The component should be removed from the game once the

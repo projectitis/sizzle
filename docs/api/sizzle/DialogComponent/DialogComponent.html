@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the DialogComponent constructor from Class DialogComponent from the sizzle library, for the Dart programming language.">
+  <title>DialogComponent constructor - DialogComponent - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle">sizzle.dart</a></li>
+    <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
+    <li class="self-crumb">DialogComponent constructor</li>
+  </ol>
+  <div class="self-name">DialogComponent</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="sizzle&#47;DialogComponent-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-constructor">DialogComponent</span> constructor 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+      <span class="name ">DialogComponent</span>(<wbr>{<ol class="parameter-list"> <li><span class="parameter" id="-param-dialogSize"><span>required</span> <span class="type-annotation">Vector2</span> <span class="parameter-name">dialogSize</span>, </span></li>
+<li><span class="parameter" id="-param-dialogStyles"><span>required</span> <span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../sizzle/DialogStyle-class.html">DialogStyle</a></span>&gt;</span></span> <span class="parameter-name">dialogStyles</span>, </span></li>
+<li><span class="parameter" id="-param-textStyles"><span>required</span> <span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../sizzle/DialogTextStyle-class.html">DialogTextStyle</a></span>&gt;</span></span> <span class="parameter-name">textStyles</span>, </span></li>
+</ol>})
+    </section>
+    
+<section class="desc markdown">
+  <p>The <code>dialogSize</code> dictates the maximum width and height of the
+dialog box.</p>
+<p>At least one dialog style and one text style must be passed in.
+These are usually given the name 'default'. Styles are changed
+by adding a tag to the dialog that matches the style name. For
+example, you might have a style for 'thinking' that shows as a
+thought bubble instead of a speech bubble. Example:
+Bob: Has she really not seen me? #thinking</p>
+<p>Any line or choice that does not contain a matching tag will use
+the 'default' style if it exists, otherwise the first style passed
+in will be used as the default.</p>
+<p>There are two special styles: 'default' is the default style in
+all cases that no other style is set. 'choice' is the default
+style for choices. If 'choice' is not set, 'default' is used.</p>
+<p>It is possible to use two different DialogComponents for
+different characters in the scene. In order ro do this, pass
+is a list of 'characters' that this dialog should display for.</p>
+<p>The 'anchor' is used as the attachment point for the dialog.</p>
+<p>The dialog will call 'onFindCharacterPosition' to request the
+component that should be aligned to. If this callback is not
+implemented, the dialog 'position' must be set instead.</p>
+<p>TODO: If there is too much text for the height, allow the user
+to click through the full text.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">DialogComponent({
+  required this.dialogSize,
+  required List&lt;DialogStyle&gt; dialogStyles,
+  required List&lt;DialogTextStyle&gt; textStyles,
+}) : super(size: dialogSize) {
+  assert(
+    dialogStyles.isNotEmpty,
+    &#39;At least one dialog style must be provided&#39;,
+  );
+  assert(textStyles.isNotEmpty, &#39;At least one text style must be provided&#39;);
+  for (final s in dialogStyles) {
+    assert(s.name != &#39;&#39;, &#39;A dialog style must have a name&#39;);
+    assert(
+      !_dialogStyles.containsKey(s.name),
+      &#39;All dialog styles must have a unique name&#39;,
+    );
+    _dialogStyles[s.name] = s;
+  }
+  _activeDialogStyle =
+      _dialogStyles[&#39;default&#39;] ?? _dialogStyles.entries.first.value;
+  for (final s in textStyles) {
+    assert(s.name != &#39;&#39;, &#39;A text style must have a name&#39;);
+    assert(
+      !_textStyles.containsKey(s.name),
+      &#39;All text styles must have a unique name&#39;,
+    );
+    _textStyles[s.name] = s;
+  }
+  anchor = _activeDialogStyle.anchor;
+  isVisible = false;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle">sizzle</a></li>
+    <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
+    <li class="self-crumb">DialogComponent constructor</li>
+</ol>
+
+    <h5>DialogComponent class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

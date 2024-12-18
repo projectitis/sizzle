@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the add method from the DialogComponent class, for the Dart programming language.">
+  <title>add method - DialogComponent class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle">sizzle.dart</a></li>
+    <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
+    <li class="self-crumb">add method</li>
+  </ol>
+  <div class="self-name">add</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;DialogComponent-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">add</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+<span class="name ">add</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="add-param-component"><span class="type-annotation">Component</span> <span class="parameter-name">component</span></span></li>
+</ol>)
+
+      <div class="features"><span class="feature">inherited</span></div>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Schedules <code>component</code> to be added as a child to this component.</p>
+<p>This method is robust towards being called from any place in the user
+code: you can call it while iterating over the component tree, during
+mounting or async loading, when the Game object is already loaded or not.</p>
+<p>The cost of this flexibility is that the component won't be added right
+away. Instead, it will be placed into a queue, and then added later, after
+it has finished loading, but no sooner than on the next game tick.</p>
+<p>When multiple children are scheduled to be added to the same parent, we
+start loading all of them as soon as possible. Nevertheless, the children
+will end up being added to the parent in exactly the same order as they
+were originally scheduled by the user, regardless of how fast or slow
+each of them loads.</p>
+<p>A component can be added to a parent which may not be mounted to the game
+tree yet. In such case, the component will start loading immediately, but
+its mounting will be delayed until such time when the parent becomes
+mounted.</p>
+<p>This method returns a future that completes when the component is done
+loading, and mounting if the parent is currently mounted. However, this
+future will not guarantee that the component will become "fully mounted":
+it still needs to be added to the parent's children list, and that
+operation will only be done on the next game tick.</p>
+<p>A component can only be added to one parent at a time. It is an error to
+try to add it to multiple parents, or even to the same parent multiple
+times. If you need to change the parent of a component, use the
+<code>parent</code> setter.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">FutureOr&lt;void&gt; add(Component component) =&gt; _addChild(component);</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle">sizzle</a></li>
+    <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
+    <li class="self-crumb">add method</li>
+</ol>
+
+    <h5>DialogComponent class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

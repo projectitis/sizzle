@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="sizzle library API docs, for the Dart programming language.">
+  <title>sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">sizzle</a></li>
+    <li class="self-crumb">sizzle.dart</li>
+  </ol>
+  <div class="self-name">sizzle</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar=""
+    data-below-sidebar="sizzle&#47;sizzle-library-sidebar.html">
+  
+    <div>
+      
+
+      <h1>
+        <span class="kind-library">sizzle</span>
+        library 
+ 
+
+      </h1>
+    </div>
+
+    
+<section class="desc markdown">
+  <p>Library for making bitmap games using flame</p>
+</section>
+
+
+    <section class="summary offset-anchor" id="classes">
+      <h2>Classes</h2>
+      <dl>
+          <dt id="CharCode">
+  <span class="name "><a href="../sizzle/CharCode-class.html">CharCode</a></span> 
+
+</dt>
+<dd>
+  Character codes
+</dd>
+
+          <dt id="Device">
+  <span class="name "><a href="../sizzle/Device-class.html">Device</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="DialogComponent">
+  <span class="name "><a href="../sizzle/DialogComponent-class.html">DialogComponent</a></span> 
+
+</dt>
+<dd>
+  Text dialog (speech bubble)
+</dd>
+
+          <dt id="DialogOptions">
+  <span class="name "><a href="../sizzle/DialogOptions-class.html">DialogOptions</a></span> 
+
+</dt>
+<dd>
+  Options available to the speech bubble
+</dd>
+
+          <dt id="DialogStyle">
+  <span class="name "><a href="../sizzle/DialogStyle-class.html">DialogStyle</a></span> 
+
+</dt>
+<dd>
+  A dialog style definition
+</dd>
+
+          <dt id="DialogTextStyle">
+  <span class="name "><a href="../sizzle/DialogTextStyle-class.html">DialogTextStyle</a></span> 
+
+</dt>
+<dd>
+  A dialog text style definition
+</dd>
+
+          <dt id="FileLogger">
+  <span class="name "><a href="../sizzle/FileLogger-class.html">FileLogger</a></span> 
+
+</dt>
+<dd>
+  Logger that writes to a file
+TODO: May lock file if crash occurs while sink is open. Do we need to
+open and close the sink for every write?
+</dd>
+
+          <dt id="Logger">
+  <span class="name "><a href="../sizzle/Logger-class.html">Logger</a></span> 
+
+</dt>
+<dd>
+  Logger interface
+</dd>
+
+          <dt id="NineGridComponent">
+  <span class="name "><a href="../sizzle/NineGridComponent-class.html">NineGridComponent</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="NineGridRepeat">
+  <span class="name "><a href="../sizzle/NineGridRepeat-class.html">NineGridRepeat</a></span> 
+
+</dt>
+<dd>
+  Describe how each section of the <code>NineGrid</code> should repeat
+</dd>
+
+          <dt id="NineGridSize">
+  <span class="name "><a href="../sizzle/NineGridSize-class.html">NineGridSize</a></span> 
+
+</dt>
+<dd>
+  Describes the size of each section of the <code>NineGrid</code>
+</dd>
+
+          <dt id="PlyAnimProps">
+  <span class="name "><a href="../sizzle/PlyAnimProps-class.html">PlyAnimProps</a></span> 
+
+</dt>
+<dd>
+  Settings for an animation to play. Provide at least the <a href="../sizzle/PlyAnimProps/name.html">name</a> of the animation. You can override specific settings
+for the animation. Set <a href="../sizzle/PlyAnimProps/direction.html">direction</a> to change the animation direction (see <a href="../sizzle/PlyDirection-class.html">PlyDirection</a>), set <a href="../sizzle/PlyAnimProps/repeats.html">repeats</a> to
+change the number of times the animation loops, and set <code>speed</code> to change the animation playback speed by a factor.
+For example, <code>speed = 1.0</code> is default, <code>speed = 0.9</code> plays it at 90% of the original speed, and <code>speed = 0.5</code> will
+play it at half speed.
+</dd>
+
+          <dt id="PlyDirection">
+  <span class="name "><a href="../sizzle/PlyDirection-class.html">PlyDirection</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="PlySpriteComponent">
+  <span class="name "><a href="../sizzle/PlySpriteComponent-class.html">PlySpriteComponent</a></span> 
+
+</dt>
+<dd>
+  A PlySprite is an animated sprite made up of many layers. The format is
+very space-efficient because it re-uses a lot of parts that make up the
+sprite, resulting in a much smaller image (sprite sheet).
+</dd>
+
+          <dt id="Pool">
+  <span class="name "><a href="../sizzle/Pool-class.html">Pool</a><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="../sizzle/Pooled-mixin.html">Pooled</a></span>&gt;</span></span> 
+
+</dt>
+<dd>
+  A pool of objects that can be reused
+</dd>
+
+          <dt id="PrintJsonLogger">
+  <span class="name "><a href="../sizzle/PrintJsonLogger-class.html">PrintJsonLogger</a></span> 
+
+</dt>
+<dd>
+  Default logger that prints to stdout as JSON with extra details
+</dd>
+
+          <dt id="PrintLogger">
+  <span class="name "><a href="../sizzle/PrintLogger-class.html">PrintLogger</a></span> 
+
+</dt>
+<dd>
+  Default logger that prints to stdout
+</dd>
+
+          <dt id="Range">
+  <span class="name "><a href="../sizzle/Range-class.html">Range</a></span> 
+
+</dt>
+<dd>
+  Utility class that describes a range defined by a minimum and maximum value
+</dd>
+
+          <dt id="Scene">
+  <span class="name "><a href="../sizzle/Scene-class.html">Scene</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="Services">
+  <span class="name "><a href="../sizzle/Services-class.html">Services</a></span> 
+
+</dt>
+<dd>
+  Global services class
+</dd>
+
+          <dt id="SizzleGame">
+  <span class="name "><a href="../sizzle/SizzleGame-class.html">SizzleGame</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="SnapDialogComponent">
+  <span class="name "><a href="../sizzle/SnapDialogComponent-class.html">SnapDialogComponent</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="SnapNineGridComponent">
+  <span class="name "><a href="../sizzle/SnapNineGridComponent-class.html">SnapNineGridComponent</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="SnapPlySpriteComponent">
+  <span class="name "><a href="../sizzle/SnapPlySpriteComponent-class.html">SnapPlySpriteComponent</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="SnapPositionComponent">
+  <span class="name "><a href="../sizzle/SnapPositionComponent-class.html">SnapPositionComponent</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="SnapRectangleComponent">
+  <span class="name "><a href="../sizzle/SnapRectangleComponent-class.html">SnapRectangleComponent</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="SnapSpriteComponent">
+  <span class="name "><a href="../sizzle/SnapSpriteComponent-class.html">SnapSpriteComponent</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="SnapTextAreaComponent">
+  <span class="name "><a href="../sizzle/SnapTextAreaComponent-class.html">SnapTextAreaComponent</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="TextAreaComponent">
+  <span class="name "><a href="../sizzle/TextAreaComponent-class.html">TextAreaComponent</a></span> 
+
+</dt>
+<dd>
+  Text area
+</dd>
+
+          <dt id="TextAreaLine">
+  <span class="name "><a href="../sizzle/TextAreaLine-class.html">TextAreaLine</a></span> 
+
+</dt>
+<dd>
+  Details of a line of text
+</dd>
+
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="enums">
+      <h2>Enums</h2>
+      <dl>
+          <dt id="AnchorWindow">
+  <span class="name "><a href="../sizzle/AnchorWindow.html">AnchorWindow</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="LogLevel">
+  <span class="name "><a href="../sizzle/LogLevel.html">LogLevel</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="NineGridRepeatType">
+  <span class="name "><a href="../sizzle/NineGridRepeatType.html">NineGridRepeatType</a></span> 
+
+</dt>
+<dd>
+  A nine-tile grid implementation
+</dd>
+
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="mixins">
+      <h2>Mixins</h2>
+      <dl>
+          <dt id="Lifetime">
+  <span class="name "><a href="../sizzle/Lifetime-mixin.html">Lifetime</a></span> 
+
+</dt>
+<dd>
+  Add lifetime to a <code>PositionComponent</code>. This mixin will add a time-to-live
+to the component. The component should be removed from the game once the
+time-to-live has expired.
+</dd>
+
+          <dt id="Movement">
+  <span class="name "><a href="../sizzle/Movement-mixin.html">Movement</a></span> 
+
+</dt>
+<dd>
+  Add movement to a <code>PositionComponent</code>. This mixin will add velocity and
+acceleration to the component. The position will be updated based on the
+velocity and acceleration. Angular velocity and acceleration are also
+supported.
+</dd>
+
+          <dt id="Pooled">
+  <span class="name "><a href="../sizzle/Pooled-mixin.html">Pooled</a></span> 
+
+</dt>
+<dd>
+  Pooled mixin for objects that should be pooled
+</dd>
+
+          <dt id="Snap">
+  <span class="name "><a href="../sizzle/Snap-mixin.html">Snap</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+      </dl>
+    </section>
+
+
+    <section class="summary offset-anchor" id="extensions">
+      <h2>Extensions</h2>
+      <dl>
+          <dt id="MutableRectangleExt">
+  <span class="name "><a href="../sizzle/MutableRectangleExt.html">MutableRectangleExt</a></span>
+  on MutableRectangle<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span>
+  
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="Vector2Ext">
+  <span class="name "><a href="../sizzle/Vector2Ext.html">Vector2Ext</a></span>
+  on Vector2
+  
+
+</dt>
+<dd>
+  Extend the Vector2 class with some utility methods
+</dd>
+
+      </dl>
+    </section>
+
+
+
+
+    <section class="summary offset-anchor" id="typedefs">
+      <h2>Typedefs</h2>
+      <dl>
+          
+  <dt id="OnFileAccessCallback" class="callable">
+    <span class="name"><a href="../sizzle/OnFileAccessCallback.html">OnFileAccessCallback</a></span><span class="signature">
+      <span class="returntype parameter">= void Function<span class="signature">(<span class="parameter" id="param-data"><span class="type-annotation">Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">dynamic</span>&gt;</span></span> <span class="parameter-name">data</span></span>)</span></span>
+    </span>
+    
+
+  </dt>
+  <dd>
+    
+    
+
+  </dd>
+
+          
+  <dt id="PlyCallback" class="callable">
+    <span class="name"><a href="../sizzle/PlyCallback.html">PlyCallback</a></span><span class="signature">
+      <span class="returntype parameter">= void Function<span class="signature">(<span class="parameter" id="param-sprite"><span class="type-annotation"><a href="../sizzle/PlySpriteComponent-class.html">PlySpriteComponent</a></span> <span class="parameter-name">sprite</span>, </span><span class="parameter" id="param-animation"><span class="type-annotation">String</span> <span class="parameter-name">animation</span></span>)</span></span>
+    </span>
+    
+
+  </dt>
+  <dd>
+    
+    
+
+  </dd>
+
+          
+  <dt id="PlyLoopCallback" class="callable">
+    <span class="name"><a href="../sizzle/PlyLoopCallback.html">PlyLoopCallback</a></span><span class="signature">
+      <span class="returntype parameter">= void Function<span class="signature">(<span class="parameter" id="param-sprite"><span class="type-annotation"><a href="../sizzle/PlySpriteComponent-class.html">PlySpriteComponent</a></span> <span class="parameter-name">sprite</span>, </span><span class="parameter" id="param-animation"><span class="type-annotation">String</span> <span class="parameter-name">animation</span>, </span><span class="parameter" id="param-loop"><span class="type-annotation">int</span> <span class="parameter-name">loop</span></span>)</span></span>
+    </span>
+    
+
+  </dt>
+  <dd>
+    
+    
+
+  </dd>
+
+      </dl>
+    </section>
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">sizzle</a></li>
+    <li class="self-crumb">sizzle.dart</li>
+</ol>
+
+    <h5><span class="package-name">sizzle</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="../sizzle">sizzle</a></li>
+</ol>
+
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+    <h5>sizzle library</h5>
+  </div><!--/sidebar-offcanvas-right-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.0
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the SizzleGame class from the sizzle library, for the Dart programming language.">
+  <title>SizzleGame class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">sizzle</a></li>
+    <li><a href="../sizzle">sizzle.dart</a></li>
+    <li class="self-crumb">SizzleGame class</li>
+  </ol>
+  <div class="self-name">SizzleGame</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;sizzle-library-sidebar.html"
+    data-below-sidebar="sizzle&#47;SizzleGame-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">SizzleGame</span> class 
+ 
+</h1></div>
+
+    
+
+
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="SizzleGame" class="callable">
+          <span class="name"><a href="../sizzle/SizzleGame/SizzleGame.html">SizzleGame</a></span><span class="signature">({<span class="parameter" id="-param-scenes"><span class="type-annotation">Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">Component Function<span class="signature">()</span></span>&gt;</span>?</span> <span class="parameter-name">scenes</span>, </span><span class="parameter" id="-param-scene"><span class="type-annotation">Component</span> <span class="parameter-name">scene</span>()?, </span><span class="parameter" id="-param-targetSize"><span class="type-annotation">Vector2?</span> <span class="parameter-name">targetSize</span>, </span><span class="parameter" id="-param-maxSize"><span class="type-annotation">Vector2?</span> <span class="parameter-name">maxSize</span>, </span><span class="parameter" id="-param-letterBoxColor"><span class="type-annotation">Color</span> <span class="parameter-name">letterBoxColor</span> = <span class="default-value">const Color(0xff000000)</span>, </span><span class="parameter" id="-param-scaleToWholePixels"><span class="type-annotation">bool</span> <span class="parameter-name">scaleToWholePixels</span> = <span class="default-value">false</span>, </span><span class="parameter" id="-param-scale"><span class="type-annotation"><a href="../sizzle/Range-class.html">Range</a>?</span> <span class="parameter-name">scale</span>, </span><span class="parameter" id="-param-maxFPS"><span class="type-annotation">double?</span> <span class="parameter-name">maxFPS</span></span>})</span>
+        </dt>
+        <dd>
+          Create a new sizzle game
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="assets" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/assets.html">assets</a></span>
+  <span class="signature">&#8596; AssetsCache</span>
+  
+
+</dt>
+<dd class="inherited">
+  The cache of all (non-image) assets loaded into the game. This defaults to
+the global <code>Flame.assets</code> cache, but you can replace this with another
+instance if needed.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="buildContext" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/buildContext.html">buildContext</a></span>
+  <span class="signature">&#8594; BuildContext?</span>
+  
+
+</dt>
+<dd class="inherited">
+  Currently attached build context. Can be null if not attached.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="camera" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/camera.html">camera</a></span>
+  <span class="signature">&#8596; CameraComponent</span>
+  
+
+</dt>
+<dd class="inherited">
+  The component that is responsible for rendering your <code>world</code>.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="canvasSize" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/canvasSize.html">canvasSize</a></span>
+  <span class="signature">&#8594; Vector2</span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="children" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/children.html">children</a></span>
+  <span class="signature">&#8594; ComponentSet</span>
+  
+
+</dt>
+<dd class="inherited">
+  The children components of this component.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="currentScene" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/currentScene.html">currentScene</a></span>
+  <span class="signature">&#8594; Scene?</span>
+  
+
+</dt>
+<dd>
+  Get the current scene
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="debugColor" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/debugColor.html">debugColor</a></span>
+  <span class="signature">&#8596; Color</span>
+  
+
+</dt>
+<dd class="inherited">
+  The color that the debug output should be rendered with.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="debugCoordinatesPrecision" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/debugCoordinatesPrecision.html">debugCoordinatesPrecision</a></span>
+  <span class="signature">&#8596; int?</span>
+  
+
+</dt>
+<dd class="inherited">
+  How many decimal digits to print when displaying coordinates in the
+debug mode. Setting this to null will suppress all coordinates from
+the output.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="debugMode" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/debugMode.html">debugMode</a></span>
+  <span class="signature">&#8596; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns whether this <code>Component</code> is in debug mode or not.
+When a child is added to the <code>Component</code> it gets the same <code>debugMode</code> as
+its parent has when it is prepared.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="debugPaint" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/debugPaint.html">debugPaint</a></span>
+  <span class="signature">&#8594; Paint</span>
+  
+
+</dt>
+<dd class="inherited">
+  The <code>debugColor</code> represented as a <code>Paint</code> object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="debugTextPaint" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/debugTextPaint.html">debugTextPaint</a></span>
+  <span class="signature">&#8594; TextPaint</span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns a <code>TextPaint</code> object with the <code>debugColor</code> set as color for the
+text.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="gameStateListeners" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/gameStateListeners.html">gameStateListeners</a></span>
+  <span class="signature">&#8594; List<span class="signature">&lt;<wbr><span class="type-parameter">VoidCallback</span>&gt;</span></span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="gameWindow" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/gameWindow.html">gameWindow</a></span>
+  <span class="signature">&#8594; MutableRectangle<span class="signature">&lt;<wbr><span class="type-parameter">double</span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  The maximum size of the game. Not all parts may be visible
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="gameWindowOffset" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/gameWindowOffset.html">gameWindowOffset</a></span>
+  <span class="signature">&#8594; Vector2</span>
+  
+
+</dt>
+<dd>
+  The offset of the game window from the top left of the screen
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="gestureDetectors" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/gestureDetectors.html">gestureDetectors</a></span>
+  <span class="signature">&#8594; GestureDetectorBuilder</span>
+  
+
+</dt>
+<dd class="inherited">
+  Used internally by various mixins that need to use gesture detection
+functionality in Flutter.
+  <div class="features"><span class="feature">late</span><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="hasChildren" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/hasChildren.html">hasChildren</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; int</span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="hasLayout" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/hasLayout.html">hasLayout</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  Indicates if this game instance is connected to a GameWidget that is live
+in the flutter widget tree.
+Once this is true, the game is ready to have its size used or in the case
+of a FlameGame, to receive components.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="hasLifecycleEvents" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/hasLifecycleEvents.html">hasLifecycleEvents</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="images" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/images.html">images</a></span>
+  <span class="signature">&#8596; Images</span>
+  
+
+</dt>
+<dd class="inherited">
+  The cache of all images loaded into the game. This defaults to the global
+<code>Flame.images</code> cache, but you can replace it with a new cache instance if
+needed.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="isAttached" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/isAttached.html">isAttached</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  Whether the game widget was attached to the Flutter tree.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="isLoaded" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/isLoaded.html">isLoaded</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  Whether this component has completed its <code>onLoad</code> step.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="isLoading" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/isLoading.html">isLoading</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  Whether the component is currently executing its <code>onLoad</code> step.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="isMounted" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/isMounted.html">isMounted</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  Whether this component is currently added to a component tree.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="isMounting" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/isMounting.html">isMounting</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="isRemoved" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/isRemoved.html">isRemoved</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  Whether the component has been removed. Originally this flag is <code>false</code>,
+but it becomes <code>true</code> after the component was mounted and then removed
+from its parent. The flag becomes <code>false</code> again when the component is
+mounted to a new parent.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="isRemoving" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/isRemoving.html">isRemoving</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  Whether the component is scheduled to be removed.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="key" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/key.html">key</a></span>
+  <span class="signature">&#8594; ComponentKey?</span>
+  
+
+</dt>
+<dd class="inherited">
+  A key that can be used to identify this component in the tree.
+  <div class="features"><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="loaded" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/loaded.html">loaded</a></span>
+  <span class="signature">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  
+
+</dt>
+<dd class="inherited">
+  A future that completes when this component finishes loading.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="maxGameSize" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/maxGameSize.html">maxGameSize</a></span>
+  <span class="signature">&#8594; Vector2</span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="mounted" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/mounted.html">mounted</a></span>
+  <span class="signature">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  
+
+</dt>
+<dd class="inherited">
+  A future that will complete once the component is mounted on its parent.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="mouseCursor" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/mouseCursor.html">mouseCursor</a></span>
+  <span class="signature">&#8596; MouseCursor</span>
+  
+
+</dt>
+<dd class="inherited">
+  Used to change the mouse cursor of the GameWidget running this game.
+Setting the value to null will make the GameWidget defer the choice
+of the cursor to the closest region available on the tree.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="mouseDetector" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/mouseDetector.html">mouseDetector</a></span>
+  <span class="signature">&#8596; void Function<span class="signature">(<span class="parameter" id="param-event"><span class="type-annotation">PointerHoverEvent</span> <span class="parameter-name">event</span></span>)</span>?</span>
+  
+
+</dt>
+<dd class="inherited">
+  Set by the PointerMoveDispatcher to receive mouse events from the
+game widget.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="notifiers" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/notifiers.html">notifiers</a></span>
+  <span class="signature">&#8594; List<span class="signature">&lt;<wbr><span class="type-parameter">ComponentsNotifier<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>&gt;</span></span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">late</span><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onCleanup" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/onCleanup.html">onCleanup</a></span>
+  <span class="signature">&#8596; Function?</span>
+  
+
+</dt>
+<dd>
+  User-defined cleanup function
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="overlays" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/overlays.html">overlays</a></span>
+  <span class="signature">&#8594; OverlayManager</span>
+  
+
+</dt>
+<dd class="inherited">
+  A property that stores an <code>OverlayManager</code>
+  <div class="features"><span class="feature">late</span><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="parent" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/parent.html">parent</a></span>
+  <span class="signature">&#8596; Component?</span>
+  
+
+</dt>
+<dd class="inherited">
+  Who owns this component in the component tree.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="paused" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/paused.html">paused</a></span>
+  <span class="signature">&#8596; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns is the engine if currently paused or running
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="pauseWhenBackgrounded" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/pauseWhenBackgrounded.html">pauseWhenBackgrounded</a></span>
+  <span class="signature">&#8596; bool</span>
+  
+
+</dt>
+<dd class="inherited">
+  Whether the game should pause when the app is backgrounded.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="priority" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/priority.html">priority</a></span>
+  <span class="signature">&#8596; int</span>
+  
+
+</dt>
+<dd class="inherited">
+  Render priority of this component. This allows you to control the order in
+which your components are rendered.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="removed" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/removed.html">removed</a></span>
+  <span class="signature">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  
+
+</dt>
+<dd class="inherited">
+  A future that completes when this component is removed from its parent.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="renderBox" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/renderBox.html">renderBox</a></span>
+  <span class="signature">&#8594; GameRenderBox</span>
+  
+
+</dt>
+<dd class="inherited">
+  Just a reference back to the render box that is kept up to date by the
+engine.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; Type</span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="safeWindow" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/safeWindow.html">safeWindow</a></span>
+  <span class="signature">&#8594; MutableRectangle<span class="signature">&lt;<wbr><span class="type-parameter">double</span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  The visible safe window. May be smaller than the view window, but
+guaranteed to be visible
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="scale" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/scale.html">scale</a></span>
+  <span class="signature">&#8596; <a href="../sizzle/Range-class.html">Range</a></span>
+  
+
+</dt>
+<dd>
+  Scale the game to fit the whole screen
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="scaleToWholePixels" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/scaleToWholePixels.html">scaleToWholePixels</a></span>
+  <span class="signature">&#8596; bool</span>
+  
+
+</dt>
+<dd>
+  Always ensure that the <a href="../sizzle/SizzleGame/snapScale.html">snapScale</a> is in whole pixels
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="size" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/size.html">size</a></span>
+  <span class="signature">&#8594; Vector2</span>
+  
+
+</dt>
+<dd class="inherited">
+  This is overwritten to consider the viewport transformation.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="snapScale" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/snapScale.html">snapScale</a></span>
+  <span class="signature">&#8594; Vector2</span>
+  
+
+</dt>
+<dd>
+  The size of each pixel once the view window has been scaled. This is used
+by bitmap sprites to display at the correct scale and to snap to whole
+pixels.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="targetGameSize" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/targetGameSize.html">targetGameSize</a></span>
+  <span class="signature">&#8594; Vector2</span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="viewWindow" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/viewWindow.html">viewWindow</a></span>
+  <span class="signature">&#8594; MutableRectangle<span class="signature">&lt;<wbr><span class="type-parameter">double</span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  The visible game window inside the letterbox
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="world" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/world.html">world</a></span>
+  <span class="signature">&#8596; World</span>
+  
+
+</dt>
+<dd class="inherited">
+  The <code>World</code> that the <code>camera</code> is rendering.
+Inside of this world is where most of your components should be added.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="add" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/add.html">add</a></span><span class="signature">(<wbr><span class="parameter" id="add-param-component"><span class="type-annotation">Component</span> <span class="parameter-name">component</span></span>)
+    <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Schedules <code>component</code> to be added as a child to this component.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="addAll" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/addAll.html">addAll</a></span><span class="signature">(<wbr><span class="parameter" id="addAll-param-components"><span class="type-annotation">Iterable<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span> <span class="parameter-name">components</span></span>)
+    <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A convenience method to <code>add</code> multiple children at once.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="addGameStateListener" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/addGameStateListener.html">addGameStateListener</a></span><span class="signature">(<wbr><span class="parameter" id="addGameStateListener-param-callback"><span class="type-annotation">VoidCallback</span> <span class="parameter-name">callback</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="addToParent" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/addToParent.html">addToParent</a></span><span class="signature">(<wbr><span class="parameter" id="addToParent-param-parent"><span class="type-annotation">Component</span> <span class="parameter-name">parent</span></span>)
+    <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Adds this component as a child of <code>parent</code> (see <code>add</code> for details).
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="ancestors" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/ancestors.html">ancestors</a></span><span class="signature">(<wbr>{<span class="parameter" id="ancestors-param-includeSelf"><span class="type-annotation">bool</span> <span class="parameter-name">includeSelf</span> = <span class="default-value">false</span></span>})
+    <span class="returntype parameter">&#8594; Iterable<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  An iterator producing this component's parent, then its parent's parent,
+then the great-grand-parent, and so on, until it reaches a component
+without a parent.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="assertHasLayout" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/assertHasLayout.html">assertHasLayout</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="attach" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/attach.html">attach</a></span><span class="signature">(<wbr><span class="parameter" id="attach-param-owner"><span class="type-annotation">PipelineOwner</span> <span class="parameter-name">owner</span>, </span><span class="parameter" id="attach-param-gameRenderBox"><span class="type-annotation">GameRenderBox</span> <span class="parameter-name">gameRenderBox</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Marks game as attached to any Flutter widget tree.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="backgroundColor" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/backgroundColor.html">backgroundColor</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; Color</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns the game background color.
+By default it will return a black color.
+It cannot be changed at runtime, because the game widget does not get
+rebuild when this value changes.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="changeScene" class="callable">
+  <span class="name"><a href="../sizzle/SizzleGame/changeScene.html">changeScene</a></span><span class="signature">(<wbr><span class="parameter" id="changeScene-param-scene"><span class="type-annotation">String</span> <span class="parameter-name">scene</span>, {</span><span class="parameter" id="changeScene-param-replace"><span class="type-annotation">bool</span> <span class="parameter-name">replace</span> = <span class="default-value">false</span></span>})
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Handle scene changes using the Flame router.
+  
+
+</dd>
+
+        <dt id="componentsAtLocation" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/componentsAtLocation.html">componentsAtLocation</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="componentsAtLocation-param-locationContext"><span class="type-annotation">T</span> <span class="parameter-name">locationContext</span>, </span><span class="parameter" id="componentsAtLocation-param-nestedContexts"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span>?</span> <span class="parameter-name">nestedContexts</span>, </span><span class="parameter" id="componentsAtLocation-param-transformContext"><span class="type-annotation">T?</span> <span class="parameter-name">transformContext</span>(<span class="parameter" id="param-"><span class="type-annotation">CoordinateTransform</span>, </span><span class="parameter" id="param-"><span class="type-annotation">T</span></span>), </span><span class="parameter" id="componentsAtLocation-param-checkContains"><span class="type-annotation">bool</span> <span class="parameter-name">checkContains</span>(<span class="parameter" id="param-"><span class="type-annotation">Component</span>, </span><span class="parameter" id="param-"><span class="type-annotation">T</span></span>)</span>)
+    <span class="returntype parameter">&#8594; Iterable<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  This is a generic implementation of <code>componentsAtPoint</code>; refer to those
+docs for context.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="componentsAtPoint" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/componentsAtPoint.html">componentsAtPoint</a></span><span class="signature">(<wbr><span class="parameter" id="componentsAtPoint-param-point"><span class="type-annotation">Vector2</span> <span class="parameter-name">point</span>, [</span><span class="parameter" id="componentsAtPoint-param-nestedPoints"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">Vector2</span>&gt;</span>?</span> <span class="parameter-name">nestedPoints</span></span>])
+    <span class="returntype parameter">&#8594; Iterable<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  An iterable of descendant components intersecting the given point. The
+<code>point</code> is in the local coordinate space.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="componentsNotifier" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/componentsNotifier.html">componentsNotifier</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends Component</span>&gt;</span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; ComponentsNotifier<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns a <code>ComponentsNotifier</code> for the given type <code>W</code>.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="contains" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/contains.html">contains</a></span><span class="signature">(<wbr><span class="parameter" id="contains-param-c"><span class="type-annotation">Component</span> <span class="parameter-name">c</span></span>)
+    <span class="returntype parameter">&#8594; bool</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Whether the children list contains the given component.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="containsLocalPoint" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/containsLocalPoint.html">containsLocalPoint</a></span><span class="signature">(<wbr><span class="parameter" id="containsLocalPoint-param-point"><span class="type-annotation">Vector2</span> <span class="parameter-name">point</span></span>)
+    <span class="returntype parameter">&#8594; bool</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Whether a point is within the boundaries of the visible part of the game.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="containsPoint" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/containsPoint.html">containsPoint</a></span><span class="signature">(<wbr><span class="parameter" id="containsPoint-param-point"><span class="type-annotation">Vector2</span> <span class="parameter-name">point</span></span>)
+    <span class="returntype parameter">&#8594; bool</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Same as <code>containsLocalPoint</code>, but for a "global" <code>point</code>.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="convertGlobalToLocalCoordinate" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/convertGlobalToLocalCoordinate.html">convertGlobalToLocalCoordinate</a></span><span class="signature">(<wbr><span class="parameter" id="convertGlobalToLocalCoordinate-param-point"><span class="type-annotation">Vector2</span> <span class="parameter-name">point</span></span>)
+    <span class="returntype parameter">&#8594; Vector2</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Converts a global coordinate (i.e. w.r.t. the app itself) to a local
+coordinate (i.e. w.r.t. he game widget).
+If the widget occupies the whole app ("full screen" games), or is not
+attached to Flutter, this operation is the identity.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="convertLocalToGlobalCoordinate" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/convertLocalToGlobalCoordinate.html">convertLocalToGlobalCoordinate</a></span><span class="signature">(<wbr><span class="parameter" id="convertLocalToGlobalCoordinate-param-point"><span class="type-annotation">Vector2</span> <span class="parameter-name">point</span></span>)
+    <span class="returntype parameter">&#8594; Vector2</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Converts a local coordinate (i.e. w.r.t. the game widget) to a global
+coordinate (i.e. w.r.t. the app itself).
+If the widget occupies the whole app ("full screen" games), or is not
+attached to Flutter, this operation is the identity.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="createComponentSet" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/createComponentSet.html">createComponentSet</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; ComponentSet</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  This method creates the children container for the current component.
+Override this method if you need to have a custom <code>ComponentSet</code> within
+a particular class.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="currentTime" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/currentTime.html">currentTime</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; double</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns the current time in seconds with microseconds precision.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="dequeueAdd" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/dequeueAdd.html">dequeueAdd</a></span><span class="signature">(<wbr><span class="parameter" id="dequeueAdd-param-child"><span class="type-annotation">Component</span> <span class="parameter-name">child</span>, </span><span class="parameter" id="dequeueAdd-param-parent"><span class="type-annotation">Component</span> <span class="parameter-name">parent</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="dequeueRemove" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/dequeueRemove.html">dequeueRemove</a></span><span class="signature">(<wbr><span class="parameter" id="dequeueRemove-param-child"><span class="type-annotation">Component</span> <span class="parameter-name">child</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="descendants" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/descendants.html">descendants</a></span><span class="signature">(<wbr>{<span class="parameter" id="descendants-param-includeSelf"><span class="type-annotation">bool</span> <span class="parameter-name">includeSelf</span> = <span class="default-value">false</span>, </span><span class="parameter" id="descendants-param-reversed"><span class="type-annotation">bool</span> <span class="parameter-name">reversed</span> = <span class="default-value">false</span></span>})
+    <span class="returntype parameter">&#8594; Iterable<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Recursively enumerates all nested <code>children</code>.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="detach" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/detach.html">detach</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Marks game as no longer attached to any Flutter widget tree.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="enqueueAdd" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/enqueueAdd.html">enqueueAdd</a></span><span class="signature">(<wbr><span class="parameter" id="enqueueAdd-param-child"><span class="type-annotation">Component</span> <span class="parameter-name">child</span>, </span><span class="parameter" id="enqueueAdd-param-parent"><span class="type-annotation">Component</span> <span class="parameter-name">parent</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="enqueueMove" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/enqueueMove.html">enqueueMove</a></span><span class="signature">(<wbr><span class="parameter" id="enqueueMove-param-child"><span class="type-annotation">Component</span> <span class="parameter-name">child</span>, </span><span class="parameter" id="enqueueMove-param-newParent"><span class="type-annotation">Component</span> <span class="parameter-name">newParent</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="enqueueRebalance" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/enqueueRebalance.html">enqueueRebalance</a></span><span class="signature">(<wbr><span class="parameter" id="enqueueRebalance-param-parent"><span class="type-annotation">Component</span> <span class="parameter-name">parent</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="enqueueRemove" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/enqueueRemove.html">enqueueRemove</a></span><span class="signature">(<wbr><span class="parameter" id="enqueueRemove-param-child"><span class="type-annotation">Component</span> <span class="parameter-name">child</span>, </span><span class="parameter" id="enqueueRemove-param-parent"><span class="type-annotation">Component</span> <span class="parameter-name">parent</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="finalizeRemoval" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/finalizeRemoval.html">finalizeRemoval</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="findByKey" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/findByKey.html">findByKey</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends Component</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="findByKey-param-key"><span class="type-annotation">ComponentKey</span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; T?</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="findByKeyName" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/findByKeyName.html">findByKeyName</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends Component</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="findByKeyName-param-name"><span class="type-annotation">String</span> <span class="parameter-name">name</span></span>)
+    <span class="returntype parameter">&#8594; T?</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="findGame" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/findGame.html">findGame</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; FlameGame<span class="signature">&lt;<wbr><span class="type-parameter">World</span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Fetches the nearest <code>FlameGame</code> ancestor to the component.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="findParent" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/findParent.html">findParent</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends Component</span>&gt;</span><span class="signature">(<wbr>{<span class="parameter" id="findParent-param-includeSelf"><span class="type-annotation">bool</span> <span class="parameter-name">includeSelf</span> = <span class="default-value">false</span></span>})
+    <span class="returntype parameter">&#8594; T?</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns the closest parent further up the hierarchy that satisfies type=T,
+or null if no such parent can be found.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="findRootGame" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/findRootGame.html">findRootGame</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; FlameGame<span class="signature">&lt;<wbr><span class="type-parameter">World</span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Fetches the root <code>FlameGame</code> ancestor to the component.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="firstChild" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/firstChild.html">firstChild</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends Component</span>&gt;</span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; T?</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns the first child that matches the given type <code>T</code>, or null if there
+are no such children.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="handleLifecycleEventAdd" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/handleLifecycleEventAdd.html">handleLifecycleEventAdd</a></span><span class="signature">(<wbr><span class="parameter" id="handleLifecycleEventAdd-param-parent"><span class="type-annotation">Component</span> <span class="parameter-name">parent</span></span>)
+    <span class="returntype parameter">&#8594; LifecycleEventStatus</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="handleLifecycleEventMove" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/handleLifecycleEventMove.html">handleLifecycleEventMove</a></span><span class="signature">(<wbr><span class="parameter" id="handleLifecycleEventMove-param-newParent"><span class="type-annotation">Component</span> <span class="parameter-name">newParent</span></span>)
+    <span class="returntype parameter">&#8594; LifecycleEventStatus</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="handleLifecycleEventRemove" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/handleLifecycleEventRemove.html">handleLifecycleEventRemove</a></span><span class="signature">(<wbr><span class="parameter" id="handleLifecycleEventRemove-param-parent"><span class="type-annotation">Component</span> <span class="parameter-name">parent</span></span>)
+    <span class="returntype parameter">&#8594; LifecycleEventStatus</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="handleResize" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/handleResize.html">handleResize</a></span><span class="signature">(<wbr><span class="parameter" id="handleResize-param-size"><span class="type-annotation">Vector2</span> <span class="parameter-name">size</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="lastChild" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/lastChild.html">lastChild</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends Component</span>&gt;</span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; T?</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Returns the last child that matches the given type <code>T</code>, or null if there
+are no such children.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="lifecycleStateChange" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/lifecycleStateChange.html">lifecycleStateChange</a></span><span class="signature">(<wbr><span class="parameter" id="lifecycleStateChange-param-state"><span class="type-annotation">AppLifecycleState</span> <span class="parameter-name">state</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  This is the lifecycle state change hook; every time the game is resumed,
+paused or suspended, this is called.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="load" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/load.html">load</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="loadSprite" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/loadSprite.html">loadSprite</a></span><span class="signature">(<wbr><span class="parameter" id="loadSprite-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, {</span><span class="parameter" id="loadSprite-param-srcSize"><span class="type-annotation">Vector2?</span> <span class="parameter-name">srcSize</span>, </span><span class="parameter" id="loadSprite-param-srcPosition"><span class="type-annotation">Vector2?</span> <span class="parameter-name">srcPosition</span></span>})
+    <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">Sprite</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Utility method to load and cache the image for a sprite based on its
+options.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="loadSpriteAnimation" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/loadSpriteAnimation.html">loadSpriteAnimation</a></span><span class="signature">(<wbr><span class="parameter" id="loadSpriteAnimation-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, </span><span class="parameter" id="loadSpriteAnimation-param-data"><span class="type-annotation">SpriteAnimationData</span> <span class="parameter-name">data</span></span>)
+    <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">SpriteAnimation</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Utility method to load and cache the image for a sprite animation based on
+its options.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="mount" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/mount.html">mount</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onAttach" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/onAttach.html">onAttach</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called when the game has been attached. This can be overridden
+to add logic that requires the game to already be attached
+to the widget tree.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onChildrenChanged" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/onChildrenChanged.html">onChildrenChanged</a></span><span class="signature">(<wbr><span class="parameter" id="onChildrenChanged-param-child"><span class="type-annotation">Component</span> <span class="parameter-name">child</span>, </span><span class="parameter" id="onChildrenChanged-param-type"><span class="type-annotation">ChildrenChangeType</span> <span class="parameter-name">type</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  This method will be invoked from lifecycle if <code>child</code> has been added
+to or removed from its parent children list.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onDetach" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/onDetach.html">onDetach</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called after the game has left the widget tree.
+This can be overridden to add logic that requires the game
+not be on the flutter widget tree anymore.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onDispose" class="callable">
+  <span class="name"><a href="../sizzle/SizzleGame/onDispose.html">onDispose</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Handle dispose and cleanup
+  
+
+</dd>
+
+        <dt id="onGameResize" class="callable">
+  <span class="name"><a href="../sizzle/SizzleGame/onGameResize.html">onGameResize</a></span><span class="signature">(<wbr><span class="parameter" id="onGameResize-param-canvasSize"><span class="type-annotation">Vector2</span> <span class="parameter-name">canvasSize</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Calculate new view window size and snap scaling when the game resizes
+  
+
+</dd>
+
+        <dt id="onKeyEvent" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/onKeyEvent.html">onKeyEvent</a></span><span class="signature">(<wbr><span class="parameter" id="onKeyEvent-param-event"><span class="type-annotation">KeyEvent</span> <span class="parameter-name">event</span>, </span><span class="parameter" id="onKeyEvent-param-keysPressed"><span class="type-annotation">Set<span class="signature">&lt;<wbr><span class="type-parameter">LogicalKeyboardKey</span>&gt;</span></span> <span class="parameter-name">keysPressed</span></span>)
+    <span class="returntype parameter">&#8594; KeyEventResult</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onLoad" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/onLoad.html">onLoad</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Method to perform late initialization of the <code>Game</code> class.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onLongTapDown" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/onLongTapDown.html">onLongTapDown</a></span><span class="signature">(<wbr><span class="parameter" id="onLongTapDown-param-event"><span class="type-annotation">TapDownEvent</span> <span class="parameter-name">event</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onMount" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/onMount.html">onMount</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called when the component is added to its parent.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onParentResize" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/onParentResize.html">onParentResize</a></span><span class="signature">(<wbr><span class="parameter" id="onParentResize-param-maxSize"><span class="type-annotation">Vector2</span> <span class="parameter-name">maxSize</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called whenever the parent of this component changes size; and also once
+before <code>onMount</code>.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onRemove" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/onRemove.html">onRemove</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called when the game is about to be removed from the Flutter widget tree,
+but before it is actually removed. See the docs for an example on how to
+do cleanups to avoid memory leaks.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onTapCancel" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/onTapCancel.html">onTapCancel</a></span><span class="signature">(<wbr><span class="parameter" id="onTapCancel-param-event"><span class="type-annotation">TapCancelEvent</span> <span class="parameter-name">event</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onTapDown" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/onTapDown.html">onTapDown</a></span><span class="signature">(<wbr><span class="parameter" id="onTapDown-param-event"><span class="type-annotation">TapDownEvent</span> <span class="parameter-name">event</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onTapUp" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/onTapUp.html">onTapUp</a></span><span class="signature">(<wbr><span class="parameter" id="onTapUp-param-event"><span class="type-annotation">TapUpEvent</span> <span class="parameter-name">event</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="pauseEngine" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/pauseEngine.html">pauseEngine</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Pauses the engine game loop execution.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="processLifecycleEvents" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/processLifecycleEvents.html">processLifecycleEvents</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="processRebalanceEvents" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/processRebalanceEvents.html">processRebalanceEvents</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="propagateToApplicableNotifiers" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/propagateToApplicableNotifiers.html">propagateToApplicableNotifiers</a></span><span class="signature">(<wbr><span class="parameter" id="propagateToApplicableNotifiers-param-component"><span class="type-annotation">Component</span> <span class="parameter-name">component</span>, </span><span class="parameter" id="propagateToApplicableNotifiers-param-callback"><span class="type-annotation">void</span> <span class="parameter-name">callback</span>(<span class="parameter" id="param-"><span class="type-annotation">ComponentsNotifier<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span></span>)</span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="propagateToChildren" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/propagateToChildren.html">propagateToChildren</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends Component</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="propagateToChildren-param-handler"><span class="type-annotation">bool</span> <span class="parameter-name">handler</span>(<span class="parameter" id="param-"><span class="type-annotation">T</span></span>), {</span><span class="parameter" id="propagateToChildren-param-includeSelf"><span class="type-annotation">bool</span> <span class="parameter-name">includeSelf</span> = <span class="default-value">false</span></span>})
+    <span class="returntype parameter">&#8594; bool</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  This method first calls the passed handler on the leaves in the tree,
+the children without any children of their own.
+Then it continues through all other children. The propagation continues
+until the handler returns false, which means "do not continue", or when
+the handler has been called with all children.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="ready" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/ready.html">ready</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Ensure that all pending tree operations finish.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="refreshWidget" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/refreshWidget.html">refreshWidget</a></span><span class="signature">(<wbr>{<span class="parameter" id="refreshWidget-param-isInternalRefresh"><span class="type-annotation">bool</span> <span class="parameter-name">isInternalRefresh</span> = <span class="default-value">true</span></span>})
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  When a Game is attached to a <code>GameWidget</code>, this method will force that
+widget to be rebuilt. This can be used when updating any property which is
+implemented within the Flutter tree.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="registerKey" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/registerKey.html">registerKey</a></span><span class="signature">(<wbr><span class="parameter" id="registerKey-param-key"><span class="type-annotation">ComponentKey</span> <span class="parameter-name">key</span>, </span><span class="parameter" id="registerKey-param-component"><span class="type-annotation">Component</span> <span class="parameter-name">component</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="remove" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/remove.html">remove</a></span><span class="signature">(<wbr><span class="parameter" id="remove-param-component"><span class="type-annotation">Component</span> <span class="parameter-name">component</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Removes a component from the component tree.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="removeAll" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/removeAll.html">removeAll</a></span><span class="signature">(<wbr><span class="parameter" id="removeAll-param-components"><span class="type-annotation">Iterable<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span> <span class="parameter-name">components</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Removes all the children in the list and calls <code>onRemove</code> for all of them
+and their children.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="removeFromParent" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/removeFromParent.html">removeFromParent</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Remove the component from its parent in the next tick.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="removeGameStateListener" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/removeGameStateListener.html">removeGameStateListener</a></span><span class="signature">(<wbr><span class="parameter" id="removeGameStateListener-param-callback"><span class="type-annotation">VoidCallback</span> <span class="parameter-name">callback</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="removeWhere" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/removeWhere.html">removeWhere</a></span><span class="signature">(<wbr><span class="parameter" id="removeWhere-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="param-component"><span class="type-annotation">Component</span> <span class="parameter-name">component</span></span>)</span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Removes all the children for which the <code>test</code> function returns true.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="render" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/render.html">render</a></span><span class="signature">(<wbr><span class="parameter" id="render-param-canvas"><span class="type-annotation">Canvas</span> <span class="parameter-name">canvas</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  This implementation of render renders each component, making sure the
+canvas is reset for each one.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="renderDebugMode" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/renderDebugMode.html">renderDebugMode</a></span><span class="signature">(<wbr><span class="parameter" id="renderDebugMode-param-canvas"><span class="type-annotation">Canvas</span> <span class="parameter-name">canvas</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="renderTree" class="callable">
+  <span class="name"><a href="../sizzle/SizzleGame/renderTree.html">renderTree</a></span><span class="signature">(<wbr><span class="parameter" id="renderTree-param-c"><span class="type-annotation">Canvas</span> <span class="parameter-name">c</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Letterbox the view window
+  
+
+</dd>
+
+        <dt id="resumeEngine" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/resumeEngine.html">resumeEngine</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Resumes the engine game loop execution.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="setLoaded" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/setLoaded.html">setLoaded</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Used by the <code>FlameGame</code> to set the loaded state of the component, since
+the game isn't going through the whole normal component life cycle.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="setMounted" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/setMounted.html">setMounted</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Used by the <code>FlameGame</code> to set the mounted state of the component, since
+the game isn't going through the whole normal component life cycle.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="setRemoved" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/setRemoved.html">setRemoved</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Used by the <code>FlameGame</code> to set the removed state of the component, since
+the game isn't going through the whole normal component life cycle.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="stepEngine" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/stepEngine.html">stepEngine</a></span><span class="signature">(<wbr>{<span class="parameter" id="stepEngine-param-stepTime"><span class="type-annotation">double</span> <span class="parameter-name">stepTime</span> = <span class="default-value">1 &#47; 60</span></span>})
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Steps the engine game loop by one frame. Works only if the engine is in
+paused state. By default step time is assumed to be 1/60th of a second.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toBeLoaded" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/toBeLoaded.html">toBeLoaded</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  To be used for tests that needs to evaluate the game after it has been
+loaded by the game widget.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; String</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="unregisterKey" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/unregisterKey.html">unregisterKey</a></span><span class="signature">(<wbr><span class="parameter" id="unregisterKey-param-key"><span class="type-annotation">ComponentKey</span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="update" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/update.html">update</a></span><span class="signature">(<wbr><span class="parameter" id="update-param-dt"><span class="type-annotation">double</span> <span class="parameter-name">dt</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  This method is called periodically by the game engine to request that your
+component updates itself.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="updateTree" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/updateTree.html">updateTree</a></span><span class="signature">(<wbr><span class="parameter" id="updateTree-param-dt"><span class="type-annotation">double</span> <span class="parameter-name">dt</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  This method traverses the component tree and calls <a href="../sizzle/SizzleGame/update.html">update</a> on all its
+children according to their <a href="../sizzle/SizzleGame/priority.html">priority</a> order, relative to the
+priority of the direct siblings, not the children or the ancestors.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation">Object</span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; bool</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">sizzle</a></li>
+    <li><a href="../sizzle">sizzle</a></li>
+    <li class="self-crumb">SizzleGame class</li>
+</ol>
+
+    <h5>sizzle library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.0
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
