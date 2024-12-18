@@ -1,5 +1,21 @@
 # Changes
 
+## 0.1.3
+
+- Game improvements
+  - Scaling
+  - Dispose callback
+- Object pooling support
+- Physics mixins (Lifetime, Movement)
+- Refactored services class
+  - Logging (including to file)
+- Vector math utils, Range class
+- Device utility class
+- [JX](https://pub.dev/packages/jx) support
+- API docs (generated using dartdoc)
+- Bugs
+  - Fixed letterboxing
+
 
 ## 0.1.2
 

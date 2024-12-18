@@ -19,3 +19,5 @@ package also regularly contribute to Flame itself.
 - [Structure of a game](game_structure.md)
 - [Game services](services.md)
 - [Scaling sprites (Snap)](snap.md)
+
+- [API (Full documentation)](api/index.html)

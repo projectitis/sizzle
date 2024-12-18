@@ -27,6 +27,7 @@ end
 
 -- Dialog for options
 local dlg = Dialog()
+dlg:entry{ id="name", label="Name", text=app.fs.fileTitle(sprite.filename) }
 dlg:combobox{ id="output", label="Output", option="Sizzle", options={ "Sizzle", "Sizzle - debug", "CraftMicro SDK" } }
 dlg:combobox{ id="layers", label="Layers", option="Visible only", options={ "Visible only", "All layers" } }
 dlg:button{ id="continue", text="Continue" }
@@ -38,6 +39,7 @@ local outputImage = not outputCppHeader
 local outputVerbose = dlg.data.output == "Sizzle - debug"
 local supportFlips = dlg.data.output == "CraftMicro SDK"
 local allLayers = dlg.data.layers == "All layers"
+local outputBaseName = dlg.data.name
 
 -- Ensure colormode is correct
 if outputCppHeader then
@@ -51,12 +53,12 @@ else
 end
 
 -- Slugify a string
-slugify = function(str)
-    return string.gsub(string.gsub(string.lower(str),"[^ a-z0-9-_]",""),"[ ]+","-")
+slugify = function(str, sep)
+    return string.gsub(string.gsub(string.gsub(string.lower(str),"[-_]",sep),"[^ a-z0-9-_]",""),"[ ]+",sep)
 end
 
 -- Output names
-local outputId = slugify(app.fs.fileTitle(sprite.filename))
+local outputId = slugify(outputBaseName, "-")
 local outputName = app.fs.joinPath(app.fs.filePath(sprite.filename), outputId)
 
 -- Number of pixels across all parts
@@ -508,6 +510,8 @@ if outputCppHeader then
     end
 
     -- prepare header
+    local outputIdCpp = slugify(outputBaseName, "_")
+    local outputNameCpp = app.fs.joinPath(app.fs.filePath(sprite.filename), outputIdCpp)
     local header = "#pragma once\n\n#include \"display/Sprite.h\"\n\nusing namespace craft;\n\n"
 
     --
@@ -518,7 +522,7 @@ if outputCppHeader then
 
     local palette = sprite.palettes[1]
     header = header.."// Palette ("..#palette.." entries)\n"
-    header = header.."static const uint32_t "..outputId.."_palette[] = {\n"
+    header = header.."static const uint32_t "..outputIdCpp.."_palette[] = {\n"
     for i=0,#palette-1 do
         local c = palette:getColor(i)
         if i > 0 then
@@ -534,7 +538,7 @@ if outputCppHeader then
         local count = 0
         local total = p.image.width * p.image.height
         header = header.."// "..p.name.." ("..total.." bytes)\n"
-        header = header.."static const uint8_t "..outputId.."_part"..p.index.."_data[] = {\n"
+        header = header.."static const uint8_t "..outputIdCpp.."_part"..p.index.."_data[] = {\n"
         for y = 0, p.image.height-1 do
             for x = 0, p.image.width-1 do
                 px = p.image:getPixel(x, y)
@@ -557,12 +561,29 @@ if outputCppHeader then
         header = header.."};\n"
     end
 
+    header = header.."\n// Parts array ("..#output.parts.." parts)\n"
+    header = header.."static const PlySpritePart "..outputIdCpp.."_parts[] = {\n"
+    for _, p in pairs(output.parts) do
+        header = header.."\t{\n"
+        header = header.."\t\t.width = "..p.image.width..",\n"
+        header = header.."\t\t.height = "..p.image.height..",\n"
+        header = header.."\t\t.anchorX = 0,\n"
+        header = header.."\t\t.anchorY = 0,\n"
+        header = header.."\t\t.partData = "..outputIdCpp.."_part"..p.index.."_data\n"
+        header = header.."\t}"
+        if p.index < #output.parts then
+            header = header..","
+        end
+        header = header.."\n"
+    end
+    header = header.."};\n\n"
+
     local animIndex = 0
     for _, a in pairs(output.animations) do
         local frameIndex = 0
         for _, f in ipairs(a.frames) do
             header = header.."\n// Animation '"..a.name.."' frame "..frameIndex.." layers ("..#f.parts.." layers)\n"
-            header = header.."static const LayeredSpriteLayer "..outputId.."_anim"..animIndex.."_layer"..frameIndex.."_data[] = {\n"
+            header = header.."static const PlySpriteLayer "..outputIdCpp.."_anim"..animIndex.."_layer"..frameIndex.."_data[] = {\n"
             local count = 0
             for _, p in pairs(f.parts) do
                 local partIndexData = calcPartIndexData(output.parts[p.index + 1], p.orientation)
@@ -586,14 +607,14 @@ if outputCppHeader then
         end
 
         header = header.."\n// Animation '"..a.name.."' frames array ("..#a.frames.." frames)\n"
-        header = header.."static const LayeredSpriteFrame "..outputId.."_anim"..animIndex.."_frames[] = {\n"
+        header = header.."static const PlySpriteFrame "..outputIdCpp.."_anim"..animIndex.."_frames[] = {\n"
         local count = 0
         local frameIndex = 0
         for _, f in pairs(a.frames) do
             header = header.."\t{\n"
             header = header.."\t\t.duration = "..string.format("%.4f", f.duration)..",\n"
             header = header.."\t\t.layerCount = "..#f.parts..",\n"
-            header = header.."\t\t.layerData = "..outputId.."_anim"..animIndex.."_layer"..frameIndex.."_data\n"
+            header = header.."\t\t.layerData = "..outputIdCpp.."_anim"..animIndex.."_layer"..frameIndex.."_data\n"
             header = header.."\t}"
             count = count + 1
             if count < #a.frames then
@@ -608,7 +629,7 @@ if outputCppHeader then
     local animCount = animIndex
 
     header = header.."// Animations array\n"
-    header = header.."static const LayeredSpriteAnim "..outputId.."_anims[] = {\n"
+    header = header.."static const PlySpriteAnim "..outputIdCpp.."_anims[] = {\n"
     local animIndex = 0
     local total = 0
     for _, a in pairs(output.animations) do
@@ -616,11 +637,11 @@ if outputCppHeader then
         header = header.."\t// Animation '"..a.name.."'\n"
         header = header.."\t{\n"
         header = header.."\t\t.direction = "..animDirectionEnum(a.direction)..",\n"
-        header = header.."\t\t.repeats = "..animDirectionEnum(a.repeats)..",\n"
-        header = header.."\t\t.anchorX = "..string.format("%.4f", a.anchor.x)..",\n"
-        header = header.."\t\t.anchorY = "..string.format("%.4f", a.anchor.y)..",\n"
+        header = header.."\t\t.repeats = "..a.repeats..",\n"
+        header = header.."\t\t.anchorX = "..math.floor(a.anchor.x + 0.5)..",\n"
+        header = header.."\t\t.anchorY = "..math.floor(a.anchor.y + 0.5)..",\n"
         header = header.."\t\t.frameCount = "..#a.frames..",\n"
-        header = header.."\t\t.frameData = "..outputId.."_anim"..animIndex.."_frames\n"
+        header = header.."\t\t.frameData = "..outputIdCpp.."_anim"..animIndex.."_frames\n"
         header = header.."\t}"
         if (animIndex < #output.animations) then
             header = header..","
@@ -631,7 +652,7 @@ if outputCppHeader then
     header = header.."};\n\n"
 
     header = header.."// Animation names\n"
-    header = header.."static const int8_t "..outputId.."_names[] = {\n"
+    header = header.."static const int8_t "..outputIdCpp.."_names[] = {\n"
     local count = 0
     for _, a in pairs(output.animations) do
         if count % 16 == 0 then
@@ -669,23 +690,23 @@ if outputCppHeader then
     -- Sprite data
     --
 
-    header = header.."// Layered sprite\n"
-    header = header.."static const LayeredSpriteData "..outputId.." = {\n"
+    header = header.."// Ply sprite\n"
+    header = header.."static const PlySpriteData "..outputIdCpp.." = {\n"
     header = header.."\t.paletteCount = "..#palette..",\n"
-    header = header.."\t.paletteData = "..outputId.."_palette,\n"
+    header = header.."\t.paletteData = "..outputIdCpp.."_palette,\n"
     header = header.."\t.partCount = "..#output.parts..",\n"
-    header = header.."\t.partData = "..outputId.."_parts,\n"
+    header = header.."\t.partData = "..outputIdCpp.."_parts,\n"
     header = header.."\t.animCount = "..animCount..",\n"
-    header = header.."\t.animData = "..outputId.."_anims,\n"
-    header = header.."\t.animNames = "..outputId.."_names,\n"
+    header = header.."\t.animData = "..outputIdCpp.."_anims,\n"
+    header = header.."\t.animNames = "..outputIdCpp.."_names,\n"
     header = header.."\t.width = "..sprite.width..",\n"
     header = header.."\t.height = "..sprite.height.."\n"
     header = header.."};\n\n"
 
-    local file = io.open(outputName..".h", "w")
+    local file = io.open(outputNameCpp..".h", "w")
     file:write(header)
     file:close()
-    print("Save header file to '"..outputId..".h'")
+    print("Save header file to '"..outputIdCpp..".h'")
 end -- outputCppHeader
 
 -- Reset color mode

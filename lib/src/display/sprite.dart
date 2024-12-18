@@ -4,9 +4,11 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:sizzle/src/game/services.dart';
+import 'package:sizzle/src/utils/services/file_service.dart';
+import 'package:sizzle/src/utils/services/image_service.dart';
 
-import 'snap.dart';
+import '../utils/services.dart';
+import './snap.dart';
 
 /// A PlySprite is an animated sprite made up of many layers. The format is
 /// very space-efficient because it re-uses a lot of parts that make up the
@@ -48,7 +50,7 @@ class PlySpriteComponent extends PositionComponent {
     if (path.lastIndexOf('.') >= 0) {
       path = path.substring(0, path.lastIndexOf('.'));
     }
-    final image = await Services.loadImage("$path.png");
+    final image = await Services.images.load(path: "$path.png");
     final data = await _PlySpriteData.create(path);
     return PlySpriteComponent._(image, data);
   }
@@ -128,13 +130,19 @@ class PlySpriteComponent extends PositionComponent {
   /// playing animation will continue.
   ///
   /// Also see [playAll]
-  void play(String animation,
-      {int direction = -1,
-      int repeats = -1,
-      double speed = 1.0,
-      bool addToQueue = false,}) {
-    final anim = PlyAnimProps(animation,
-        direction: direction, repeats: repeats, speed: speed,);
+  void play(
+    String animation, {
+    int direction = -1,
+    int repeats = -1,
+    double speed = 1.0,
+    bool addToQueue = false,
+  }) {
+    final anim = PlyAnimProps(
+      animation,
+      direction: direction,
+      repeats: repeats,
+      speed: speed,
+    );
     if (!addToQueue) {
       _queue.clear();
       _playing = false;
@@ -329,12 +337,26 @@ class PlySpriteComponent extends PositionComponent {
     if (_anim != null) {
       if (_anim!.renderPartsIndividually) {
         for (var i = 0; i < _frame.transforms.length; i++) {
-          canvas.drawAtlas(_image, [_frame.transforms[i]], [_frame.rects[i]],
-              null, null, null, _frame.paints[i],);
+          canvas.drawAtlas(
+            _image,
+            [_frame.transforms[i]],
+            [_frame.rects[i]],
+            null,
+            null,
+            null,
+            _frame.paints[i],
+          );
         }
       } else {
-        canvas.drawAtlas(_image, _frame.transforms, _frame.rects, null, null,
-            null, _frame.paints[0],);
+        canvas.drawAtlas(
+          _image,
+          _frame.transforms,
+          _frame.rects,
+          null,
+          null,
+          null,
+          _frame.paints[0],
+        );
       }
     }
     super.render(canvas);
@@ -342,10 +364,15 @@ class PlySpriteComponent extends PositionComponent {
 }
 
 typedef PlyCallback = void Function(
-    PlySpriteComponent sprite, String animation,);
+  PlySpriteComponent sprite,
+  String animation,
+);
 
 typedef PlyLoopCallback = void Function(
-    PlySpriteComponent sprite, String animation, int loop,);
+  PlySpriteComponent sprite,
+  String animation,
+  int loop,
+);
 
 class PlyDirection {
   static const forward = 0;
@@ -360,9 +387,12 @@ class PlyDirection {
 /// For example, `speed = 1.0` is default, `speed = 0.9` plays it at 90% of the original speed, and `speed = 0.5` will
 /// play it at half speed.
 class PlyAnimProps {
-  PlyAnimProps(this.name,
-      {this.direction = -1, this.repeats = -1, double speed = 1.0,})
-      : _speed = max(0, speed);
+  PlyAnimProps(
+    this.name, {
+    this.direction = -1,
+    this.repeats = -1,
+    double speed = 1.0,
+  }) : _speed = max(0, speed);
   String name;
   int direction;
   int repeats;
@@ -379,7 +409,8 @@ class PlyAnimProps {
     if (direction < 0) direction = anim.direction;
     if (repeats < 0) repeats = anim.repeats;
     print(
-        "PlyAnimProps $name, dir: $direction, repeats: $repeats, speed: $_speed",);
+      "PlyAnimProps $name, dir: $direction, repeats: $repeats, speed: $_speed",
+    );
   }
 }
 
@@ -390,8 +421,14 @@ class _PlyFrame {
   final List<Rect> rects = [];
   final List<Paint> paints = [];
 
-  void addPly(Rect part, int orientation, double x, double y, int alpha,
-      int blendmode,) {
+  void addPly(
+    Rect part,
+    int orientation,
+    double x,
+    double y,
+    int alpha,
+    int blendmode,
+  ) {
     double rot = 0;
     double ox = 0;
     double oy = 0;
@@ -406,14 +443,16 @@ class _PlyFrame {
       rot = pi * 1.5;
       oy = part.height;
     }
-    transforms.add(RSTransform.fromComponents(
-      rotation: rot,
-      scale: 1.0,
-      anchorX: 0.0,
-      anchorY: 0.0,
-      translateX: x + ox,
-      translateY: y + oy,
-    ),);
+    transforms.add(
+      RSTransform.fromComponents(
+        rotation: rot,
+        scale: 1.0,
+        anchorX: 0.0,
+        anchorY: 0.0,
+        translateX: x + ox,
+        translateY: y + oy,
+      ),
+    );
     rects.add(part);
     paints.add(createPaint(alpha, blendmode));
   }
@@ -498,7 +537,9 @@ class _PlySpriteData {
 
   static FutureOr<_PlySpriteData> create(String path) async {
     if (!_cache.containsKey(path)) {
-      final data = _PlySpriteData(await Services.loadJson("$path.json"));
+      final data = _PlySpriteData(
+        await Services.files.loadJson(path: "$path.json"),
+      );
       _cache[path] = data;
     }
     return _cache[path]!;
@@ -515,12 +556,14 @@ class _PlySpriteData {
       height = json['height'].toDouble();
 
       for (final part in json['parts']) {
-        parts.add(Rect.fromLTWH(
-          part['x'].toDouble(),
-          part['y'].toDouble(),
-          part['width'].toDouble(),
-          part['height'].toDouble(),
-        ),);
+        parts.add(
+          Rect.fromLTWH(
+            part['x'].toDouble(),
+            part['y'].toDouble(),
+            part['width'].toDouble(),
+            part['height'].toDouble(),
+          ),
+        );
       }
 
       json['animations'].forEach((name, animData) {
@@ -565,12 +608,14 @@ class _PlySpriteData {
       height = json[0][1].toDouble();
 
       for (final part in json[1]) {
-        parts.add(Rect.fromLTWH(
-          part[0].toDouble(),
-          part[1].toDouble(),
-          part[2].toDouble(),
-          part[3].toDouble(),
-        ),);
+        parts.add(
+          Rect.fromLTWH(
+            part[0].toDouble(),
+            part[1].toDouble(),
+            part[2].toDouble(),
+            part[3].toDouble(),
+          ),
+        );
       }
 
       for (final a in json[2]) {
@@ -630,7 +675,7 @@ class SnapPlySpriteComponent extends PlySpriteComponent with Snap {
     if (path.lastIndexOf('.') >= 0) {
       path = path.substring(0, path.lastIndexOf('.'));
     }
-    final image = await Services.loadImage("$path.png");
+    final image = await Services.images.load(path: "$path.png");
     final data = await _PlySpriteData.create(path);
     return SnapPlySpriteComponent._(image, data);
   }

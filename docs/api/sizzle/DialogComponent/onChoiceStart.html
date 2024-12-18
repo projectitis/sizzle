@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the onChoiceStart method from the DialogComponent class, for the Dart programming language.">
+  <title>onChoiceStart method - DialogComponent class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle">sizzle.dart</a></li>
+    <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
+    <li class="self-crumb">onChoiceStart method</li>
+  </ol>
+  <div class="self-name">onChoiceStart</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;DialogComponent-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">onChoiceStart</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@override</li>
+    </ol>
+  </div>
+<span class="returntype">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">int?</span>&gt;</span></span>
+<span class="name ">onChoiceStart</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="onChoiceStart-param-choice"><span class="type-annotation">DialogueChoice</span> <span class="parameter-name">choice</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Called when the dialogue arrives at an option set, and the player must now
+make a choice on how to proceed. If a dialogue view presents this choice
+to the player and allows them to make a selection, then it must return a
+future that completes when the choice is made. If the dialogue view does
+not display menu choice, then it should return <code>null</code> (possibly in a
+<code>Future</code>).</p>
+<p>The future returned by this method should deliver an integer value of the
+index of the option that was selected. This index must not exceed the
+length of the <code>choice</code> list, and the indicated option must not be marked
+as "unavailable". If these conditions are violated, an exception will be
+thrown.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+FutureOr&lt;int?&gt; onChoiceStart(DialogueChoice choice) async {
+  for (final option in choice.options) {
+    bool characterMatches = true;
+    if (option.character == null ||
+        (characters.isNotEmpty &amp;&amp;
+            !characters.contains(option.character?.name))) {
+      characterMatches = false;
+    }
+    if (option.isAvailable &amp;&amp; characterMatches) {
+      await _show();
+
+      DialogTextStyle textStyle = _setStyles(option.tags, true);
+      if (option == choice.options.first) {
+        if (options.displayCharacterName) {
+          _addTextArea(textStyle.captionStyle, option.character!.name);
+        }
+        if (_updateTrackTarget(option.character!.name)) {
+          _updatePosition();
+        }
+      }
+      _addTextArea(textStyle.textStyle, option.text);
+    }
+  }
+  if (isVisible) {
+    _prepare(true);
+
+    _choiceCompleter = Completer();
+    return _choiceCompleter.future;
+  }
+  return null;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle">sizzle</a></li>
+    <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
+    <li class="self-crumb">onChoiceStart method</li>
+</ol>
+
+    <h5>DialogComponent class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

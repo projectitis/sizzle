@@ -6,11 +6,12 @@ import 'package:flame/events.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:sizzle/src/display/ninegrid.dart';
-import 'package:sizzle/src/game/services.dart';
+import 'package:sizzle/src/utils/services/image_service.dart';
 
-import 'package:sizzle/src/text/text.dart';
-import 'snap.dart';
+import '../display/ninegrid.dart';
+import '../utils/services.dart';
+import '../text/text.dart';
+import './snap.dart';
 
 /// Options available to the speech bubble
 class DialogOptions {
@@ -59,7 +60,7 @@ class DialogTextStyle {
 /// Text dialog (speech bubble)
 ///
 /// Uses yarn spinner to process and display conversation. Add
-/// a component to the tree, then pass it to `Services.startDialog`.
+/// a component to the tree, then pass it to `Services.dialog.start`.
 class DialogComponent extends PositionComponent
     with DialogueView, TapCallbacks, HoverCallbacks, HasVisibility {
   Vector2 dialogSize;
@@ -151,12 +152,12 @@ class DialogComponent extends PositionComponent
   FutureOr<void> onLoad() async {
     // Cache all background images
     for (final s in _dialogStyles.values) {
-      await Services.loadImage(s.imageName);
+      await Services.images.load(path: s.imageName);
     }
 
     // Set active dialog
     _bg = NineGridComponent(
-      Services.loadedImage(_activeDialogStyle.imageName),
+      Services.images[_activeDialogStyle.imageName]!,
       dialogSize,
       grid: _activeDialogStyle.grid,
       repeat: _activeDialogStyle.repeat,
@@ -215,7 +216,7 @@ class DialogComponent extends PositionComponent
         _activeDialogStyle.name != styleName) {
       _activeDialogStyle = _dialogStyles[styleName]!;
       _bg.replace(
-        image: Services.loadedImage(_activeDialogStyle.imageName),
+        image: Services.images[_activeDialogStyle.imageName],
         grid: _activeDialogStyle.grid,
         repeat: _activeDialogStyle.repeat,
         useSafeSize: _activeDialogStyle.safeRepeat,
@@ -411,9 +412,9 @@ class DialogComponent extends PositionComponent
 class SnapDialogComponent extends DialogComponent with Snap {
   SnapDialogComponent({
     required super.dialogSize,
-    required List<DialogStyle> dialogStyles,
-    required List<DialogTextStyle> textStyles,
-  }) : super(dialogStyles: dialogStyles, textStyles: textStyles) {
+    required super.dialogStyles,
+    required super.textStyles,
+  }) {
     anchorWindow = AnchorWindow.viewWindow;
   }
 }

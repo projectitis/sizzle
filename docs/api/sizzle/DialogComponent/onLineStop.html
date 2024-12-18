@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the onLineStop method from the DialogComponent class, for the Dart programming language.">
+  <title>onLineStop method - DialogComponent class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle">sizzle.dart</a></li>
+    <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
+    <li class="self-crumb">onLineStop method</li>
+  </ol>
+  <div class="self-name">onLineStop</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <div class="toggle" id="theme-button" title="Toggle brightness">
+    <label for="theme">
+      <input type="checkbox" id="theme" value="light-theme">
+      <span id="dark-theme-button" class="material-symbols-outlined">
+        dark_mode
+      </span>
+      <span id="light-theme-button" class="material-symbols-outlined">
+        light_mode
+      </span>
+    </label>
+  </div>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;DialogComponent-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">onLineStop</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+<span class="name ">onLineStop</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="onLineStop-param-line"><span class="type-annotation">DialogueLine</span> <span class="parameter-name">line</span></span></li>
+</ol>)
+
+      <div class="features"><span class="feature">inherited</span></div>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Called when the game demands that the <code>line</code> finished presenting as soon
+as possible.</p>
+<p>By itself, the dialogue runner will never call this method. However, it
+may be invoked as a result of an explicit request by the game (or by one
+of the dialogue views). Examples when this could be appropriate: (a) the
+player was hit while talking to an NPC -- better stop talking and fight
+for your life, (b) the user has pressed a "skip dialogue" button, so we
+should stop the current line and proceed to the next one ASAP.</p>
+<p>This method returns a future that will be awaited before continuing to
+the next line of the dialogue. At the same time, any future that's still
+pending from the <code>onLineStart</code> call will be discarded and will no longer
+be awaited. The <code>onLineFinish</code> method will not be called either.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">FutureOr&lt;void&gt; onLineStop(DialogueLine line) {}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle">sizzle</a></li>
+    <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
+    <li class="self-crumb">onLineStop method</li>
+</ol>
+
+    <h5>DialogComponent class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

@@ -1,6 +1,6 @@
 import 'package:flame/components.dart';
 
-import 'snap.dart';
+import './snap.dart';
 
 class SnapRectangleComponent extends RectangleComponent with Snap {
   SnapRectangleComponent({
