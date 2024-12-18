@@ -1,6 +1,6 @@
 name: sizzle
 description: A bitmap/pixel game engine based on Flame
-version: 0.1.0
+version: 0.1.3
 repository: https://github.com/projectitis/sizzle
 publish_to: 'none' # Remove this line once ready to publish to pub.dev
 
