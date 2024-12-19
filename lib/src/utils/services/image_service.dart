@@ -76,9 +76,11 @@ class ImageService {
   final List<ImageProperties> _queued = [];
   final Map<String, Image> _cache = {};
   final String assetFolder;
+  final AssetBundle assetBundle;
 
   /// Create a new image service with path to [assetFolder] for loading images.
-  ImageService(this.assetFolder);
+  ImageService(this.assetFolder, {AssetBundle? assetBundle})
+      : assetBundle = assetBundle ?? rootBundle;
 
   /// Add an image to the queue so that it is cached when [loadQueue] is called.
   /// Call [load] instead to load the image immediately, or [get] if it has
@@ -97,7 +99,7 @@ class ImageService {
   }
 
   /// Add multiple images to the queue
-  void enqueueAll(List<ImageProperties>? properties, List<String>? paths) {
+  void enqueueAll({List<ImageProperties>? properties, List<String>? paths}) {
     if (properties != null) {
       _queued.addAll(properties);
     }
@@ -138,7 +140,7 @@ class ImageService {
       return _cache[assetName]!;
     }
     String assetPath = path ?? properties!.path;
-    final data = await rootBundle.load(assetFolder + assetPath);
+    final data = await assetBundle.load(assetFolder + assetPath);
     final bytes = Uint8List.view(data.buffer);
     final image = await decodeImageFromList(bytes);
     if (properties == null) {
@@ -178,6 +180,15 @@ class ImageService {
 
   /// Check if an image is in the cache by [name]
   bool contains(String name) => _cache.containsKey(name);
+
+  /// The number of images in the cache
+  int get length => _cache.length;
+
+  /// Check if the cache is empty
+  bool get isEmpty => _cache.isEmpty;
+
+  /// Check if the cache is not empty
+  bool get isNotEmpty => _cache.isNotEmpty;
 
   /// Helper method to process an image
   static Future<Image> processImage(
