@@ -96,6 +96,18 @@ class ImageService {
     _queued.add(p);
   }
 
+  /// Add multiple images to the queue
+  void enqueueAll(List<ImageProperties>? properties, List<String>? paths) {
+    if (properties != null) {
+      _queued.addAll(properties);
+    }
+    if (paths != null) {
+      for (String path in paths) {
+        enqueue(path: path);
+      }
+    }
+  }
+
   /// Load all images that have been added to the queue with [enqueue]
   Future<void> loadQueue() async {
     for (ImageProperties properties in _queued) {

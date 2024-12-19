@@ -379,11 +379,16 @@ class PlyDirection {
   static const pongping = 3;
 }
 
-/// Settings for an animation to play. Provide at least the [name] of the animation. You can override specific settings
-/// for the animation. Set [direction] to change the animation direction (see [PlyDirection]), set [repeats] to
-/// change the number of times the animation loops, and set [speed] to change the animation playback speed by a factor.
-/// For example, `speed = 1.0` is default, `speed = 0.9` plays it at 90% of the original speed, and `speed = 0.5` will
-/// play it at half speed.
+/// Settings for an animation to play.
+///
+/// Provide at least the [name] of the animation. You can override specific
+/// settings for the animation. Set [direction] to change the animation
+/// direction (see [PlyDirection]), set [repeats] to change the number of times
+/// the animation loops, and set [speed] to change the animation playback speed
+/// by a factor.
+///
+/// For example, `speed = 1.0` is default, `speed = 0.9` plays it at 90% of the
+/// original speed, and `speed = 0.5` will play it at half speed.
 class PlyAnimProps {
   PlyAnimProps(
     this.name, {
@@ -396,6 +401,7 @@ class PlyAnimProps {
   int repeats;
   double _speed;
 
+  /// Copy the settings from another [PlyAnimProps] object.
   void copy(PlyAnimProps anim) {
     name = anim.name;
     direction = anim.direction;
@@ -457,6 +463,7 @@ class _PlyFrame {
 
   Paint createPaint(int alpha, int blendmode) {
     final p = Paint()..color = Color.fromARGB(alpha, 0, 0, 0);
+    // Blend mode values are from Aseprite
     switch (blendmode) {
       case 14:
         p.blendMode = BlendMode.multiply;

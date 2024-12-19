@@ -35,6 +35,18 @@ class FileService {
     _queued.add(p);
   }
 
+  /// Add multiple files to the queue
+  void enqueueAll(List<FileProperties>? properties, List<String>? paths) {
+    if (properties != null) {
+      _queued.addAll(properties);
+    }
+    if (paths != null) {
+      for (String path in paths) {
+        enqueue(path: path);
+      }
+    }
+  }
+
   /// Load all files that have been added to the queue with [enqueue]
   Future<void> loadQueue() async {
     for (FileProperties properties in _queued) {
