@@ -119,3 +119,20 @@ class Range {
     return Random().nextDouble() * (max - min) + min;
   }
 }
+
+/// Calculate the bounding box of a rectangle rotated around its center.
+Rect boundingBox(Size size, double angle) {
+  double absCosRA = cos(angle).abs();
+  double absSinRA = sin(angle).abs();
+  double bbW = size.width * absCosRA + size.height * absSinRA;
+  double bbH = size.width * absSinRA + size.height * absCosRA;
+  double ox = (size.width - bbW) / 2;
+  double oy = (size.height - bbH) / 2;
+  return Rect.fromLTWH(ox, oy, bbW, bbH);
+}
+
+extension RectExt on Rect {
+  Rect bounds(double angle) {
+    return boundingBox(size, angle);
+  }
+}

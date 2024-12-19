@@ -24,11 +24,11 @@ class FileService {
   /// been loaded previously. Only provide [properties] or [path], not both.
   void enqueue({FileProperties? properties, String? path}) {
     assert(
-      !(properties == null && path == null),
+      !(properties != null && path != null),
       'Provide either properties or path, not both',
     );
     assert(
-      properties != null && path != null,
+      !(properties == null && path == null),
       'Provide either properties or path',
     );
     FileProperties p = properties ?? FileProperties(path!);
@@ -51,11 +51,11 @@ class FileService {
     bool cache = true,
   }) async {
     assert(
-      !(properties == null && path == null),
+      !(properties != null && path != null),
       'Provide either properties or path, not both',
     );
     assert(
-      properties != null && path != null,
+      !(properties == null && path == null),
       'Provide either properties or path',
     );
     String assetName = path ?? properties!.name;

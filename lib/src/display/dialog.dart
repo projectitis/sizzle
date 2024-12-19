@@ -6,7 +6,6 @@ import 'package:flame/events.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:sizzle/src/utils/services/image_service.dart';
 
 import '../display/ninegrid.dart';
 import '../utils/services.dart';
