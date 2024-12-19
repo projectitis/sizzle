@@ -33,4 +33,33 @@ class Device {
   static Vector2 get screenSize => view.physicalSize.toVector2();
 
   static double get pixelRatio => view.devicePixelRatio;
+
+  static String describe() {
+    String s = '';
+    s += isAndroid
+        ? 'Android'
+        : isIOS
+            ? 'iOS'
+            : isWindows
+                ? 'Windows'
+                : isMacOS
+                    ? 'macOS'
+                    : isLinux
+                        ? 'Linux'
+                        : isFuchsia
+                            ? 'Fuchsia'
+                            : 'Unknown OS';
+    s += ', ';
+    s += isWatch
+        ? 'Watch'
+        : isMobile
+            ? 'Mobile'
+            : isDesktop
+                ? 'Desktop'
+                : isWeb
+                    ? 'Web'
+                    : 'Unknown type';
+    s += ', $screenSize, pr=$pixelRatio';
+    return s;
+  }
 }

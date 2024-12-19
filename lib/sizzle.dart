@@ -32,3 +32,7 @@ export 'src/utils/device.dart';
 export 'src/utils/logger.dart';
 export 'src/utils/pool.dart';
 export 'src/utils/services.dart';
+export 'src/utils/services/dialog_service.dart';
+export 'src/utils/services/file_service.dart';
+export 'src/utils/services/flag_service.dart';
+export 'src/utils/services/image_service.dart';

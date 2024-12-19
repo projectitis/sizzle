@@ -4,8 +4,6 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:sizzle/src/utils/services/file_service.dart';
-import 'package:sizzle/src/utils/services/image_service.dart';
 
 import '../utils/services.dart';
 import './snap.dart';
