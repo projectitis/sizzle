@@ -1,10 +1,8 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sizzle/sizzle.dart';
-import 'package:sizzle/src/utils/services/image_service.dart';
 
 import '../../sizzle_test_helpers.dart';
 
@@ -28,7 +26,8 @@ void main() async {
 
     test('Loads image by properties', () async {
       final image = await imageService.load(
-          properties: ImageProperties('sizzle-icon.png'));
+        properties: ImageProperties('sizzle-icon.png'),
+      );
       expect(image, isNotNull);
       expect(imageService.isNotEmpty, true);
       expect(imageService.length, 1);

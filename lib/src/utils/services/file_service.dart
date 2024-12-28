@@ -164,4 +164,10 @@ class FileService {
 
   /// Check if a file is in the cache by [name]
   bool contains(String name) => _cache.containsKey(name);
+
+  /// Return the number of cached files
+  int get length => _cache.length;
+
+  /// Return the number of queued files
+  int get queueLength => _queued.length;
 }

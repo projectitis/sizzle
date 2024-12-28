@@ -29,6 +29,18 @@ class DialogService {
     yarn.commands.addCommand1('flag', _setFlagsFromYarn);
   }
 
+  /// Parse a single yarn spinner dialog [data] string. If [replaceNodes] is
+  /// true, the already loaded yarn nodes will be deleted first.
+  void parse(
+    String data, {
+    bool replaceNodes = false,
+  }) {
+    if (replaceNodes) {
+      yarn.nodes.clear();
+    }
+    yarn.parse(data);
+  }
+
   /// Load and parse one or more yarn spinner dialog [files]
   /// ready for starting a dialog. If [replaceNodes] is true,
   /// the already loaded yarn nodes will be deleted first. Any
@@ -91,16 +103,16 @@ class DialogService {
       yarn.nodes.clear();
     }
     if (characters) {
-      //yarn.characters.clear();
+      yarn.characters.clear();
     }
     if (variables) {
-      //yarn.variables.clear(false);
+      yarn.variables.clear(clearNodeVisits: false);
     }
     if (commands) {
-      //yarn.commands.clear();
+      yarn.commands.clear();
     }
     if (functions) {
-      //yarn.functions.clear();
+      yarn.functions.clear();
     }
   }
 
