@@ -7,8 +7,8 @@ import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 
+import './scene.dart';
 import '../math/math.dart';
-import '../utils/services.dart';
 
 class SizzleGame extends FlameGame
     with SingleGameInstance, TapCallbacks, KeyboardEvents {
@@ -112,9 +112,6 @@ class SizzleGame extends FlameGame
           RouterComponent(initialRoute: routes.keys.first, routes: routes),
     );
 
-    // Set up services
-    Services.init(this);
-
     // Handle game exit
     AppLifecycleListener(
       onDetach: () {
@@ -186,16 +183,20 @@ class SizzleGame extends FlameGame
         // Left
         c.drawRect(
           Rect.fromLTWH(
-              0.0, viewWindow.top, viewWindow.left, viewWindow.bottom),
+            0.0,
+            viewWindow.top.floorToDouble(),
+            viewWindow.left,
+            viewWindow.bottom.ceilToDouble(),
+          ),
           _letterBoxPaint,
         );
         // Right
         c.drawRect(
           Rect.fromLTWH(
             viewWindow.right,
-            viewWindow.top,
+            viewWindow.top.floorToDouble(),
             viewWindow.left,
-            viewWindow.bottom,
+            viewWindow.bottom.ceilToDouble(),
           ),
           _letterBoxPaint,
         );
