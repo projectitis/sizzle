@@ -16,8 +16,10 @@ class FileService {
   final List<FileProperties> _queued = [];
   final Map<String, ByteData> _cache = {};
   final String assetFolder;
+  final AssetBundle assetBundle;
 
-  FileService(this.assetFolder);
+  FileService(this.assetFolder, {AssetBundle? assetBundle})
+      : assetBundle = assetBundle ?? rootBundle;
 
   /// Add a file to the queue so that it is cached when [loadQueue] is called.
   /// Call [load] instead to load the file immediately, or [get] if it has
@@ -36,7 +38,7 @@ class FileService {
   }
 
   /// Add multiple files to the queue
-  void enqueueAll(List<FileProperties>? properties, List<String>? paths) {
+  void enqueueAll({List<FileProperties>? properties, List<String>? paths}) {
     if (properties != null) {
       _queued.addAll(properties);
     }
@@ -75,7 +77,7 @@ class FileService {
       return _cache[assetName]!;
     }
     String assetPath = path ?? properties!.path;
-    final data = await rootBundle.load(assetFolder + assetPath);
+    final data = await assetBundle.load(assetFolder + assetPath);
     if (cache) {
       _cache[assetName] = data;
     }
@@ -162,4 +164,10 @@ class FileService {
 
   /// Check if a file is in the cache by [name]
   bool contains(String name) => _cache.containsKey(name);
+
+  /// Return the number of cached files
+  int get length => _cache.length;
+
+  /// Return the number of queued files
+  int get queueLength => _queued.length;
 }

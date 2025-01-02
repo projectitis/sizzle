@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flame/components.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../game/game.dart';
@@ -27,7 +28,8 @@ class Services {
   static final _assetFolder = 'assets/';
 
   /// Reference to the currently running game
-  static late final SizzleGame game;
+  static final Component _gameRef = Component();
+  static get game => _gameRef.findGame() as SizzleGame;
 
   /// Reference to the file service
   static final FileService files = FileService(_assetFolder);
@@ -60,13 +62,6 @@ class Services {
   static OnFileAccessCallback? _onSave;
   static set onSave(OnFileAccessCallback callback) {
     _onSave = callback;
-  }
-
-  /// Initialise the services. SizzleGame does this
-  /// automatically during constructor, and should not be
-  /// called again.
-  static void init(SizzleGame game) {
-    Services.game = game;
   }
 
   /// Load all data from the device. This includes flags

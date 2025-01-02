@@ -4,19 +4,22 @@ import '../utils/services.dart';
 import '../game/game.dart';
 
 enum AnchorWindow {
-  /// The maximum game window (some parts may not be visible). This
-  /// corresponds to the `maxSize` passed in to the `SizzleGame`
+  /// The maximum game window (some parts may not be visible).
+  ///
+  /// This corresponds to the `maxSize` passed in to the `SizzleGame`
   /// constructor.
   maxWindow,
 
-  /// The currently viewable game area. Somewhere between game and target
-  /// window. On platforms that allow resizing the screen, this window can
-  /// change zie throughout the lifetime of the game. This window is best
-  /// used for aligning UI elements.
+  /// The currently viewable game area.
+  ///
+  /// This is somewhere between game and target window. On platforms that allow
+  /// resizing the screen, this window can change size throughout the lifetime
+  /// of the game. This window is best used for aligning UI elements.
   viewWindow,
 
-  /// The smallest visible area, always guaranteed to be visible. This
-  /// corresponds to the `targetSize` passed in to the `SizzleGame`
+  /// The smallest visible area, always guaranteed to be visible.
+  ///
+  /// This corresponds to the `targetSize` passed in to the `SizzleGame`
   /// constructor.
   targetWindow,
 }
