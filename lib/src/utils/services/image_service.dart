@@ -11,63 +11,82 @@ import '../../math/math.dart';
 /// prior to caching.
 class ImageProperties {
   /// The path to the image asset.
-  late final String path;
+  final String path;
 
   /// A friendly name. Use [path] if not provided.
   late final String name;
 
   /// Scale of the image along each axis.
-  late final Vector2 scale;
+  final Vector2? scale;
 
   /// The area of the image to crop. Default is the entire image.
-  late final Rect crop;
+  final Rect? crop;
 
   /// The angle to rotate the image in radians. Also see [fitCrop].
-  late final double angle;
+  final double? angle;
 
   /// Used if rotating. If set to true, the image will be scaled to fit the
   /// crop rectangle. Only the crop width and height will be used (position is
   /// ignored).
-  late final bool fitCrop;
+  final bool? fitCrop;
 
   /// Flip the image horizontally.
-  late final bool flipX;
+  final bool? flipX;
 
   /// Flip the image vertically.
-  late final bool flipY;
+  final bool? flipY;
 
   /// Use antialias when transforming the image.
-  late final bool antiAlias;
+  final bool? antiAlias;
 
   /// The blend mode to use when transforming the image.
-  late final BlendMode blendMode;
+  final BlendMode? blendMode;
 
   /// The quality used when transforming the image.
-  late final FilterQuality filterQuality;
+  final FilterQuality? filterQuality;
+
+  /// If true, the default properties will be replaced by the provided. If false
+  /// the provided properties will be merged with the default properties.
+  late final bool ignoreDefaultProperties;
 
   ImageProperties(
     this.path, {
     String? name,
-    Vector2? scale,
-    Rect? crop,
-    double? angle,
-    bool? fitCrop,
-    bool? flipX,
-    bool? flipY,
-    bool? antiAlias,
-    BlendMode? blendMode,
-    FilterQuality? filterQuality,
+    this.scale,
+    this.crop,
+    this.angle,
+    this.fitCrop,
+    this.flipX,
+    this.flipY,
+    this.antiAlias,
+    this.blendMode,
+    this.filterQuality,
+    bool? ignoreDefaultProperties,
   }) {
     this.name = name ?? path;
-    this.scale = scale ?? Vector2.all(1.0);
-    this.crop = crop ?? Rect.zero;
-    this.angle = angle ?? 0.0;
-    this.flipX = flipX ?? false;
-    this.flipY = flipY ?? false;
-    this.antiAlias = antiAlias ?? true;
-    this.blendMode = blendMode ?? BlendMode.srcOver;
-    this.fitCrop = fitCrop ?? false;
-    this.filterQuality = filterQuality ?? FilterQuality.low;
+    this.ignoreDefaultProperties = ignoreDefaultProperties ?? false;
+  }
+
+  /// Create a copy of this object with the properties of another
+  /// [ImageProperties] merged into it.
+  ///
+  /// [name], [path] and [ignoreDefaultProperties] aren't merged.
+  ImageProperties copyMerged(ImageProperties other) {
+    ImageProperties copy = ImageProperties(
+      path,
+      name: name,
+      scale: other.scale ?? scale,
+      crop: other.crop ?? crop,
+      angle: other.angle ?? angle,
+      fitCrop: other.fitCrop ?? fitCrop,
+      flipX: other.flipX ?? flipX,
+      flipY: other.flipY ?? flipY,
+      antiAlias: other.antiAlias ?? antiAlias,
+      blendMode: other.blendMode ?? blendMode,
+      filterQuality: other.filterQuality ?? filterQuality,
+      ignoreDefaultProperties: ignoreDefaultProperties,
+    );
+    return copy;
   }
 }
 
@@ -77,9 +96,11 @@ class ImageService {
   final Map<String, Image> _cache = {};
   final String assetFolder;
   final AssetBundle assetBundle;
+  ImageProperties? defaultProperties;
 
   /// Create a new image service with path to [assetFolder] for loading images.
-  ImageService(this.assetFolder, {AssetBundle? assetBundle})
+  ImageService(this.assetFolder,
+      {AssetBundle? assetBundle, this.defaultProperties})
       : assetBundle = assetBundle ?? rootBundle;
 
   /// Add an image to the queue so that it is cached when [loadQueue] is called.
@@ -190,10 +211,10 @@ class ImageService {
   /// Check if the cache is not empty
   bool get isNotEmpty => _cache.isNotEmpty;
 
-  /// Helper method to process an image
-  static Future<Image> processImage(
+  /// Process an image
+  Future<Image> processImage(
     Image image,
-    ImageProperties properties,
+    ImageProperties imageProperties,
   ) async {
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder);
@@ -201,53 +222,62 @@ class ImageService {
     double height = image.height.toDouble();
     bool requiresProcessing = false;
 
+    // Prepare properties
+    ImageProperties properties = imageProperties;
+    if (defaultProperties != null && !imageProperties.ignoreDefaultProperties) {
+      properties = defaultProperties!.copyMerged(imageProperties);
+    }
+
     // Prepare crop
-    Rect c = properties.crop;
+    Rect propertyCrop = properties.crop ?? Rect.zero;
+    Rect c = propertyCrop;
 
     // Prepare scale
-    if (properties.scale.x != 1.0 || properties.scale.y != 1.0) {
-      width *= properties.scale.x;
-      height *= properties.scale.y;
+    Vector2 propertyScale = properties.scale ?? Vector2.all(1.0);
+    if (propertyScale.x != 1.0 || propertyScale.y != 1.0) {
+      width *= propertyScale.x;
+      height *= propertyScale.y;
     }
 
     // Prepare rotation
-    if (properties.angle != 0.0) {
-      if (properties.fitCrop && !properties.crop.isEmpty) {
-        Rect b = properties.crop.bounds(-properties.angle);
+    double propertyAngle = properties.angle ?? 0.0;
+    if (propertyAngle != 0.0) {
+      if ((properties.fitCrop ?? false) && !propertyCrop.isEmpty) {
+        Rect b = propertyCrop.bounds(-propertyAngle);
         double scale = max(b.width / width, b.height / height);
         width *= scale;
         height *= scale;
-        properties.scale.multiply(Vector2.all(scale));
-        b = boundingBox(Size(width, height), properties.angle);
+        propertyScale.multiply(Vector2.all(scale));
+        b = boundingBox(Size(width, height), propertyAngle);
         c = Rect.fromLTWH(
-          (width - properties.crop.width) / 2,
-          (height - properties.crop.height) / 2,
-          properties.crop.width,
-          properties.crop.height,
+          (width - propertyCrop.width) / 2,
+          (height - propertyCrop.height) / 2,
+          propertyCrop.width,
+          propertyCrop.height,
         );
       } else {
-        c = boundingBox(Size(width, height), properties.angle);
-        if (!properties.crop.isEmpty) {
-          c = properties.crop.translate(c.left, c.top);
+        c = boundingBox(Size(width, height), propertyAngle);
+        if (!propertyCrop.isEmpty) {
+          c = propertyCrop.translate(c.left, c.top);
         }
       }
-      if (properties.flipX) {
+      if (properties.flipX ?? false) {
         c = Rect.fromLTWH(-c.left, c.top, c.width, c.height);
       }
-      if (properties.flipY) {
+      if (properties.flipY ?? false) {
         c = Rect.fromLTWH(c.left, -c.top, c.width, c.height);
       }
     }
 
     // Flip X
-    if (properties.flipX) {
+    if (properties.flipX ?? false) {
       canvas.scale(-1.0, 1.0);
       canvas.translate(-width, 0.0);
       requiresProcessing = true;
     }
 
     // Flip Y
-    if (properties.flipY) {
+    if (properties.flipY ?? false) {
       canvas.scale(1.0, -1.0);
       canvas.translate(0.0, -height);
       requiresProcessing = true;
@@ -260,16 +290,16 @@ class ImageService {
     }
 
     // Finish rotation
-    if (properties.angle != 0.0) {
+    if (propertyAngle != 0.0) {
       canvas.translate(width / 2, height / 2);
-      canvas.rotate(-properties.angle);
+      canvas.rotate(-propertyAngle);
       canvas.translate(-width / 2, -height / 2);
       requiresProcessing = true;
     }
 
     // Scale
-    if (properties.scale.x != 1.0 || properties.scale.y != 1.0) {
-      canvas.scale(properties.scale.x, properties.scale.y);
+    if (propertyScale.x != 1.0 || propertyScale.y != 1.0) {
+      canvas.scale(propertyScale.x, propertyScale.y);
       requiresProcessing = true;
     }
 
@@ -284,9 +314,9 @@ class ImageService {
       image,
       Offset.zero,
       Paint()
-        ..isAntiAlias = properties.antiAlias
-        ..blendMode = properties.blendMode
-        ..filterQuality = properties.filterQuality,
+        ..isAntiAlias = properties.antiAlias ?? true
+        ..blendMode = properties.blendMode ?? BlendMode.srcOver
+        ..filterQuality = properties.filterQuality ?? FilterQuality.low,
     );
 
     // Crop?
