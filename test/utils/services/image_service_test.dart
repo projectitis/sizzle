@@ -344,5 +344,41 @@ void main() async {
         matchesGoldenFile('$goldens/sizzle-icon-tx2.png'),
       );
     });
+
+    test('With default properties', () async {
+      ImageService localImageService = ImageService(
+        '',
+        assetBundle: assets,
+        defaultProperties: ImageProperties(
+          '',
+          scale: Vector2(0.5, 0.5),
+          angle: radians(45),
+          flipX: true,
+        ),
+      );
+
+      final image1 = await localImageService.load(path: 'sizzle-icon.png');
+      final image2 = await localImageService.load(
+        properties: ImageProperties(
+          'sizzle-icon.png',
+          name: 'default-replaced',
+          scale: Vector2(1.0, 1.0),
+          angle: 0,
+          flipX: false,
+          ignoreDefaultProperties: true,
+        ),
+      );
+
+      await expectLater(
+        image1,
+        matchesGoldenFile('$goldens/sizzle-icon.png'),
+      );
+      await expectLater(
+        image2,
+        matchesGoldenFile('$goldens/sizzle-icon.png'),
+      );
+
+      localImageService.clear();
+    });
   });
 }
