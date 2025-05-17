@@ -47,6 +47,24 @@ class Range {
     _max = double.infinity;
   }
 
+  /// Set the range to the same values as another range
+  void setFrom(Range other) {
+    _min = other._min;
+    _max = other._max;
+  }
+
+  /// Set the range from the same values of a Vector2
+  void setFromVector2(Vector2 vector) {
+    min = vector.x;
+    max = vector.y;
+  }
+
+  /// Set the range from the same values of an Offset
+  void setFromOffset(Offset offset) {
+    min = offset.dx;
+    max = offset.dy;
+  }
+
   /// The minimum value of the range
   double get min => _min;
   set min(double value) {
@@ -67,6 +85,37 @@ class Range {
     } else {
       _max = value;
     }
+  }
+
+  /// Multiple this range by a value and return a new range
+  Range operator *(double value) {
+    return Range(_min * value, _max * value);
+  }
+
+  /// Divide this range by a value and return a new range
+  Range operator /(double value) {
+    return Range(_min / value, _max / value);
+  }
+
+  /// Add another range to this range and return a new range
+  Range operator +(Range other) {
+    return Range(_min + other._min, _max + other._max);
+  }
+
+  /// Subtract another range from this range and return a new range
+  Range operator -(Range other) {
+    return Range(_min - other._min, _max - other._max);
+  }
+
+  /// Return a new range that is the negative of this range
+  Range operator -() {
+    return Range(-_min, -_max);
+  }
+
+  /// Multiply the min and max by a value of this range
+  void multiply(double value) {
+    _min *= value;
+    _max *= value;
   }
 
   /// Clamp a number to this range
