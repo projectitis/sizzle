@@ -23,7 +23,7 @@ dependencies:
   jx: ^1.0.5
 
 dev_dependencies:
-  lints: ^3.0.0
+  lints: ^6.0.0
   test: ^1.25.0
   flutter_test:
     sdk: flutter

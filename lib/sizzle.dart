@@ -19,6 +19,7 @@ export 'package:flame/events.dart';
 export 'src/game/game.dart';
 export 'src/game/scene.dart';
 export 'src/display/dialog.dart';
+export 'src/display/lightning.dart';
 export 'src/display/snap.dart';
 export 'src/display/shape.dart';
 export 'src/display/sprite.dart';
