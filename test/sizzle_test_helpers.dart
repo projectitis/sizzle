@@ -250,4 +250,13 @@ class DiskAssetBundle extends CachingAssetBundle {
   Future<ByteData> load(String key) async {
     return _cache[key]!;
   }
+
+  @override
+  String toString() {
+    String s = '';
+    for (final entry in _cache.entries) {
+      s += '${entry.key}: ${entry.value}\n';
+    }
+    return s;
+  }
 }
