@@ -23,6 +23,7 @@ export 'src/display/lightning.dart';
 export 'src/display/snap.dart';
 export 'src/display/shape.dart';
 export 'src/display/sprite.dart';
+export 'src/display/tile.dart';
 export 'src/display/ninegrid.dart';
 export 'src/math/math.dart';
 export 'src/math/vector_math.dart';
