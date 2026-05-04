@@ -167,6 +167,28 @@ class SizzleGame extends FlameGame
     super.onGameResize(canvasSize);
   }
 
+  /// Transform event coordinates to account for the letterbox offset applied
+  /// in [renderTree]. Without this, hit testing uses raw screen coordinates
+  /// while components are rendered with the letterbox translation, causing all
+  /// tap/drag events to miss their targets.
+  @override
+  Iterable<Component> componentsAtPoint(
+    Vector2 point, [
+    List<Vector2>? nestedPoints,
+  ]) {
+    if (_targetSize.x != 0) {
+      return super.componentsAtPoint(
+        point -
+            Vector2(
+              viewWindow.left - gameWindow.left,
+              viewWindow.top - gameWindow.top,
+            ),
+        nestedPoints,
+      );
+    }
+    return super.componentsAtPoint(point, nestedPoints);
+  }
+
   /// Letterbox the view window
   @override
   void renderTree(Canvas c) {
