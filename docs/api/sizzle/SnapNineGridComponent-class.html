@@ -25,24 +25,21 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../index.html">sizzle</a></li>
-    <li><a href="../sizzle">sizzle.dart</a></li>
+    <li><a href="../sizzle/">sizzle.dart</a></li>
     <li class="self-crumb">SnapNineGridComponent class</li>
   </ol>
   <div class="self-name">SnapNineGridComponent</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -91,7 +88,7 @@
   <section class="summary offset-anchor" id="constructors">
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
-        <dt id="SnapNineGridComponent" class="callable">
+        <dt id="SnapNineGridComponent.new" class="callable">
           <span class="name"><a href="../sizzle/SnapNineGridComponent/SnapNineGridComponent.html">SnapNineGridComponent</a></span><span class="signature">(<span class="parameter" id="-param-image"><span class="type-annotation">Image</span> <span class="parameter-name">image</span>, </span><span class="parameter" id="-param-size"><span class="type-annotation">Vector2</span> <span class="parameter-name">size</span>, {</span><span class="parameter" id="-param-grid"><span class="type-annotation"><a href="../sizzle/NineGridSize-class.html">NineGridSize</a>?</span> <span class="parameter-name">grid</span>, </span><span class="parameter" id="-param-repeat"><span class="type-annotation"><a href="../sizzle/NineGridRepeat-class.html">NineGridRepeat</a>?</span> <span class="parameter-name">repeat</span>, </span><span class="parameter" id="-param-useSafeSize"><span class="type-annotation">bool</span> <span class="parameter-name">useSafeSize</span> = <span class="default-value">false</span></span>})</span>
         </dt>
         <dd>
@@ -112,8 +109,22 @@
 
 </dt>
 <dd class="inherited">
-  The resulting angle after all the ancestors and the components own angle
-has been applied.
+  The resulting angle after all the ancestors and the components own angles
+and scales have been applied.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="absoluteAngleWithoutReflection" class="property inherited">
+  <span class="name"><a href="../sizzle/NineGridComponent/absoluteAngleWithoutReflection.html">absoluteAngleWithoutReflection</a></span>
+  <span class="signature">&#8594; double</span>
+  
+
+</dt>
+<dd class="inherited">
+  The resulting angle after all the ancestors and the components own angles
+and scales have been applied, but without reflecting the angle
+if the component is flipped.
   <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
 
 </dd>
@@ -251,7 +262,7 @@ in the parent's coordinates.
 
         <dt id="children" class="property inherited">
   <span class="name"><a href="../sizzle/NineGridComponent/children.html">children</a></span>
-  <span class="signature">&#8594; ComponentSet</span>
+  <span class="signature">&#8594; ReadOnlyOrderedSet<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
   
 
 </dt>
@@ -369,7 +380,8 @@ text.
 
 </dt>
 <dd class="inherited">
-  
+  Whether this component has any children.
+Avoids the creation of the children container if not necessary.
   <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
 
 </dd>
@@ -479,18 +491,6 @@ may visually appear larger or smaller due to application of <code>scale</code>.
 </dt>
 <dd class="inherited">
   Whether this component is currently added to a component tree.
-  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="isMounting" class="property inherited">
-  <span class="name"><a href="../sizzle/NineGridComponent/isMounting.html">isMounting</a></span>
-  <span class="signature">&#8594; bool</span>
-  
-
-</dt>
-<dd class="inherited">
-  
   <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
 
 </dd>
@@ -621,6 +621,19 @@ which your components are rendered.
 </dt>
 <dd class="inherited">
   A future that completes when this component is removed from its parent.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="renderContext" class="property inherited">
+  <span class="name"><a href="../sizzle/NineGridComponent/renderContext.html">renderContext</a></span>
+  <span class="signature">&#8594; ComponentRenderContext?</span>
+  
+
+</dt>
+<dd class="inherited">
+  Override this method if you want your component to provide a custom
+render context to all its children (recursively).
   <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
 
 </dd>
@@ -921,6 +934,19 @@ local coordinates. This function is the inverse of
 
 </dd>
 
+        <dt id="afterChildrenRendered" class="callable inherited">
+  <span class="name"><a href="../sizzle/NineGridComponent/afterChildrenRendered.html">afterChildrenRendered</a></span><span class="signature">(<wbr><span class="parameter" id="afterChildrenRendered-param-canvas"><span class="type-annotation">Canvas</span> <span class="parameter-name">canvas</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called once after all children have been rendered in <code>renderTree</code>.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
         <dt id="ancestors" class="callable inherited">
   <span class="name"><a href="../sizzle/NineGridComponent/ancestors.html">ancestors</a></span><span class="signature">(<wbr>{<span class="parameter" id="ancestors-param-includeSelf"><span class="type-annotation">bool</span> <span class="parameter-name">includeSelf</span> = <span class="default-value">false</span></span>})
     <span class="returntype parameter">&#8594; Iterable<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
@@ -945,9 +971,10 @@ without a parent.
 </dt>
 <dd class="inherited">
   Returns the angle formed by component's orientation vector and a vector
-starting at component's absolute position and ending at <code>target</code>. This
-angle is measured in clockwise direction. <code>target</code> should be in absolute/world
-coordinate system.
+starting at component's absolute position and ending at <code>target</code>. I.e.
+how much the current component need to rotate to face the target. This
+angle is measured in clockwise direction. <code>target</code> should be in
+absolute/world coordinate system.
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
@@ -1052,14 +1079,14 @@ while the bottom and the right borders are exclusive.
 
         <dt id="createComponentSet" class="callable inherited">
   <span class="name"><a href="../sizzle/NineGridComponent/createComponentSet.html">createComponentSet</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; ComponentSet</span>
+    <span class="returntype parameter">&#8594; OrderedSet<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
   </span>
   
 
 </dt>
 <dd class="inherited">
   This method creates the children container for the current component.
-Override this method if you need to have a custom <code>ComponentSet</code> within
+Override this method if you need to have a custom <code>OrderedSet</code> within
 a particular class.
   <div class="features"><span class="feature">inherited</span></div>
 
@@ -1115,6 +1142,19 @@ component's anchor and the <code>other</code> component's anchor.
 <dd class="inherited">
   Returns the closest parent further up the hierarchy that satisfies type=T,
 or null if no such parent can be found.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="findRenderContext" class="callable inherited">
+  <span class="name"><a href="../sizzle/NineGridComponent/findRenderContext.html">findRenderContext</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends ComponentRenderContext</span>&gt;</span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; T?</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
@@ -1194,58 +1234,6 @@ are no such children.
 </dt>
 <dd class="inherited">
   Flip the component vertically around its center line.
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="handleLifecycleEventAdd" class="callable inherited">
-  <span class="name"><a href="../sizzle/NineGridComponent/handleLifecycleEventAdd.html">handleLifecycleEventAdd</a></span><span class="signature">(<wbr><span class="parameter" id="handleLifecycleEventAdd-param-parent"><span class="type-annotation">Component</span> <span class="parameter-name">parent</span></span>)
-    <span class="returntype parameter">&#8594; LifecycleEventStatus</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="handleLifecycleEventMove" class="callable inherited">
-  <span class="name"><a href="../sizzle/NineGridComponent/handleLifecycleEventMove.html">handleLifecycleEventMove</a></span><span class="signature">(<wbr><span class="parameter" id="handleLifecycleEventMove-param-newParent"><span class="type-annotation">Component</span> <span class="parameter-name">newParent</span></span>)
-    <span class="returntype parameter">&#8594; LifecycleEventStatus</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="handleLifecycleEventRemove" class="callable inherited">
-  <span class="name"><a href="../sizzle/NineGridComponent/handleLifecycleEventRemove.html">handleLifecycleEventRemove</a></span><span class="signature">(<wbr><span class="parameter" id="handleLifecycleEventRemove-param-parent"><span class="type-annotation">Component</span> <span class="parameter-name">parent</span></span>)
-    <span class="returntype parameter">&#8594; LifecycleEventStatus</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="handleResize" class="callable inherited">
-  <span class="name"><a href="../sizzle/NineGridComponent/handleResize.html">handleResize</a></span><span class="signature">(<wbr><span class="parameter" id="handleResize-param-size"><span class="type-annotation">Vector2</span> <span class="parameter-name">size</span></span>)
-    <span class="returntype parameter">&#8594; void</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
@@ -1330,6 +1318,19 @@ to or removed from its parent children list.
 
 </dd>
 
+        <dt id="onHotReload" class="callable inherited">
+  <span class="name"><a href="../sizzle/NineGridComponent/onHotReload.html">onHotReload</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called when Flutter's hot reload is triggered.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
         <dt id="onLoad" class="callable inherited">
   <span class="name"><a href="../sizzle/NineGridComponent/onLoad.html">onLoad</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
@@ -1378,7 +1379,9 @@ before <code>onMount</code>.
 
 </dt>
 <dd class="inherited">
-  Called right before the component is removed from the game.
+  Called right before the component is removed from its parent
+and also before it changes parents (and is thus temporarily removed
+from the component tree).
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
@@ -1437,6 +1440,19 @@ the children without any children of their own.
 Then it continues through all other children. The propagation continues
 until the handler returns false, which means "do not continue", or when
 the handler has been called with all children.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="rebalanceChildren" class="callable inherited">
+  <span class="name"><a href="../sizzle/NineGridComponent/rebalanceChildren.html">rebalanceChildren</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
@@ -1507,6 +1523,19 @@ and their children.
 
 </dd>
 
+        <dt id="renderChild" class="callable inherited">
+  <span class="name"><a href="../sizzle/NineGridComponent/renderChild.html">renderChild</a></span><span class="signature">(<wbr><span class="parameter" id="renderChild-param-canvas"><span class="type-annotation">Canvas</span> <span class="parameter-name">canvas</span>, </span><span class="parameter" id="renderChild-param-child"><span class="type-annotation">Component</span> <span class="parameter-name">child</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Renders a single <code>child</code> component onto <code>canvas</code>.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
         <dt id="renderDebugMode" class="callable inherited">
   <span class="name"><a href="../sizzle/NineGridComponent/renderDebugMode.html">renderDebugMode</a></span><span class="signature">(<wbr><span class="parameter" id="renderDebugMode-param-canvas"><span class="type-annotation">Canvas</span> <span class="parameter-name">canvas</span></span>)
     <span class="returntype parameter">&#8594; void</span>
@@ -1562,48 +1591,6 @@ i.e. setByRect ∘ toRect = identity).
 
 </dd>
 
-        <dt id="setLoaded" class="callable inherited">
-  <span class="name"><a href="../sizzle/NineGridComponent/setLoaded.html">setLoaded</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; void</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  Used by the <code>FlameGame</code> to set the loaded state of the component, since
-the game isn't going through the whole normal component life cycle.
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="setMounted" class="callable inherited">
-  <span class="name"><a href="../sizzle/NineGridComponent/setMounted.html">setMounted</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; void</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  Used by the <code>FlameGame</code> to set the mounted state of the component, since
-the game isn't going through the whole normal component life cycle.
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="setRemoved" class="callable inherited">
-  <span class="name"><a href="../sizzle/NineGridComponent/setRemoved.html">setRemoved</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; void</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  Used by the <code>FlameGame</code> to set the removed state of the component, since
-the game isn't going through the whole normal component life cycle.
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
         <dt id="toAbsoluteRect" class="callable inherited">
   <span class="name"><a href="../sizzle/NineGridComponent/toAbsoluteRect.html">toAbsoluteRect</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; Rect</span>
@@ -1652,7 +1639,7 @@ coordinates. This function is the inverse of <a href="../sizzle/NineGridComponen
 
 </dt>
 <dd class="inherited">
-  A string representation of this object.
+  
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
@@ -1723,7 +1710,7 @@ priority of the direct siblings, not the children or the ancestors.
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../index.html">sizzle</a></li>
-    <li><a href="../sizzle">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle</a></li>
     <li class="self-crumb">SnapNineGridComponent class</li>
 </ol>
 
@@ -1736,7 +1723,7 @@ priority of the direct siblings, not the children or the ancestors.
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>

@@ -23,7 +23,7 @@ enum NineGridRepeatType {
   mirror
 }
 
-/// Describe how each section of the [NineGrid] should repeat
+/// Describe how each section of the [NineGridComponent] should repeat
 class NineGridRepeat {
   NineGridRepeat({
     this.left = NineGridRepeatType.stretch,
@@ -83,7 +83,7 @@ class NineGridRepeat {
   }
 }
 
-/// Describes the size of each section of the [NineGrid]
+/// Describes the size of each section of the [NineGridComponent]
 class NineGridSize {
   NineGridSize({
     this.left = 0.0,

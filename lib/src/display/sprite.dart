@@ -117,7 +117,7 @@ class PlySpriteComponent extends PositionComponent {
 
   /// Play the supplied [animation] by name.
   ///
-  /// Any of the animation properties can be overwritten by supplying a new animation [directions], a number of
+  /// Any of the animation properties can be overwritten by supplying a new animation [direction], a number of
   /// [repeats] for looping, or adjust the [speed]. A speed of `1.0` is normal. `1.2` is 20% faster, and `0.5` is
   /// half-speed.
   ///

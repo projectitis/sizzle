@@ -25,24 +25,21 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../index.html">sizzle</a></li>
-    <li><a href="../sizzle">sizzle.dart</a></li>
+    <li><a href="../sizzle/">sizzle.dart</a></li>
     <li class="self-crumb">PlyAnimProps class</li>
   </ol>
   <div class="self-name">PlyAnimProps</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -57,11 +54,14 @@
 
     
 <section class="desc markdown">
-  <p>Settings for an animation to play. Provide at least the <a href="../sizzle/PlyAnimProps/name.html">name</a> of the animation. You can override specific settings
-for the animation. Set <a href="../sizzle/PlyAnimProps/direction.html">direction</a> to change the animation direction (see <a href="../sizzle/PlyDirection-class.html">PlyDirection</a>), set <a href="../sizzle/PlyAnimProps/repeats.html">repeats</a> to
-change the number of times the animation loops, and set <code>speed</code> to change the animation playback speed by a factor.
-For example, <code>speed = 1.0</code> is default, <code>speed = 0.9</code> plays it at 90% of the original speed, and <code>speed = 0.5</code> will
-play it at half speed.</p>
+  <p>Settings for an animation to play.</p>
+<p>Provide at least the <a href="../sizzle/PlyAnimProps/name.html">name</a> of the animation. You can override specific
+settings for the animation. Set <a href="../sizzle/PlyAnimProps/direction.html">direction</a> to change the animation
+direction (see <a href="../sizzle/PlyDirection-class.html">PlyDirection</a>), set <a href="../sizzle/PlyAnimProps/repeats.html">repeats</a> to change the number of times
+the animation loops, and set <code>speed</code> to change the animation playback speed
+by a factor.</p>
+<p>For example, <code>speed = 1.0</code> is default, <code>speed = 0.9</code> plays it at 90% of the
+original speed, and <code>speed = 0.5</code> will play it at half speed.</p>
 </section>
 
 
@@ -70,7 +70,7 @@ play it at half speed.</p>
   <section class="summary offset-anchor" id="constructors">
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
-        <dt id="PlyAnimProps" class="callable">
+        <dt id="PlyAnimProps.new" class="callable">
           <span class="name"><a href="../sizzle/PlyAnimProps/PlyAnimProps.html">PlyAnimProps</a></span><span class="signature">(<span class="parameter" id="-param-name"><span class="type-annotation">String</span> <span class="parameter-name">name</span>, {</span><span class="parameter" id="-param-direction"><span class="type-annotation">int</span> <span class="parameter-name">direction</span> = <span class="default-value">-1</span>, </span><span class="parameter" id="-param-repeats"><span class="type-annotation">int</span> <span class="parameter-name">repeats</span> = <span class="default-value">-1</span>, </span><span class="parameter" id="-param-speed"><span class="type-annotation">double</span> <span class="parameter-name">speed</span> = <span class="default-value">1.0</span></span>})</span>
         </dt>
         <dd>
@@ -161,7 +161,7 @@ play it at half speed.</p>
 
 </dt>
 <dd>
-  
+  Copy the settings from another <a href="../sizzle/PlyAnimProps-class.html">PlyAnimProps</a> object.
   
 
 </dd>
@@ -229,7 +229,7 @@ play it at half speed.</p>
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../index.html">sizzle</a></li>
-    <li><a href="../sizzle">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle</a></li>
     <li class="self-crumb">PlyAnimProps class</li>
 </ol>
 
@@ -242,7 +242,7 @@ play it at half speed.</p>
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>

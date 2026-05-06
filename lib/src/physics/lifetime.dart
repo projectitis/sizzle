@@ -7,7 +7,7 @@ mixin Lifetime on PositionComponent {
   double ttl = 0.0;
 
   /// Update the time-to-live of this component. If the time-to-live has
-  /// expired, [lifeEnded] will be called. If [lifeEnded] returns true, the
+  /// expired, [onLifeEnded] will be called. If [onLifeEnded] returns true, the
   /// component will be removed from the game.
   @override
   void update(double dt) {

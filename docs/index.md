@@ -14,10 +14,13 @@ other Flame features, so you can make use of audio, bloc, forge2d etc. The maint
 package also regularly contribute to Flame itself.
 
 
-# Documentation
+## Documentation
 
 - [Structure of a game](game_structure.md)
 - [Game services](services.md)
 - [Scaling sprites (Snap)](snap.md)
+- [Memory pooling](pool.md)
 
-- [API (Full documentation)](api/index.html)
+## API
+
+- [Full documentation](api/index.html)

@@ -25,24 +25,21 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../index.html">sizzle</a></li>
-    <li><a href="../sizzle">sizzle.dart</a></li>
+    <li><a href="../sizzle/">sizzle.dart</a></li>
     <li class="self-crumb">Services class</li>
   </ol>
   <div class="self-name">Services</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -66,7 +63,7 @@
   <section class="summary offset-anchor" id="constructors">
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
-        <dt id="Services" class="callable">
+        <dt id="Services.new" class="callable">
           <span class="name"><a href="../sizzle/Services/Services.html">Services</a></span><span class="signature">()</span>
         </dt>
         <dd>
@@ -168,7 +165,7 @@
     <dl class="properties">
         <dt id="dialog" class="property">
   <span class="name"><a href="../sizzle/Services/dialog.html">dialog</a></span>
-  <span class="signature">&#8594; DialogService</span>
+  <span class="signature">&#8594; <a href="../sizzle/DialogService-class.html">DialogService</a></span>
   
 
 </dt>
@@ -180,7 +177,7 @@
 
         <dt id="files" class="property">
   <span class="name"><a href="../sizzle/Services/files.html">files</a></span>
-  <span class="signature">&#8594; FileService</span>
+  <span class="signature">&#8594; <a href="../sizzle/FileService-class.html">FileService</a></span>
   
 
 </dt>
@@ -192,7 +189,7 @@
 
         <dt id="flags" class="property">
   <span class="name"><a href="../sizzle/Services/flags.html">flags</a></span>
-  <span class="signature">&#8594; FlagService</span>
+  <span class="signature">&#8594; <a href="../sizzle/FlagService-class.html">FlagService</a></span>
   
 
 </dt>
@@ -204,19 +201,19 @@
 
         <dt id="game" class="property">
   <span class="name"><a href="../sizzle/Services/game.html">game</a></span>
-  <span class="signature">&#8596; <a href="../sizzle/SizzleGame-class.html">SizzleGame</a></span>
+  <span class="signature">&#8594; dynamic</span>
   
 
 </dt>
 <dd>
-  Reference to the currently running game
-  <div class="features"><span class="feature">late</span><span class="feature">final</span></div>
+  
+  <div class="features"><span class="feature">no setter</span></div>
 
 </dd>
 
         <dt id="images" class="property">
   <span class="name"><a href="../sizzle/Services/images.html">images</a></span>
-  <span class="signature">&#8594; ImageService</span>
+  <span class="signature">&#8594; <a href="../sizzle/ImageService-class.html">ImageService</a></span>
   
 
 </dt>
@@ -262,27 +259,24 @@
 
 </dd>
 
+        <dt id="svg" class="property">
+  <span class="name"><a href="../sizzle/Services/svg.html">svg</a></span>
+  <span class="signature">&#8594; <a href="../sizzle/SvgService-class.html">SvgService</a></span>
+  
+
+</dt>
+<dd>
+  Reference to the SVG service
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
     </dl>
   </section>
     
   <section class="summary offset-anchor" id="static-methods">
     <h2>Static Methods</h2>
     <dl class="callables">
-        <dt id="init" class="callable">
-  <span class="name"><a href="../sizzle/Services/init.html">init</a></span><span class="signature">(<wbr><span class="parameter" id="init-param-game"><span class="type-annotation"><a href="../sizzle/SizzleGame-class.html">SizzleGame</a></span> <span class="parameter-name">game</span></span>)
-    <span class="returntype parameter">&#8594; void</span>
-  </span>
-  
-
-</dt>
-<dd>
-  Initialise the services. SizzleGame does this
-automatically during constructor, and should not be
-called again.
-  
-
-</dd>
-
         <dt id="load" class="callable">
   <span class="name"><a href="../sizzle/Services/load.html">load</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
@@ -295,8 +289,8 @@ called again.
 and yarn variables (dialog system). Flags are appended
 or replaced. Clear the flags first if this is not desired.
 Yarn variables are appended or replaced. Clear the yarn
-variables using <code>clearDialog</code> if this is not desired.
-Use <a href="../sizzle/Services/onLoad.html">onLoad</a> callback to customise data after the load operation.
+variables using <code>Services.dialog.clear(variables: true)</code> if this is not
+desired. Use <a href="../sizzle/Services/onLoad.html">onLoad</a> callback to customise data after the load operation.
   
 
 </dd>
@@ -309,7 +303,7 @@ Use <a href="../sizzle/Services/onLoad.html">onLoad</a> callback to customise da
 
 </dt>
 <dd>
-  Save all data to the device
+  Save all data to the device.
   
 
 </dd>
@@ -328,7 +322,7 @@ Use <a href="../sizzle/Services/onLoad.html">onLoad</a> callback to customise da
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../index.html">sizzle</a></li>
-    <li><a href="../sizzle">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle</a></li>
     <li class="self-crumb">Services class</li>
 </ol>
 
@@ -341,7 +335,7 @@ Use <a href="../sizzle/Services/onLoad.html">onLoad</a> callback to customise da
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>

@@ -299,6 +299,18 @@ class DialogComponent extends PositionComponent
     _hide();
   }
 
+  /// Forwarded from Jenny when a yarn command runs. Delegates to the default
+  /// `DialogueView` implementation - see Jenny's documentation for details.
+  @override
+  FutureOr<void> onCommand(UserDefinedCommand command) =>
+      super.onCommand(command);
+
+  /// Forwarded from Jenny when the runner leaves a node. Delegates to the
+  /// default `DialogueView` implementation - see Jenny's documentation for
+  /// details.
+  @override
+  FutureOr<void> onNodeFinish(Node node) => super.onNodeFinish(node);
+
   void _clearTextAreas() {
     for (final t in _text) {
       _bg.remove(t);

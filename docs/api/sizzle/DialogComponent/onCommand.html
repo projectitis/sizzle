@@ -25,7 +25,7 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle.dart</a></li>
+    <li><a href="../../sizzle/">sizzle.dart</a></li>
     <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
     <li class="self-crumb">onCommand method</li>
   </ol>
@@ -33,17 +33,14 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -57,31 +54,31 @@
 
     <section class="multi-line-signature">
       
+  <div>
+    <ol class="annotation-list">
+        <li>@override</li>
+    </ol>
+  </div>
 <span class="returntype">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
 <span class="name ">onCommand</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="onCommand-param-command"><span class="type-annotation">UserDefinedCommand</span> <span class="parameter-name">command</span></span></li>
 </ol>)
 
-      <div class="features"><span class="feature">inherited</span></div>
+      
 
     </section>
     
 <section class="desc markdown">
-  <p>Called when the dialogue encounters a [<code>user-defined command</code>].</p>
-<p>This method is invoked immediately after the command itself is executed,
-but before the result of the execution was awaited. Thus, if the command's
-effect is asynchronous, then it will be send to dialogue views and
-executed <em>at the same time</em>.</p>
-<p>In cases when the command's effect occurs within the game, implementing
-this method may not be necessary. However, if you want to have a command
-that affects the dialogue views themselves, then this method provides
-a way of achieving that.</p>
+  <p>Forwarded from Jenny when a yarn command runs. Delegates to the default
+<code>DialogueView</code> implementation - see Jenny's documentation for details.</p>
 </section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">FutureOr&lt;void&gt; onCommand(UserDefinedCommand command) {}</code></pre>
+  <pre class="language-dart"><code class="language-dart">@override
+FutureOr&lt;void&gt; onCommand(UserDefinedCommand command) =&gt;
+    super.onCommand(command);</code></pre>
 </section>
 
 
@@ -95,7 +92,7 @@ a way of achieving that.</p>
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle</a></li>
     <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
     <li class="self-crumb">onCommand method</li>
 </ol>
@@ -109,7 +106,7 @@ a way of achieving that.</p>
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>

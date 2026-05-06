@@ -72,8 +72,8 @@ class Services {
   /// and yarn variables (dialog system). Flags are appended
   /// or replaced. Clear the flags first if this is not desired.
   /// Yarn variables are appended or replaced. Clear the yarn
-  /// variables using [clearDialog] if this is not desired.
-  /// Use [onLoad] callback to customise data after the load operation.
+  /// variables using `Services.dialog.clear(variables: true)` if this is not
+  /// desired. Use [onLoad] callback to customise data after the load operation.
   static FutureOr<void> load() async {
     _dir ??= await getApplicationDocumentsDirectory();
     if (_dir == null) return;
@@ -92,9 +92,9 @@ class Services {
     }
   }
 
-  /// Save all data to the device
+  /// Save all data to the device.
   ///
-  /// Override [saveCustom] to customise data before the save operation
+  /// Use the [onSave] callback to customise data before the save operation.
   static FutureOr<void> save() async {
     _dir ??= await getApplicationDocumentsDirectory();
     if (_dir == null) return;

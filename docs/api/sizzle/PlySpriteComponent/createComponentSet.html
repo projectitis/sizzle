@@ -25,7 +25,7 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle.dart</a></li>
+    <li><a href="../../sizzle/">sizzle.dart</a></li>
     <li><a href="../../sizzle/PlySpriteComponent-class.html">PlySpriteComponent</a></li>
     <li class="self-crumb">createComponentSet method</li>
   </ol>
@@ -33,17 +33,14 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -57,7 +54,7 @@
 
     <section class="multi-line-signature">
       
-<span class="returntype">ComponentSet</span>
+<span class="returntype">OrderedSet<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
 <span class="name ">createComponentSet</span>(<wbr>)
 
       <div class="features"><span class="feature">inherited</span></div>
@@ -66,7 +63,7 @@
     
 <section class="desc markdown">
   <p>This method creates the children container for the current component.
-Override this method if you need to have a custom <code>ComponentSet</code> within
+Override this method if you need to have a custom <code>OrderedSet</code> within
 a particular class.</p>
 </section>
 
@@ -74,7 +71,7 @@ a particular class.</p>
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">ComponentSet createComponentSet() =&gt; childrenFactory();</code></pre>
+  <pre class="language-dart"><code class="language-dart">OrderedSet&lt;Component&gt; createComponentSet() =&gt; childrenFactory();</code></pre>
 </section>
 
 
@@ -88,7 +85,7 @@ a particular class.</p>
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle</a></li>
     <li><a href="../../sizzle/PlySpriteComponent-class.html">PlySpriteComponent</a></li>
     <li class="self-crumb">createComponentSet method</li>
 </ol>
@@ -102,7 +99,7 @@ a particular class.</p>
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>

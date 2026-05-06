@@ -31,17 +31,14 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -70,6 +67,14 @@
     <section class="summary offset-anchor" id="classes">
       <h2>Classes</h2>
       <dl>
+          <dt id="AmbientLight">
+  <span class="name "><a href="../sizzle/AmbientLight-class.html">AmbientLight</a></span> 
+
+</dt>
+<dd>
+  Non-directional fill — lifts overall scene brightness uniformly.
+</dd>
+
           <dt id="CharCode">
   <span class="name "><a href="../sizzle/CharCode-class.html">CharCode</a></span> 
 
@@ -102,6 +107,14 @@
   Options available to the speech bubble
 </dd>
 
+          <dt id="DialogService">
+  <span class="name "><a href="../sizzle/DialogService-class.html">DialogService</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
           <dt id="DialogStyle">
   <span class="name "><a href="../sizzle/DialogStyle-class.html">DialogStyle</a></span> 
 
@@ -118,6 +131,33 @@
   A dialog text style definition
 </dd>
 
+          <dt id="DirectionalLight">
+  <span class="name "><a href="../sizzle/DirectionalLight-class.html">DirectionalLight</a></span> 
+
+</dt>
+<dd>
+  Parallel-ray light from <a href="../sizzle/DirectionalLight/direction.html">direction</a> (think sunlight). The vector is
+normalised at construction and on assignment, so callers may pass any
+non-zero vector. A zero vector is preserved as-is (no NaN).
+</dd>
+
+          <dt id="Environment">
+  <span class="name "><a href="../sizzle/Environment-class.html">Environment</a></span> 
+
+</dt>
+<dd>
+  Carrier component for scene-wide lighting state.
+</dd>
+
+          <dt id="EnvironmentComponent">
+  <span class="name "><a href="../sizzle/EnvironmentComponent-class.html">EnvironmentComponent</a></span> 
+
+</dt>
+<dd>
+  Base class for components that participate in environment-driven
+lighting.
+</dd>
+
           <dt id="FileLogger">
   <span class="name "><a href="../sizzle/FileLogger-class.html">FileLogger</a></span> 
 
@@ -126,6 +166,71 @@
   Logger that writes to a file
 TODO: May lock file if crash occurs while sink is open. Do we need to
 open and close the sink for every write?
+</dd>
+
+          <dt id="FileProperties">
+  <span class="name "><a href="../sizzle/FileProperties-class.html">FileProperties</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="FileService">
+  <span class="name "><a href="../sizzle/FileService-class.html">FileService</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="FlagService">
+  <span class="name "><a href="../sizzle/FlagService-class.html">FlagService</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="ImageProperties">
+  <span class="name "><a href="../sizzle/ImageProperties-class.html">ImageProperties</a></span> 
+
+</dt>
+<dd>
+  A class to store properties of an image, including manipulating the image
+prior to caching.
+</dd>
+
+          <dt id="ImageService">
+  <span class="name "><a href="../sizzle/ImageService-class.html">ImageService</a></span> 
+
+</dt>
+<dd>
+  A service for loading and caching image assets
+</dd>
+
+          <dt id="Joins">
+  <span class="name "><a href="../sizzle/Joins-class.html">Joins</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="Light">
+  <span class="name "><a href="../sizzle/Light-class.html">Light</a></span> 
+
+</dt>
+<dd>
+  Base light. All lights have a <a href="../sizzle/Light/color.html">color</a> and a <a href="../sizzle/Light/strength.html">strength</a> multiplier.
+</dd>
+
+          <dt id="Lightning">
+  <span class="name "><a href="../sizzle/Lightning-class.html">Lightning</a></span> 
+
+</dt>
+<dd>
+  An animated lightning bolt effect
 </dd>
 
           <dt id="Logger">
@@ -149,7 +254,7 @@ open and close the sink for every write?
 
 </dt>
 <dd>
-  Describe how each section of the <code>NineGrid</code> should repeat
+  Describe how each section of the <a href="../sizzle/NineGridComponent-class.html">NineGridComponent</a> should repeat
 </dd>
 
           <dt id="NineGridSize">
@@ -157,7 +262,7 @@ open and close the sink for every write?
 
 </dt>
 <dd>
-  Describes the size of each section of the <code>NineGrid</code>
+  Describes the size of each section of the <a href="../sizzle/NineGridComponent-class.html">NineGridComponent</a>
 </dd>
 
           <dt id="PlyAnimProps">
@@ -165,11 +270,7 @@ open and close the sink for every write?
 
 </dt>
 <dd>
-  Settings for an animation to play. Provide at least the <a href="../sizzle/PlyAnimProps/name.html">name</a> of the animation. You can override specific settings
-for the animation. Set <a href="../sizzle/PlyAnimProps/direction.html">direction</a> to change the animation direction (see <a href="../sizzle/PlyDirection-class.html">PlyDirection</a>), set <a href="../sizzle/PlyAnimProps/repeats.html">repeats</a> to
-change the number of times the animation loops, and set <code>speed</code> to change the animation playback speed by a factor.
-For example, <code>speed = 1.0</code> is default, <code>speed = 0.9</code> plays it at 90% of the original speed, and <code>speed = 0.5</code> will
-play it at half speed.
+  Settings for an animation to play.
 </dd>
 
           <dt id="PlyDirection">
@@ -302,6 +403,75 @@ sprite, resulting in a much smaller image (sprite sheet).
   
 </dd>
 
+          <dt id="Svg">
+  <span class="name "><a href="../sizzle/Svg-class.html">Svg</a></span> 
+
+</dt>
+<dd>
+  SVG base class.
+</dd>
+
+          <dt id="SvgComponent">
+  <span class="name "><a href="../sizzle/SvgComponent-class.html">SvgComponent</a></span> 
+
+</dt>
+<dd>
+  Renders a parsed <a href="../sizzle/Svg-class.html">Svg</a> with lighting from the nearest <a href="../sizzle/Environment-class.html">Environment</a>
+ancestor.
+</dd>
+
+          <dt id="SvgGroup">
+  <span class="name "><a href="../sizzle/SvgGroup-class.html">SvgGroup</a></span> 
+
+</dt>
+<dd>
+  A group definition
+</dd>
+
+          <dt id="SvgMaterial">
+  <span class="name "><a href="../sizzle/SvgMaterial-class.html">SvgMaterial</a></span> 
+
+</dt>
+<dd>
+  The material definition for a group, as defined in the pp:material attribute.
+The attribute is either 1, 2 or 3 items separated by whitespace:
+"baseColor" (topColor = baseColor, sheen = matte)
+"baseColor sheen" (topColor = baseColor)
+"baseColor topColor sheen"
+The baseColor and topColor are 3, 6, or 8 digit hex:
+#RGB (each digit doubled, alpha is assumed to be 255)
+#RRGGBB (alpha is assumed to be 255)
+#AARRGGBB
+Sheen may be <code>dull</code>, <code>matte</code>, <code>gloss</code>, <code>specular</code>, or just the first letter
+(<code>d</code>, <code>m</code>, <code>g</code>, <code>s</code>).
+</dd>
+
+          <dt id="SvgPath">
+  <span class="name "><a href="../sizzle/SvgPath-class.html">SvgPath</a></span> 
+
+</dt>
+<dd>
+  A closed path baked as a <code>dart:ui</code> <code>Path</code>. Vertices are not retained
+separately — the parser writes them directly into <a href="../sizzle/SvgPath/uiPath.html">uiPath</a> and (where
+relevant) applies any <code>pp:expand</code> offset before doing so.
+</dd>
+
+          <dt id="SvgRenderItem">
+  <span class="name "><a href="../sizzle/SvgRenderItem-class.html">SvgRenderItem</a></span> 
+
+</dt>
+<dd>
+  An item on the render list
+</dd>
+
+          <dt id="SvgService">
+  <span class="name "><a href="../sizzle/SvgService-class.html">SvgService</a></span> 
+
+</dt>
+<dd>
+  A service for loading and caching parsed <a href="../sizzle/Svg-class.html">Svg</a> assets.
+</dd>
+
           <dt id="TextAreaComponent">
   <span class="name "><a href="../sizzle/TextAreaComponent-class.html">TextAreaComponent</a></span> 
 
@@ -316,6 +486,30 @@ sprite, resulting in a much smaller image (sprite sheet).
 </dt>
 <dd>
   Details of a line of text
+</dd>
+
+          <dt id="Tile">
+  <span class="name "><a href="../sizzle/Tile-class.html">Tile</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="TileService">
+  <span class="name "><a href="../sizzle/TileService-class.html">TileService</a></span> 
+
+</dt>
+<dd>
+  
+</dd>
+
+          <dt id="Walkable">
+  <span class="name "><a href="../sizzle/Walkable-class.html">Walkable</a></span> 
+
+</dt>
+<dd>
+  
 </dd>
 
       </dl>
@@ -346,6 +540,23 @@ sprite, resulting in a much smaller image (sprite sheet).
 </dt>
 <dd>
   A nine-tile grid implementation
+</dd>
+
+          <dt id="SvgMaterialSheen">
+  <span class="name "><a href="../sizzle/SvgMaterialSheen.html">SvgMaterialSheen</a></span> 
+
+</dt>
+<dd>
+  The sheen levels.
+matte is default
+</dd>
+
+          <dt id="WidthFade">
+  <span class="name "><a href="../sizzle/WidthFade.html">WidthFade</a></span> 
+
+</dt>
+<dd>
+  
 </dd>
 
       </dl>
@@ -408,6 +619,16 @@ supported.
   
 </dd>
 
+          <dt id="RectExt">
+  <span class="name "><a href="../sizzle/RectExt.html">RectExt</a></span>
+  on Rect
+  
+
+</dt>
+<dd>
+  
+</dd>
+
           <dt id="Vector2Ext">
   <span class="name "><a href="../sizzle/Vector2Ext.html">Vector2Ext</a></span>
   on Vector2
@@ -423,6 +644,24 @@ supported.
 
 
 
+    <section class="summary offset-anchor" id="functions">
+      <h2>Functions</h2>
+      <dl class="callables">
+          <dt id="boundingBox" class="callable">
+  <span class="name"><a href="../sizzle/boundingBox.html">boundingBox</a></span><span class="signature">(<wbr><span class="parameter" id="boundingBox-param-size"><span class="type-annotation">Size</span> <span class="parameter-name">size</span>, </span><span class="parameter" id="boundingBox-param-angle"><span class="type-annotation">double</span> <span class="parameter-name">angle</span></span>)
+    <span class="returntype parameter">&#8594; Rect</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Calculate the bounding box of a rectangle rotated around its center.
+  
+
+</dd>
+
+      </dl>
+    </section>
 
     <section class="summary offset-anchor" id="typedefs">
       <h2>Typedefs</h2>
@@ -488,7 +727,7 @@ supported.
     <h5><span class="package-name">sizzle</span> <span class="package-kind">package</span></h5>
     <ol>
       <li class="section-title">Libraries</li>
-      <li><a href="../sizzle">sizzle</a></li>
+      <li><a href="../sizzle/">sizzle</a></li>
 </ol>
 
   </div>
@@ -499,7 +738,7 @@ supported.
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>

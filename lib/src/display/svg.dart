@@ -12,7 +12,7 @@ import 'package:xml/xml.dart';
 /// * The root `<svg>` element must declare the Paraplu namespace
 ///   (`xmlns:pp="http://paraplu.io/svg"`) and supplies `width`, `height`, and
 ///   the custom `pp:origin="x y"` attribute (the SVG's local origin in
-///   viewBox pixels — typically what a [PositionComponent] anchor will be
+///   viewBox pixels — typically what a `PositionComponent` anchor will be
 ///   derived from).
 /// * `<defs>` may contain `<g id="...">` group definitions. Each group may
 ///   carry the custom `pp:material` attribute and may contain `<path>` nodes.

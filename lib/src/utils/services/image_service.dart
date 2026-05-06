@@ -139,10 +139,10 @@ class ImageService {
     _queued.clear();
   }
 
-  /// Load an image from a path and cache it. if [properties.name] is not
-  /// provided, the path will be used as the name. Additional parameters can be
-  /// provided to scale and resize the image. Only provide [properties] or
-  /// [path], not both.
+  /// Load an image from a path and cache it. If [properties] is supplied
+  /// without a `name`, the path will be used as the name. Additional
+  /// parameters can be provided to scale and resize the image. Only provide
+  /// [properties] or [path], not both.
   Future<Image> load({
     ImageProperties? properties,
     String? path,

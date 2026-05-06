@@ -48,7 +48,7 @@ spriteWithSnap.useSnapScale = false;
 Many modern (non-traditional) pixel art games use large pixels but combine that with smooth
 movement. Traditional pixel art games stay on whole pixels (i.e. snap to pixels).
 
-A `Snap` component will snap tp the nearest whole pixel as it moves. If this is not the artistic
+A `Snap` component will snap to the nearest whole pixel as it moves. If this is not the artistic
 style you are going for, you can turn this off by setting `useSnap` to `false`.
 
 ```dart

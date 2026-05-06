@@ -25,7 +25,7 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle.dart</a></li>
+    <li><a href="../../sizzle/">sizzle.dart</a></li>
     <li><a href="../../sizzle/Services-class.html">Services</a></li>
     <li class="self-crumb">game property</li>
   </ol>
@@ -33,17 +33,14 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -56,26 +53,29 @@
 </h1></div>
 
     
-      <section class="multi-line-signature">
-        
-        <a href="../../sizzle/SizzleGame-class.html">SizzleGame</a>
-        <span class="name ">game</span>
-        <div class="features"><span class="feature">late</span><span class="feature">final</span></div>
-
-      </section>
-      
-<section class="desc markdown">
-  <p>Reference to the currently running game</p>
-</section>
-
-      
-<section class="summary source-code" id="source">
-  <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">static late final SizzleGame game;</code></pre>
-</section>
-
 
     
+        
+  <section id="getter">
+    <section class="multi-line-signature">
+      
+      <span class="returntype">dynamic</span>
+      get
+      <span class="name ">game</span>
+      
+
+    </section>
+    
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">static get game =&gt; _gameRef.findGame() as SizzleGame;</code></pre>
+</section>
+
+  </section>
+
+
 </div> <!-- /.main-content -->
 <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
   <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
@@ -86,7 +86,7 @@
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle</a></li>
     <li><a href="../../sizzle/Services-class.html">Services</a></li>
     <li class="self-crumb">game property</li>
 </ol>
@@ -100,7 +100,7 @@
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>

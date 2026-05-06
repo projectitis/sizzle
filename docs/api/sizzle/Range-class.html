@@ -25,24 +25,21 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../index.html">sizzle</a></li>
-    <li><a href="../sizzle">sizzle.dart</a></li>
+    <li><a href="../sizzle/">sizzle.dart</a></li>
     <li class="self-crumb">Range class</li>
   </ol>
   <div class="self-name">Range</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -66,7 +63,7 @@
   <section class="summary offset-anchor" id="constructors">
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
-        <dt id="Range" class="callable">
+        <dt id="Range.new" class="callable">
           <span class="name"><a href="../sizzle/Range/Range.html">Range</a></span><span class="signature">(<span class="parameter" id="-param-min"><span class="type-annotation">double</span> <span class="parameter-name">min</span>, </span><span class="parameter" id="-param-max"><span class="type-annotation">double</span> <span class="parameter-name">max</span></span>)</span>
         </dt>
         <dd>
@@ -256,6 +253,19 @@
 
 </dd>
 
+        <dt id="multiply" class="callable">
+  <span class="name"><a href="../sizzle/Range/multiply.html">multiply</a></span><span class="signature">(<wbr><span class="parameter" id="multiply-param-value"><span class="type-annotation">double</span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Multiply the min and max by a value of this range
+  
+
+</dd>
+
         <dt id="noSuchMethod" class="callable inherited">
   <span class="name"><a href="../sizzle/Range/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
     <span class="returntype parameter">&#8594; dynamic</span>
@@ -278,6 +288,45 @@
 </dt>
 <dd>
   Return a random number within this range
+  
+
+</dd>
+
+        <dt id="setFrom" class="callable">
+  <span class="name"><a href="../sizzle/Range/setFrom.html">setFrom</a></span><span class="signature">(<wbr><span class="parameter" id="setFrom-param-other"><span class="type-annotation"><a href="../sizzle/Range-class.html">Range</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Set the range to the same values as another range
+  
+
+</dd>
+
+        <dt id="setFromOffset" class="callable">
+  <span class="name"><a href="../sizzle/Range/setFromOffset.html">setFromOffset</a></span><span class="signature">(<wbr><span class="parameter" id="setFromOffset-param-offset"><span class="type-annotation">Offset</span> <span class="parameter-name">offset</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Set the range from the same values of an Offset
+  
+
+</dd>
+
+        <dt id="setFromVector2" class="callable">
+  <span class="name"><a href="../sizzle/Range/setFromVector2.html">setFromVector2</a></span><span class="signature">(<wbr><span class="parameter" id="setFromVector2-param-vector"><span class="type-annotation">Vector2</span> <span class="parameter-name">vector</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Set the range from the same values of a Vector2
   
 
 </dd>
@@ -325,10 +374,62 @@
   </section>
     
   <section
-      class="summary offset-anchor inherited"
+      class="summary offset-anchor"
       id="operators">
     <h2>Operators</h2>
     <dl class="callables">
+        <dt id="operator *" class="callable">
+  <span class="name"><a href="../sizzle/Range/operator_multiply.html">operator *</a></span><span class="signature">(<wbr><span class="parameter" id="*-param-value"><span class="type-annotation">double</span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../sizzle/Range-class.html">Range</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Multiple this range by a value and return a new range
+  
+
+</dd>
+
+        <dt id="operator +" class="callable">
+  <span class="name"><a href="../sizzle/Range/operator_plus.html">operator +</a></span><span class="signature">(<wbr><span class="parameter" id="+-param-other"><span class="type-annotation"><a href="../sizzle/Range-class.html">Range</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../sizzle/Range-class.html">Range</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Add another range to this range and return a new range
+  
+
+</dd>
+
+        <dt id="operator -" class="callable">
+  <span class="name"><a href="../sizzle/Range/operator_minus.html">operator -</a></span><span class="signature">(<wbr><span class="parameter" id="--param-other"><span class="type-annotation"><a href="../sizzle/Range-class.html">Range</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../sizzle/Range-class.html">Range</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Subtract another range from this range and return a new range
+  
+
+</dd>
+
+        <dt id="operator &#47;" class="callable">
+  <span class="name"><a href="../sizzle/Range/operator_divide.html">operator /</a></span><span class="signature">(<wbr><span class="parameter" id="/-param-value"><span class="type-annotation">double</span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../sizzle/Range-class.html">Range</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Divide this range by a value and return a new range
+  
+
+</dd>
+
         <dt id="operator ==" class="callable inherited">
   <span class="name"><a href="../sizzle/Range/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation">Object</span> <span class="parameter-name">other</span></span>)
     <span class="returntype parameter">&#8594; bool</span>
@@ -339,6 +440,19 @@
 <dd class="inherited">
   The equality operator.
   <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="operator unary-" class="callable">
+  <span class="name"><a href="../sizzle/Range/operator_unary_minus.html">operator unary-</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../sizzle/Range-class.html">Range</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Return a new range that is the negative of this range
+  
 
 </dd>
 
@@ -387,7 +501,7 @@
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../index.html">sizzle</a></li>
-    <li><a href="../sizzle">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle</a></li>
     <li class="self-crumb">Range class</li>
 </ol>
 
@@ -400,7 +514,7 @@
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>
