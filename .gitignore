@@ -1,5 +1,8 @@
 # See https://www.dartlang.org/guides/libraries/private-files
 
+# Claude
+.claude/
+
 # Files and directories created by pub
 .dart_tool/
 .packages
@@ -20,6 +23,7 @@ doc/api/
 *.js.deps
 *.js.map
 
+# Flutter plugins
 .flutter-plugins
 .flutter-plugins-dependencies
 
