@@ -21,6 +21,7 @@ dependencies:
   path_provider: ^2.1.0
   meta: ^1.10.0
   jx: ^1.0.5
+  xml: ^7.0.1
 
 dev_dependencies:
   lints: ^6.0.0
