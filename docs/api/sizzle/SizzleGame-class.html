@@ -53,6 +53,47 @@
 </h1></div>
 
     
+<section class="desc markdown">
+  <p>The root <code>FlameGame</code> for a Sizzle title.</p>
+<p><code>SizzleGame</code> adds three things on top of <code>FlameGame</code>:</p>
+<ol>
+<li><strong>A target/max sizing model with letterboxing.</strong> Pass <code>targetSize</code>
+(the always-visible game area) and optionally <code>maxSize</code> (the largest
+drawable area). Sizzle picks a uniform scale that keeps the target
+area fully on-screen, fills outwards up to the max, and draws a
+letterbox in <code>letterBoxColor</code> for anything beyond. Set
+<a href="../sizzle/SizzleGame/scaleToWholePixels.html">scaleToWholePixels</a> for crisp pixel-art rendering, or <a href="../sizzle/SizzleGame/scale.html">scale</a> to
+clamp the auto-fit factor.</li>
+<li><strong>Scene routing.</strong> Provide either a single <code>scene</code> or a map of named
+<code>scenes</code>; the first entry is the initial route. Each value is a
+<em>constructor reference</em> (<code>MyScene.new</code> or a closure) that the
+underlying <code>RouterComponent</code> invokes lazily on first visit. Switch
+scenes with <a href="../sizzle/SizzleGame/changeScene.html">changeScene</a> from anywhere with a game reference, or
+<code>Scene.changeScene</code> from inside a scene.</li>
+<li><strong>Coordinate-transformed input</strong> so taps, drags and hover hit the
+same components they appear over once the letterbox translation has
+been applied (see <a href="../sizzle/SizzleGame/componentsAtPoint.html">componentsAtPoint</a>).</li>
+</ol>
+<p>Read-only views of the resulting layout are exposed via <a href="../sizzle/SizzleGame/viewWindow.html">viewWindow</a>
+(the visible area inside the letterbox), <a href="../sizzle/SizzleGame/gameWindow.html">gameWindow</a> (the full max
+area, which may extend past the screen), <a href="../sizzle/SizzleGame/safeWindow.html">safeWindow</a> (the slice that
+is always visible regardless of aspect ratio), <a href="../sizzle/SizzleGame/gameWindowOffset.html">gameWindowOffset</a> (the
+max area's offset from the canvas), and <a href="../sizzle/SizzleGame/snapScale.html">snapScale</a> (the current
+pixel-to-screen ratio used by <code>Snap</code> components).</p>
+<p>A typical entry point:</p>
+<pre class="language-dart"><code class="language-dart">void main() {
+  final game = SizzleGame(
+    scenes: {
+      'menu': MenuScene.new,
+      'game': GameScene.new,
+    },
+    targetSize: Vector2(240, 180),
+    maxSize: Vector2(360, 180),
+  );
+  runApp(GameWidget(game: game));
+}
+</code></pre>
+</section>
 
 
 
@@ -61,10 +102,10 @@
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
         <dt id="SizzleGame.new" class="callable">
-          <span class="name"><a href="../sizzle/SizzleGame/SizzleGame.html">SizzleGame</a></span><span class="signature">({<span class="parameter" id="-param-scenes"><span class="type-annotation">Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">Component Function<span class="signature">()</span></span>&gt;</span>?</span> <span class="parameter-name">scenes</span>, </span><span class="parameter" id="-param-scene"><span class="type-annotation">Component</span> <span class="parameter-name">scene</span>()?, </span><span class="parameter" id="-param-targetSize"><span class="type-annotation">Vector2?</span> <span class="parameter-name">targetSize</span>, </span><span class="parameter" id="-param-maxSize"><span class="type-annotation">Vector2?</span> <span class="parameter-name">maxSize</span>, </span><span class="parameter" id="-param-letterBoxColor"><span class="type-annotation">Color</span> <span class="parameter-name">letterBoxColor</span> = <span class="default-value">const Color(0xff000000)</span>, </span><span class="parameter" id="-param-scaleToWholePixels"><span class="type-annotation">bool</span> <span class="parameter-name">scaleToWholePixels</span> = <span class="default-value">false</span>, </span><span class="parameter" id="-param-scale"><span class="type-annotation"><a href="../sizzle/Range-class.html">Range</a>?</span> <span class="parameter-name">scale</span>, </span><span class="parameter" id="-param-maxFPS"><span class="type-annotation">double?</span> <span class="parameter-name">maxFPS</span></span>})</span>
+          <span class="name"><a href="../sizzle/SizzleGame/SizzleGame.html">SizzleGame</a></span><span class="signature">({<span class="parameter" id="-param-scenes"><span class="type-annotation">Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">Component Function<span class="signature">()</span></span>&gt;</span>?</span> <span class="parameter-name">scenes</span>, </span><span class="parameter" id="-param-scene"><span class="type-annotation">Component</span> <span class="parameter-name">scene</span>()?, </span><span class="parameter" id="-param-targetSize"><span class="type-annotation">Vector2?</span> <span class="parameter-name">targetSize</span>, </span><span class="parameter" id="-param-maxSize"><span class="type-annotation">Vector2?</span> <span class="parameter-name">maxSize</span>, </span><span class="parameter" id="-param-letterBoxColor"><span class="type-annotation">Color</span> <span class="parameter-name">letterBoxColor</span> = <span class="default-value">const Color(0xff000000)</span>, </span><span class="parameter" id="-param-scaleToWholePixels"><span class="type-annotation">bool</span> <span class="parameter-name">scaleToWholePixels</span> = <span class="default-value">false</span>, </span><span class="parameter" id="-param-scale"><span class="type-annotation"><a href="../sizzle/Range-class.html">Range</a>?</span> <span class="parameter-name">scale</span></span>})</span>
         </dt>
         <dd>
-          Create a new sizzle game
+          Creates a new Sizzle game.
         </dd>
     </dl>
   </section>
@@ -143,7 +184,8 @@ instance if needed.
 
 </dt>
 <dd>
-  Get the current scene
+  The scene currently on top of the navigation stack, or <code>null</code> while
+the initial route is still mounting.
   <div class="features"><span class="feature">no setter</span></div>
 
 </dd>
@@ -232,7 +274,8 @@ text.
 
 </dt>
 <dd>
-  The maximum size of the game. Not all parts may be visible
+  The full max-size game area in screen pixels. May extend past the
+visible canvas - see <a href="../sizzle/SizzleGame/viewWindow.html">viewWindow</a> for what the user actually sees.
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
@@ -244,7 +287,8 @@ text.
 
 </dt>
 <dd>
-  The offset of the game window from the top left of the screen
+  Offset of <a href="../sizzle/SizzleGame/gameWindow.html">gameWindow</a> from the top-left of the canvas, in screen
+pixels. Negative when the max area extends past the canvas edges.
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
@@ -459,7 +503,7 @@ processed.
 
 </dt>
 <dd>
-  
+  The maximum drawable area, in unscaled game pixels.
   <div class="features"><span class="feature">no setter</span></div>
 
 </dd>
@@ -510,7 +554,9 @@ game widget.
 
 </dt>
 <dd>
-  User-defined cleanup function
+  Optional cleanup callback. Invoked from <a href="../sizzle/SizzleGame/onDispose.html">onDispose</a> before the
+superclass tears down, giving the game a chance to release resources
+(file handles, audio sinks, services) it owns.
   <div class="features"><span class="feature">getter/setter pair</span></div>
 
 </dd>
@@ -614,6 +660,18 @@ render context to all its children (recursively).
 
 </dd>
 
+        <dt id="router" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/router.html">router</a></span>
+  <span class="signature">&#8594; RouterComponent</span>
+  
+
+</dt>
+<dd>
+  The underlying Flame <code>RouterComponent</code> driving scene navigation.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
         <dt id="runtimeType" class="property inherited">
   <span class="name"><a href="../sizzle/SizzleGame/runtimeType.html">runtimeType</a></span>
   <span class="signature">&#8594; Type</span>
@@ -633,8 +691,9 @@ render context to all its children (recursively).
 
 </dt>
 <dd>
-  The visible safe window. May be smaller than the view window, but
-guaranteed to be visible
+  The slice of <a href="../sizzle/SizzleGame/gameWindow.html">gameWindow</a> that is guaranteed to be visible at every
+aspect ratio. May be smaller than <a href="../sizzle/SizzleGame/viewWindow.html">viewWindow</a>. UI and critical game
+elements should stay inside this rectangle.
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
@@ -646,7 +705,8 @@ guaranteed to be visible
 
 </dt>
 <dd>
-  Scale the game to fit the whole screen
+  Optional clamp on the auto-fit scale factor. When non-zero the scale
+chosen by <a href="../sizzle/SizzleGame/onGameResize.html">onGameResize</a> is restricted to this <code>[min, max]</code> range.
   <div class="features"><span class="feature">getter/setter pair</span></div>
 
 </dd>
@@ -658,7 +718,9 @@ guaranteed to be visible
 
 </dt>
 <dd>
-  Always ensure that the <a href="../sizzle/SizzleGame/snapScale.html">snapScale</a> is in whole pixels
+  When <code>true</code>, <a href="../sizzle/SizzleGame/snapScale.html">snapScale</a> is rounded down to an integer so each game
+pixel covers a whole number of screen pixels. Recommended for
+pixel-art games.
   <div class="features"><span class="feature">getter/setter pair</span></div>
 
 </dd>
@@ -682,9 +744,10 @@ guaranteed to be visible
 
 </dt>
 <dd>
-  The size of each pixel once the view window has been scaled. This is used
-by bitmap sprites to display at the correct scale and to snap to whole
-pixels.
+  The size of one game pixel in screen pixels after the view window has
+been scaled. Updated automatically by <a href="../sizzle/SizzleGame/onGameResize.html">onGameResize</a>; bitmap sprites
+and <code>Snap</code> components read this to render at the right scale and snap
+to whole pixels.
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
@@ -696,7 +759,9 @@ pixels.
 
 </dt>
 <dd>
-  
+  The always-visible game area, in unscaled game pixels. Common sizes
+are 320x240, 160x120 etc. Set via the <code>targetSize</code> constructor
+parameter; once the game is constructed this getter is read-only.
   <div class="features"><span class="feature">no setter</span></div>
 
 </dd>
@@ -708,7 +773,8 @@ pixels.
 
 </dt>
 <dd>
-  The visible game window inside the letterbox
+  The visible game area inside the letterbox, in screen pixels.
+Updated by <a href="../sizzle/SizzleGame/onGameResize.html">onGameResize</a>.
   <div class="features"><span class="feature">final</span></div>
 
 </dd>
@@ -865,7 +931,7 @@ rebuild when this value changes.
 
 </dt>
 <dd>
-  Handle scene changes using the Flame router.
+  Switches to the scene registered under <code>scene</code>.
   
 
 </dd>
@@ -892,10 +958,8 @@ docs for context.
 
 </dt>
 <dd>
-  Transform event coordinates to account for the letterbox offset applied
-in <a href="../sizzle/SizzleGame/renderTree.html">renderTree</a>. Without this, hit testing uses raw screen coordinates
-while components are rendered with the letterbox translation, causing all
-tap/drag events to miss their targets.
+  Transforms event coordinates to account for the letterbox offset
+applied in <a href="../sizzle/SizzleGame/renderTree.html">renderTree</a>.
   
 
 </dd>
@@ -1278,7 +1342,7 @@ not be on the flutter widget tree anymore.
 
 </dt>
 <dd>
-  Handle dispose and cleanup
+  Runs <a href="../sizzle/SizzleGame/onCleanup.html">onCleanup</a> (if set) and tears down the game.
   
 
 </dd>
@@ -1291,7 +1355,9 @@ not be on the flutter widget tree anymore.
 
 </dt>
 <dd>
-  Calculate new view window size and snap scaling when the game resizes
+  Recomputes <a href="../sizzle/SizzleGame/snapScale.html">snapScale</a>, <a href="../sizzle/SizzleGame/viewWindow.html">viewWindow</a>, <a href="../sizzle/SizzleGame/gameWindow.html">gameWindow</a>, <a href="../sizzle/SizzleGame/safeWindow.html">safeWindow</a> and
+<a href="../sizzle/SizzleGame/gameWindowOffset.html">gameWindowOffset</a> for the new canvas size, then forwards to
+<code>FlameGame.onGameResize</code>. Honours <a href="../sizzle/SizzleGame/scale.html">scale</a> and <a href="../sizzle/SizzleGame/scaleToWholePixels.html">scaleToWholePixels</a>.
   
 
 </dd>
@@ -1612,7 +1678,9 @@ canvas is reset for each one.
 
 </dt>
 <dd>
-  Letterbox the view window
+  Translates the canvas to the <a href="../sizzle/SizzleGame/viewWindow.html">viewWindow</a> origin, renders the
+component tree, and fills any space outside <a href="../sizzle/SizzleGame/viewWindow.html">viewWindow</a> with the
+letterbox colour.
   
 
 </dd>

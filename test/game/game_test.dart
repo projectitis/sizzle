@@ -8,14 +8,18 @@ import 'package:flutter/painting.dart';
 
 import '../sizzle_test_helpers.dart';
 
-class TestScene extends Scene {
-  static Component create() => TestScene();
-}
+class TestScene extends Scene {}
 
 class LeveledScene extends Scene {
   LeveledScene(this.level);
   final int level;
 }
+
+class SceneA extends Scene {}
+
+class SceneB extends Scene {}
+
+class SceneC extends Scene {}
 
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -205,6 +209,77 @@ void main() async {
         final scene = game.currentScene;
         expect(scene, isA<LeveledScene>());
         expect((scene! as LeveledScene).level, 1);
+      },
+    );
+
+    testWithGame<SizzleGame>(
+      'changeScene pushes the new scene on top by default',
+      () => SizzleGame(
+        scenes: {
+          'a': SceneA.new,
+          'b': SceneB.new,
+        },
+        targetSize: Vector2(150, 100),
+      ),
+      (game) async {
+        await game.ready();
+        expect(game.router.stack.length, 1);
+        expect(game.currentScene, isA<SceneA>());
+
+        game.changeScene('b');
+        await game.ready();
+
+        expect(game.router.stack.length, 2);
+        expect(game.currentScene, isA<SceneB>());
+      },
+    );
+
+    testWithGame<SizzleGame>(
+      'changeScene with replace: true swaps the top route in place',
+      () => SizzleGame(
+        scenes: {
+          'a': SceneA.new,
+          'b': SceneB.new,
+          'c': SceneC.new,
+        },
+        targetSize: Vector2(150, 100),
+      ),
+      (game) async {
+        await game.ready();
+        game.changeScene('b');
+        await game.ready();
+        expect(game.router.stack.length, 2);
+
+        game.changeScene('c', replace: true);
+        await game.ready();
+
+        expect(game.router.stack.length, 2);
+        expect(game.currentScene, isA<SceneC>());
+        expect(game.router.stack.first.name, 'a');
+      },
+    );
+
+    testWithGame<SizzleGame>(
+      'Scene.changeScene forwards replace to the game',
+      () => SizzleGame(
+        scenes: {
+          'a': SceneA.new,
+          'b': SceneB.new,
+          'c': SceneC.new,
+        },
+        targetSize: Vector2(150, 100),
+      ),
+      (game) async {
+        await game.ready();
+        game.currentScene!.changeScene('b');
+        await game.ready();
+        expect(game.router.stack.length, 2);
+
+        game.currentScene!.changeScene('c', replace: true);
+        await game.ready();
+
+        expect(game.router.stack.length, 2);
+        expect(game.currentScene, isA<SceneC>());
       },
     );
 

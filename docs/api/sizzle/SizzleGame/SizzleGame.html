@@ -61,16 +61,21 @@
 <li><span class="parameter" id="-param-letterBoxColor"><span class="type-annotation">Color</span> <span class="parameter-name">letterBoxColor</span> = <span class="default-value">const Color(0xff000000)</span>, </span></li>
 <li><span class="parameter" id="-param-scaleToWholePixels"><span class="type-annotation">bool</span> <span class="parameter-name">scaleToWholePixels</span> = <span class="default-value">false</span>, </span></li>
 <li><span class="parameter" id="-param-scale"><span class="type-annotation"><a href="../../sizzle/Range-class.html">Range</a>?</span> <span class="parameter-name">scale</span>, </span></li>
-<li><span class="parameter" id="-param-maxFPS"><span class="type-annotation">double?</span> <span class="parameter-name">maxFPS</span>, </span></li>
 </ol>})
     </section>
     
 <section class="desc markdown">
-  <p>Create a new sizzle game</p>
-<p>Either a <code>scene</code> or map of <code>scenes</code> should be provided. The game will
-start on the first scene in the list. Set a target screen size using
-<code>targetSize</code>, and use <code>maxSize</code> to support a larger game area. Set the
-color of the letterbox with <code>letterBoxColor</code>.</p>
+  <p>Creates a new Sizzle game.</p>
+<p>Exactly one of <code>scene</code> (a single scene) or <code>scenes</code> (a named map)
+must be supplied. For <code>scenes</code>, the first entry becomes the initial
+route. Each value is a constructor reference - typically <code>MyScene.new</code>,
+or <code>() =&gt; MyScene(arg)</code> if the scene needs constructor arguments.</p>
+<p><code>targetSize</code> is the always-visible game area; <code>maxSize</code> (defaults to
+<code>targetSize</code>) lets you draw beyond it without the extra area becoming
+the new minimum visible area. <code>letterBoxColor</code> is painted around
+<code>maxSize</code> when the canvas is larger than the max area.
+<code>scaleToWholePixels</code> forces integer pixel scaling for crisp pixel-art.
+<code>scale</code> clamps the auto-fit scale factor.</p>
 </section>
 
 
@@ -85,7 +90,6 @@ color of the letterbox with <code>letterBoxColor</code>.</p>
   Color letterBoxColor = const Color(0xff000000),
   this.scaleToWholePixels = false,
   Range? scale,
-  double? maxFPS,
 }) : super() {
   assert(
     scene != null || scenes != null,
@@ -120,7 +124,8 @@ color of the letterbox with <code>letterBoxColor</code>.</p>
         RouterComponent(initialRoute: routes.keys.first, routes: routes),
   );
 
-  &#47;&#47; Handle game exit
+  &#47;&#47; Route lifecycle events through onDispose so platform-specific exit
+  &#47;&#47; paths (close button, OS shutdown) all converge on the same cleanup.
   AppLifecycleListener(
     onDetach: () {
       onDispose();

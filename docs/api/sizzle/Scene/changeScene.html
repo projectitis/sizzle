@@ -63,13 +63,22 @@
 
     </section>
     
+<section class="desc markdown">
+  <p>Switches the running <a href="../../sizzle/SizzleGame-class.html">SizzleGame</a> to the scene registered under <code>scene</code>.</p>
+<p>Convenience wrapper around <code>game.changeScene(name)</code> so that scenes can
+trigger navigation without reaching for the game reference directly. The
+named route must exist in the <code>scenes:</code> map passed to <a href="../../sizzle/SizzleGame-class.html">SizzleGame</a> or
+the underlying call will assert.</p>
+<p>If <code>replace</code> is <code>true</code>, the new scene takes the place of the current
+route on the navigation stack instead of being pushed on top of it.</p>
+</section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">void changeScene(String scene, {bool replace = false}) {
-  gameRef.changeScene(scene);
+  game.changeScene(scene, replace: replace);
 }</code></pre>
 </section>
 

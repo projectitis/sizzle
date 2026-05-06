@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the targetGameSize property from the SizzleGame class, for the Dart programming language.">
-  <title>targetGameSize property - SizzleGame class - sizzle library - Dart API</title>
+  <meta name="description" content="API docs for the router property from the SizzleGame class, for the Dart programming language.">
+  <title>router property - SizzleGame class - sizzle library - Dart API</title>
 
 
   
@@ -27,9 +27,9 @@
     <li><a href="../../index.html">sizzle</a></li>
     <li><a href="../../sizzle/">sizzle.dart</a></li>
     <li><a href="../../sizzle/SizzleGame-class.html">SizzleGame</a></li>
-    <li class="self-crumb">targetGameSize property</li>
+    <li class="self-crumb">router property</li>
   </ol>
-  <div class="self-name">targetGameSize</div>
+  <div class="self-name">router</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -49,7 +49,7 @@
     data-above-sidebar="sizzle&#47;SizzleGame-class-sidebar.html"
     data-below-sidebar="">
     <div>
-<h1><span class="kind-property">targetGameSize</span> property 
+<h1><span class="kind-property">router</span> property 
 </h1></div>
 
     
@@ -59,23 +59,24 @@
   <section id="getter">
     <section class="multi-line-signature">
       
-      <span class="returntype">Vector2</span>
+      <span class="returntype">RouterComponent</span>
       get
-      <span class="name ">targetGameSize</span>
+      <span class="name ">router</span>
       
 
     </section>
     
 <section class="desc markdown">
-  <p>The always-visible game area, in unscaled game pixels. Common sizes
-are 320x240, 160x120 etc. Set via the <code>targetSize</code> constructor
-parameter; once the game is constructed this getter is read-only.</p>
+  <p>The underlying Flame <code>RouterComponent</code> driving scene navigation.</p>
+<p>Exposed for advanced use cases - inspecting the navigation stack,
+driving custom transitions, or popping routes - that the convenience
+methods on <a href="../../sizzle/SizzleGame-class.html">SizzleGame</a> and <a href="../../sizzle/Scene-class.html">Scene</a> don't cover.</p>
 </section>
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">Vector2 get targetGameSize =&gt; _targetSize;</code></pre>
+  <pre class="language-dart"><code class="language-dart">RouterComponent get router =&gt; _router;</code></pre>
 </section>
 
   </section>
@@ -93,7 +94,7 @@ parameter; once the game is constructed this getter is read-only.</p>
     <li><a href="../../index.html">sizzle</a></li>
     <li><a href="../../sizzle/">sizzle</a></li>
     <li><a href="../../sizzle/SizzleGame-class.html">SizzleGame</a></li>
-    <li class="self-crumb">targetGameSize property</li>
+    <li class="self-crumb">router property</li>
 </ol>
 
   <h5>SizzleGame class</h5>
