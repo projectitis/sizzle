@@ -61,6 +61,14 @@
 
       </section>
       
+<section class="desc markdown">
+  <p>When <code>true</code>, <a href="../../sizzle/Scene/update.html">update</a> and <a href="../../sizzle/Scene/render.html">render</a> short-circuit so the scene's children
+are neither ticked nor drawn.</p>
+<p>Useful for pause menus, modal overlays, or temporarily freezing the
+world while a different scene is presented on top. Pausing only affects
+this scene - other mounted scenes (and the rest of the component tree)
+continue to run.</p>
+</section>
 
       
 <section class="summary source-code" id="source">

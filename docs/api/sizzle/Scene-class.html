@@ -53,6 +53,31 @@
 </h1></div>
 
     
+<section class="desc markdown">
+  <p>Base class for a top-level screen, level, or game state in a Sizzle game.</p>
+<p>Each entry in <a href="../sizzle/SizzleGame-class.html">SizzleGame</a>'s <code>scenes:</code> map (or its <code>scene:</code>) is a
+constructor reference to a <a href="../sizzle/Scene-class.html">Scene</a> subclass. The subclass is instantiated
+lazily by Flame's <code>RouterComponent</code> the first time the route is visited,
+so any expensive work belongs in <code>onLoad</code> rather than the constructor.</p>
+<p>A minimal scene only needs to extend <a href="../sizzle/Scene-class.html">Scene</a>:</p>
+<pre class="language-dart"><code class="language-dart">class IntroScene extends Scene {
+  @override
+  Future&lt;void&gt; onLoad() async {
+    // Load assets, add child components.
+  }
+}
+
+SizzleGame(scenes: {'intro': IntroScene.new});
+</code></pre>
+<p>If the scene needs constructor arguments, supply a closure in place of
+<code>MyScene.new</code>:</p>
+<pre class="language-dart"><code class="language-dart">SizzleGame(scenes: {'level': () =&gt; LevelScene(currentLevel)});
+</code></pre>
+<p>Scenes are Flame <code>Component</code>s, so children, lifecycle hooks (<code>onLoad</code>,
+<code>onMount</code>, <code>onRemove</code>, etc.) and the priority/key API all behave as they
+do in any other component. The mixed-in <code>HasGameReference</code> exposes the
+running <a href="../sizzle/SizzleGame-class.html">SizzleGame</a> via <code>game</code>.</p>
+</section>
 
 
 
@@ -160,18 +185,6 @@ text.
 <dd class="inherited">
   Reference to the top-level Game instance that owns this component.
   <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="gameRef" class="property inherited">
-  <span class="name"><a href="../sizzle/Scene/gameRef.html">gameRef</a></span>
-  <span class="signature">&#8594; <a href="../sizzle/SizzleGame-class.html">SizzleGame</a></span>
-  
-
-</dt>
-<dd class="inherited">
-  Equivalent to the <code>game</code> property.
-  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
 
 </dd>
 
@@ -318,7 +331,8 @@ mounted to a new parent.
 
 </dt>
 <dd>
-  
+  When <code>true</code>, <a href="../sizzle/Scene/update.html">update</a> and <a href="../sizzle/Scene/render.html">render</a> short-circuit so the scene's children
+are neither ticked nor drawn.
   <div class="features"><span class="feature">getter/setter pair</span></div>
 
 </dd>
@@ -457,7 +471,7 @@ without a parent.
 
 </dt>
 <dd>
-  
+  Switches the running <a href="../sizzle/SizzleGame-class.html">SizzleGame</a> to the scene registered under <code>scene</code>.
   
 
 </dd>
@@ -837,7 +851,8 @@ and their children.
 
 </dt>
 <dd>
-  
+  Draws the scene's children. Skipped while <a href="../sizzle/Scene/paused.html">paused</a>, leaving the previous
+frame visible.
   
 
 </dd>
@@ -902,8 +917,7 @@ and their children.
 
 </dt>
 <dd>
-  This method is called periodically by the game engine to request that your
-component updates itself.
+  Advances the scene's children by <code>dt</code> seconds. Skipped while <a href="../sizzle/Scene/paused.html">paused</a>.
   
 
 </dd>

@@ -68,14 +68,7 @@
     </section>
     
 <section class="desc markdown">
-  <p>This method is called periodically by the game engine to request that your
-component updates itself.</p>
-<p>The time <code>dt</code> in seconds (with microseconds precision provided by Flutter)
-since the last update cycle.
-This time can vary according to hardware capacity, so make sure to update
-your state considering this.
-All components in the tree are always updated by the same amount. The time
-each one takes to update adds up to the next update cycle.</p>
+  <p>Advances the scene's children by <code>dt</code> seconds. Skipped while <a href="../../sizzle/Scene/paused.html">paused</a>.</p>
 </section>
 
 

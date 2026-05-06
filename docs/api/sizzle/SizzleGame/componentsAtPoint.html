@@ -69,10 +69,11 @@
     </section>
     
 <section class="desc markdown">
-  <p>Transform event coordinates to account for the letterbox offset applied
-in <a href="../../sizzle/SizzleGame/renderTree.html">renderTree</a>. Without this, hit testing uses raw screen coordinates
-while components are rendered with the letterbox translation, causing all
-tap/drag events to miss their targets.</p>
+  <p>Transforms event coordinates to account for the letterbox offset
+applied in <a href="../../sizzle/SizzleGame/renderTree.html">renderTree</a>.</p>
+<p>Without this, hit testing would use raw screen coordinates while
+components are rendered with the letterbox translation, causing
+every tap/drag/hover event to miss its target.</p>
 </section>
 
 

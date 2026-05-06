@@ -67,7 +67,10 @@
     </section>
     
 <section class="desc markdown">
-  <p>Handle dispose and cleanup</p>
+  <p>Runs <a href="../../sizzle/SizzleGame/onCleanup.html">onCleanup</a> (if set) and tears down the game.</p>
+<p>Idempotent: subsequent calls are no-ops, which lets multiple
+platform lifecycle paths (<code>onDetach</code>, <code>onExitRequested</code>, manual
+disposal) safely converge here.</p>
 </section>
 
 
@@ -76,8 +79,6 @@
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
 void onDispose() {
-  &#47;&#47; Ensure game is only disposed once. Different lifecycle events may end
-  &#47;&#47; up calling this method multiple times on certain platforms.
   if (!_isDisposed) {
     onCleanup?.call();
     super.onDispose();
