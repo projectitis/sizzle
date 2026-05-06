@@ -47,7 +47,7 @@ import 'package:sizzle/sizzle.dart';
 
 void main() {
   final game = SizzleGame(
-    scene: ExampleScene.create,
+    scene: ExampleScene.new,
     targetSize: Vector2(320, 240),
   );
 
