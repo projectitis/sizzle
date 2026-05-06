@@ -25,7 +25,7 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle.dart</a></li>
+    <li><a href="../../sizzle/">sizzle.dart</a></li>
     <li><a href="../../sizzle/TextAreaComponent-class.html">TextAreaComponent</a></li>
     <li class="self-crumb">angleTo method</li>
   </ol>
@@ -33,17 +33,14 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -67,13 +64,14 @@
     
 <section class="desc markdown">
   <p>Returns the angle formed by component's orientation vector and a vector
-starting at component's absolute position and ending at <code>target</code>. This
-angle is measured in clockwise direction. <code>target</code> should be in absolute/world
-coordinate system.</p>
+starting at component's absolute position and ending at <code>target</code>. I.e.
+how much the current component need to rotate to face the target. This
+angle is measured in clockwise direction. <code>target</code> should be in
+absolute/world coordinate system.</p>
 <p>Uses <code>nativeAngle</code> to decide the orientation direction of the component.
 See <code>lookAt</code> to make the component instantly rotate towards target.</p>
-<p>Note: If target coincides with the current component, then it is treated
-as being north.</p>
+<p>Note: If target coincides with the current component's position, then it
+is treated as being north.</p>
 </section>
 
 
@@ -81,11 +79,32 @@ as being north.</p>
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">double angleTo(Vector2 target) {
-  return math.atan2(
-        target.x - absolutePosition.x,
-        absolutePosition.y - target.y,
-      ) -
-      (nativeAngle + absoluteAngle);
+  final direction = target - absolutePosition;
+  if (direction.isZero()) {
+    &#47;&#47; If the target coincides with the component&#39;s position, we treat it as
+    &#47;&#47; being north.
+    return -nativeAngle % tau;
+  }
+
+  final parentAbsoluteScale = _parentAbsoluteScale;
+  final targetAngle = math.atan2(
+    direction.x * scale.x.sign,
+    -direction.y * scale.y.sign,
+  );
+  final angleDifference = targetAngle - absoluteAngle - nativeAngle;
+
+  final hasOddFlips =
+      parentAbsoluteScale.x.isNegative ^
+      parentAbsoluteScale.y.isNegative ^
+      scale.x.isNegative ^
+      scale.y.isNegative;
+  final hasSelfYFlip =
+      !parentAbsoluteScale.y.isNegative &amp;&amp; scale.y.isNegative;
+
+  final result =
+      (hasOddFlips ? -1 : 1) * angleDifference +
+      (hasSelfYFlip ? 1 : 0) * math.pi;
+  return result.toNormalizedAngle();
 }</code></pre>
 </section>
 
@@ -100,7 +119,7 @@ as being north.</p>
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle</a></li>
     <li><a href="../../sizzle/TextAreaComponent-class.html">TextAreaComponent</a></li>
     <li class="self-crumb">angleTo method</li>
 </ol>
@@ -114,7 +133,7 @@ as being north.</p>
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>

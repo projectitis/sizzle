@@ -25,7 +25,7 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle.dart</a></li>
+    <li><a href="../../sizzle/">sizzle.dart</a></li>
     <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
     <li class="self-crumb">onLoad method</li>
   </ol>
@@ -33,17 +33,14 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -78,7 +75,7 @@ component. This has several advantages over the traditional constructor:</p>
 <li>it is invoked when the size of the game canvas is already known.</li>
 </ul>
 <p>If your loading logic requires knowing the size of the game canvas, then
-add <code>HasGameRef</code> mixin and then query <code>game.size</code> or
+add <code>HasGameReference</code> mixin and then query <code>game.size</code> or
 <code>game.canvasSize</code>.</p>
 <p>The default implementation returns <code>null</code>, indicating that there is no
 need to await anything. When overriding this method, you have a choice
@@ -137,7 +134,7 @@ FutureOr&lt;void&gt; onLoad() async {
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle</a></li>
     <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
     <li class="self-crumb">onLoad method</li>
 </ol>
@@ -151,7 +148,7 @@ FutureOr&lt;void&gt; onLoad() async {
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>

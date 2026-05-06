@@ -25,7 +25,7 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle.dart</a></li>
+    <li><a href="../../sizzle/">sizzle.dart</a></li>
     <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
     <li class="self-crumb">onNodeFinish method</li>
   </ol>
@@ -33,17 +33,14 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -57,29 +54,31 @@
 
     <section class="multi-line-signature">
       
+  <div>
+    <ol class="annotation-list">
+        <li>@override</li>
+    </ol>
+  </div>
 <span class="returntype">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
 <span class="name ">onNodeFinish</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="onNodeFinish-param-node"><span class="type-annotation">Node</span> <span class="parameter-name">node</span></span></li>
 </ol>)
 
-      <div class="features"><span class="feature">inherited</span></div>
+      
 
     </section>
     
 <section class="desc markdown">
-  <p>Called when the dialogue exits the <code>node</code>.</p>
-<p>For example, during a [<code>&lt;&lt;jump&gt;&gt;</code>] this callback will be called with the
-current node, and then <code>onNodeStart</code> will be called with the new node.
-Similarly, the command [<code>&lt;&lt;stop&gt;&gt;</code>] will trigger this callback too. At the
-same time, during [<code>&lt;&lt;visit&gt;&gt;</code>] this callback will not be invoked.</p>
-<p>This callback can be used to clean up any preparations that were
-performed in <code>onNodeStart</code>.</p>
+  <p>Forwarded from Jenny when the runner leaves a node. Delegates to the
+default <code>DialogueView</code> implementation - see Jenny's documentation for
+details.</p>
 </section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">FutureOr&lt;void&gt; onNodeFinish(Node node) {}</code></pre>
+  <pre class="language-dart"><code class="language-dart">@override
+FutureOr&lt;void&gt; onNodeFinish(Node node) =&gt; super.onNodeFinish(node);</code></pre>
 </section>
 
 
@@ -93,7 +92,7 @@ performed in <code>onNodeStart</code>.</p>
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle</a></li>
     <li><a href="../../sizzle/DialogComponent-class.html">DialogComponent</a></li>
     <li class="self-crumb">onNodeFinish method</li>
 </ol>
@@ -107,7 +106,7 @@ performed in <code>onNodeStart</code>.</p>
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>

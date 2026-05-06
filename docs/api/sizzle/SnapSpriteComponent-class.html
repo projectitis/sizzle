@@ -25,24 +25,21 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../index.html">sizzle</a></li>
-    <li><a href="../sizzle">sizzle.dart</a></li>
+    <li><a href="../sizzle/">sizzle.dart</a></li>
     <li class="self-crumb">SnapSpriteComponent class</li>
   </ol>
   <div class="self-name">SnapSpriteComponent</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -83,7 +80,7 @@
   <section class="summary offset-anchor" id="constructors">
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
-        <dt id="SnapSpriteComponent" class="callable">
+        <dt id="SnapSpriteComponent.new" class="callable">
           <span class="name"><a href="../sizzle/SnapSpriteComponent/SnapSpriteComponent.html">SnapSpriteComponent</a></span><span class="signature">({<span class="parameter" id="-param-sprite"><span class="type-annotation">Sprite?</span> <span class="parameter-name">sprite</span>, </span><span class="parameter" id="-param-autoResize"><span class="type-annotation">bool?</span> <span class="parameter-name">autoResize</span>, </span><span class="parameter" id="-param-paint"><span class="type-annotation">Paint?</span> <span class="parameter-name">paint</span>, </span><span class="parameter" id="-param-position"><span class="type-annotation">Vector2?</span> <span class="parameter-name">position</span>, </span><span class="parameter" id="-param-size"><span class="type-annotation">Vector2?</span> <span class="parameter-name">size</span>, </span><span class="parameter" id="-param-scale"><span class="type-annotation">Vector2?</span> <span class="parameter-name">scale</span>, </span><span class="parameter" id="-param-angle"><span class="type-annotation">double?</span> <span class="parameter-name">angle</span>, </span><span class="parameter" id="-param-nativeAngle"><span class="type-annotation">double</span> <span class="parameter-name">nativeAngle</span> = <span class="default-value">0</span>, </span><span class="parameter" id="-param-anchor"><span class="type-annotation">Anchor?</span> <span class="parameter-name">anchor</span>, </span><span class="parameter" id="-param-children"><span class="type-annotation">Iterable<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span>?</span> <span class="parameter-name">children</span>, </span><span class="parameter" id="-param-priority"><span class="type-annotation">int?</span> <span class="parameter-name">priority</span>, </span><span class="parameter" id="-param-key"><span class="type-annotation">ComponentKey?</span> <span class="parameter-name">key</span></span>})</span>
         </dt>
         <dd>
@@ -104,8 +101,22 @@
 
 </dt>
 <dd class="inherited">
-  The resulting angle after all the ancestors and the components own angle
-has been applied.
+  The resulting angle after all the ancestors and the components own angles
+and scales have been applied.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="absoluteAngleWithoutReflection" class="property inherited">
+  <span class="name"><a href="../sizzle/Snap/absoluteAngleWithoutReflection.html">absoluteAngleWithoutReflection</a></span>
+  <span class="signature">&#8594; double</span>
+  
+
+</dt>
+<dd class="inherited">
+  The resulting angle after all the ancestors and the components own angles
+and scales have been applied, but without reflecting the angle
+if the component is flipped.
   <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
 
 </dd>
@@ -228,6 +239,18 @@ angle is positive, or counterclockwise if the angle is negative.
 
 </dd>
 
+        <dt id="bleed" class="property inherited">
+  <span class="name"><a href="../sizzle/SnapSpriteComponent/bleed.html">bleed</a></span>
+  <span class="signature">&#8596; double?</span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
         <dt id="center" class="property inherited">
   <span class="name"><a href="../sizzle/Snap/center.html">center</a></span>
   <span class="signature">&#8596; Vector2</span>
@@ -243,7 +266,7 @@ in the parent's coordinates.
 
         <dt id="children" class="property inherited">
   <span class="name"><a href="../sizzle/Snap/children.html">children</a></span>
-  <span class="signature">&#8594; ComponentSet</span>
+  <span class="signature">&#8594; ReadOnlyOrderedSet<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
   
 
 </dt>
@@ -349,7 +372,8 @@ text.
 
 </dt>
 <dd class="inherited">
-  
+  Whether this component has any children.
+Avoids the creation of the children container if not necessary.
   <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
 
 </dd>
@@ -387,6 +411,18 @@ text.
 <dd class="inherited">
   The height of the component in local coordinates. Note that the object
 may visually appear larger or smaller due to application of <code>scale</code>.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="hue" class="property inherited">
+  <span class="name"><a href="../sizzle/SnapSpriteComponent/hue.html">hue</a></span>
+  <span class="signature">&#8596; double</span>
+  
+
+</dt>
+<dd class="inherited">
+  
   <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
 
 </dd>
@@ -447,18 +483,6 @@ may visually appear larger or smaller due to application of <code>scale</code>.
 </dt>
 <dd class="inherited">
   Whether this component is currently added to a component tree.
-  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="isMounting" class="property inherited">
-  <span class="name"><a href="../sizzle/Snap/isMounting.html">isMounting</a></span>
-  <span class="signature">&#8594; bool</span>
-  
-
-</dt>
-<dd class="inherited">
-  
   <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
 
 </dd>
@@ -580,18 +604,6 @@ For example, a nativeAngle of
 
 </dd>
 
-        <dt id="paintLayersInternal" class="property inherited">
-  <span class="name"><a href="../sizzle/SnapSpriteComponent/paintLayersInternal.html">paintLayersInternal</a></span>
-  <span class="signature">&#8596; List<span class="signature">&lt;<wbr><span class="type-parameter">Paint</span>&gt;</span>?</span>
-  
-
-</dt>
-<dd class="inherited">
-  
-  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
-
-</dd>
-
         <dt id="parent" class="property inherited">
   <span class="name"><a href="../sizzle/Snap/parent.html">parent</a></span>
   <span class="signature">&#8596; Component?</span>
@@ -637,6 +649,19 @@ which your components are rendered.
 </dt>
 <dd class="inherited">
   A future that completes when this component is removed from its parent.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="renderContext" class="property inherited">
+  <span class="name"><a href="../sizzle/Snap/renderContext.html">renderContext</a></span>
+  <span class="signature">&#8594; ComponentRenderContext?</span>
+  
+
+</dt>
+<dd class="inherited">
+  Override this method if you want your component to provide a custom
+render context to all its children (recursively).
   <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
 
 </dd>
@@ -900,6 +925,19 @@ local coordinates. This function is the inverse of
 
 </dd>
 
+        <dt id="afterChildrenRendered" class="callable inherited">
+  <span class="name"><a href="../sizzle/Snap/afterChildrenRendered.html">afterChildrenRendered</a></span><span class="signature">(<wbr><span class="parameter" id="afterChildrenRendered-param-canvas"><span class="type-annotation">Canvas</span> <span class="parameter-name">canvas</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called once after all children have been rendered in <code>renderTree</code>.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
         <dt id="ancestors" class="callable inherited">
   <span class="name"><a href="../sizzle/Snap/ancestors.html">ancestors</a></span><span class="signature">(<wbr>{<span class="parameter" id="ancestors-param-includeSelf"><span class="type-annotation">bool</span> <span class="parameter-name">includeSelf</span> = <span class="default-value">false</span></span>})
     <span class="returntype parameter">&#8594; Iterable<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
@@ -924,9 +962,10 @@ without a parent.
 </dt>
 <dd class="inherited">
   Returns the angle formed by component's orientation vector and a vector
-starting at component's absolute position and ending at <code>target</code>. This
-angle is measured in clockwise direction. <code>target</code> should be in absolute/world
-coordinate system.
+starting at component's absolute position and ending at <code>target</code>. I.e.
+how much the current component need to rotate to face the target. This
+angle is measured in clockwise direction. <code>target</code> should be in
+absolute/world coordinate system.
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
@@ -1004,14 +1043,14 @@ while the bottom and the right borders are exclusive.
 
         <dt id="createComponentSet" class="callable inherited">
   <span class="name"><a href="../sizzle/Snap/createComponentSet.html">createComponentSet</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; ComponentSet</span>
+    <span class="returntype parameter">&#8594; OrderedSet<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
   </span>
   
 
 </dt>
 <dd class="inherited">
   This method creates the children container for the current component.
-Override this method if you need to have a custom <code>ComponentSet</code> within
+Override this method if you need to have a custom <code>OrderedSet</code> within
 a particular class.
   <div class="features"><span class="feature">inherited</span></div>
 
@@ -1080,6 +1119,19 @@ component's anchor and the <code>other</code> component's anchor.
 <dd class="inherited">
   Returns the closest parent further up the hierarchy that satisfies type=T,
 or null if no such parent can be found.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="findRenderContext" class="callable inherited">
+  <span class="name"><a href="../sizzle/Snap/findRenderContext.html">findRenderContext</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends ComponentRenderContext</span>&gt;</span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; T?</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
@@ -1202,58 +1254,6 @@ are no such children.
 
 </dd>
 
-        <dt id="handleLifecycleEventAdd" class="callable inherited">
-  <span class="name"><a href="../sizzle/Snap/handleLifecycleEventAdd.html">handleLifecycleEventAdd</a></span><span class="signature">(<wbr><span class="parameter" id="handleLifecycleEventAdd-param-parent"><span class="type-annotation">Component</span> <span class="parameter-name">parent</span></span>)
-    <span class="returntype parameter">&#8594; LifecycleEventStatus</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="handleLifecycleEventMove" class="callable inherited">
-  <span class="name"><a href="../sizzle/Snap/handleLifecycleEventMove.html">handleLifecycleEventMove</a></span><span class="signature">(<wbr><span class="parameter" id="handleLifecycleEventMove-param-newParent"><span class="type-annotation">Component</span> <span class="parameter-name">newParent</span></span>)
-    <span class="returntype parameter">&#8594; LifecycleEventStatus</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="handleLifecycleEventRemove" class="callable inherited">
-  <span class="name"><a href="../sizzle/Snap/handleLifecycleEventRemove.html">handleLifecycleEventRemove</a></span><span class="signature">(<wbr><span class="parameter" id="handleLifecycleEventRemove-param-parent"><span class="type-annotation">Component</span> <span class="parameter-name">parent</span></span>)
-    <span class="returntype parameter">&#8594; LifecycleEventStatus</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="handleResize" class="callable inherited">
-  <span class="name"><a href="../sizzle/Snap/handleResize.html">handleResize</a></span><span class="signature">(<wbr><span class="parameter" id="handleResize-param-size"><span class="type-annotation">Vector2</span> <span class="parameter-name">size</span></span>)
-    <span class="returntype parameter">&#8594; void</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
         <dt id="lastChild" class="callable inherited">
   <span class="name"><a href="../sizzle/Snap/lastChild.html">lastChild</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends Component</span>&gt;</span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; T?</span>
@@ -1360,6 +1360,19 @@ to or removed from its parent children list.
 
 </dd>
 
+        <dt id="onHotReload" class="callable inherited">
+  <span class="name"><a href="../sizzle/Snap/onHotReload.html">onHotReload</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called when Flutter's hot reload is triggered.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
         <dt id="onLoad" class="callable inherited">
   <span class="name"><a href="../sizzle/Snap/onLoad.html">onLoad</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
@@ -1408,7 +1421,9 @@ before <code>onMount</code>.
 
 </dt>
 <dd class="inherited">
-  Called right before the component is removed from the game.
+  Called right before the component is removed from its parent
+and also before it changes parents (and is thus temporarily removed
+from the component tree).
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
@@ -1499,6 +1514,19 @@ the handler has been called with all children.
 
 </dd>
 
+        <dt id="rebalanceChildren" class="callable inherited">
+  <span class="name"><a href="../sizzle/Snap/rebalanceChildren.html">rebalanceChildren</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
         <dt id="remove" class="callable inherited">
   <span class="name"><a href="../sizzle/Snap/remove.html">remove</a></span><span class="signature">(<wbr><span class="parameter" id="remove-param-component"><span class="type-annotation">Component</span> <span class="parameter-name">component</span></span>)
     <span class="returntype parameter">&#8594; void</span>
@@ -1561,6 +1589,19 @@ and their children.
 </dt>
 <dd class="inherited">
   
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="renderChild" class="callable inherited">
+  <span class="name"><a href="../sizzle/Snap/renderChild.html">renderChild</a></span><span class="signature">(<wbr><span class="parameter" id="renderChild-param-canvas"><span class="type-annotation">Canvas</span> <span class="parameter-name">canvas</span>, </span><span class="parameter" id="renderChild-param-child"><span class="type-annotation">Component</span> <span class="parameter-name">child</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Renders a single <code>child</code> component onto <code>canvas</code>.
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
@@ -1633,34 +1674,6 @@ i.e. setByRect ∘ toRect = identity).
 
 </dd>
 
-        <dt id="setLoaded" class="callable inherited">
-  <span class="name"><a href="../sizzle/Snap/setLoaded.html">setLoaded</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; void</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  Used by the <code>FlameGame</code> to set the loaded state of the component, since
-the game isn't going through the whole normal component life cycle.
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="setMounted" class="callable inherited">
-  <span class="name"><a href="../sizzle/Snap/setMounted.html">setMounted</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; void</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  Used by the <code>FlameGame</code> to set the mounted state of the component, since
-the game isn't going through the whole normal component life cycle.
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
         <dt id="setOpacity" class="callable inherited">
   <span class="name"><a href="../sizzle/SnapSpriteComponent/setOpacity.html">setOpacity</a></span><span class="signature">(<wbr><span class="parameter" id="setOpacity-param-opacity"><span class="type-annotation">double</span> <span class="parameter-name">opacity</span>, {</span><span class="parameter" id="setOpacity-param-paintId"><span class="type-annotation">Object?</span> <span class="parameter-name">paintId</span></span>})
     <span class="returntype parameter">&#8594; void</span>
@@ -1683,20 +1696,6 @@ the game isn't going through the whole normal component life cycle.
 </dt>
 <dd class="inherited">
   Sets a paint on the collection.
-  <div class="features"><span class="feature">inherited</span></div>
-
-</dd>
-
-        <dt id="setRemoved" class="callable inherited">
-  <span class="name"><a href="../sizzle/Snap/setRemoved.html">setRemoved</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; void</span>
-  </span>
-  
-
-</dt>
-<dd class="inherited">
-  Used by the <code>FlameGame</code> to set the removed state of the component, since
-the game isn't going through the whole normal component life cycle.
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
@@ -1764,7 +1763,7 @@ coordinates. This function is the inverse of <a href="../sizzle/Snap/positionOf.
 
 </dt>
 <dd class="inherited">
-  A string representation of this object.
+  
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>
@@ -1835,7 +1834,7 @@ priority of the direct siblings, not the children or the ancestors.
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../index.html">sizzle</a></li>
-    <li><a href="../sizzle">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle</a></li>
     <li class="self-crumb">SnapSpriteComponent class</li>
 </ol>
 
@@ -1848,7 +1847,7 @@ priority of the direct siblings, not the children or the ancestors.
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>

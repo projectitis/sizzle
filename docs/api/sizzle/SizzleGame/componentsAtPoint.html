@@ -25,7 +25,7 @@
   <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle.dart</a></li>
+    <li><a href="../../sizzle/">sizzle.dart</a></li>
     <li><a href="../../sizzle/SizzleGame-class.html">SizzleGame</a></li>
     <li class="self-crumb">componentsAtPoint method</li>
   </ol>
@@ -33,17 +33,14 @@
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
-  <div class="toggle" id="theme-button" title="Toggle brightness">
-    <label for="theme">
-      <input type="checkbox" id="theme" value="light-theme">
-      <span id="dark-theme-button" class="material-symbols-outlined">
-        dark_mode
-      </span>
-      <span id="light-theme-button" class="material-symbols-outlined">
-        light_mode
-      </span>
-    </label>
-  </div>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
 </header>
 <main>
 <div
@@ -57,53 +54,47 @@
 
     <section class="multi-line-signature">
       
+  <div>
+    <ol class="annotation-list">
+        <li>@override</li>
+    </ol>
+  </div>
 <span class="returntype">Iterable<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
 <span class="name ">componentsAtPoint</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="componentsAtPoint-param-point"><span class="type-annotation">Vector2</span> <span class="parameter-name">point</span>, [</span></li>
 <li><span class="parameter" id="componentsAtPoint-param-nestedPoints"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">Vector2</span>&gt;</span>?</span> <span class="parameter-name">nestedPoints</span></span></li>
 </ol>])
 
-      <div class="features"><span class="feature">inherited</span></div>
+      
 
     </section>
     
 <section class="desc markdown">
-  <p>An iterable of descendant components intersecting the given point. The
-<code>point</code> is in the local coordinate space.</p>
-<p>More precisely, imagine a ray originating at a certain point (x, y) on
-the screen, and extending perpendicularly to the screen's surface into
-your game's world. The purpose of this method is to find all components
-that intersect with this ray, in the order from those that are closest to
-the user to those that are farthest.</p>
-<p>The return value is an <code>Iterable</code> of components. If the <code>nestedPoints</code>
-parameter is given, then it will also report the points of intersection
-for each component in its local coordinate space. Specifically, the last
-element in the list is the point in the coordinate space of the returned
-component, the element before the last is in that component's parent's
-coordinate space, and so on. The <code>nestedPoints</code> list must be growable and
-modifiable.</p>
-<p>The default implementation relies on the <code>CoordinateTransform</code> interface
-to translate from the parent's coordinate system into the local one. Make
-sure that your component implements this interface if it alters the
-coordinate system when rendering.</p>
-<p>If your component overrides <code>renderTree</code>, then it almost certainly needs
-to override this method as well, so that this method can find all rendered
-components wherever they are.</p>
+  <p>Transform event coordinates to account for the letterbox offset applied
+in <a href="../../sizzle/SizzleGame/renderTree.html">renderTree</a>. Without this, hit testing uses raw screen coordinates
+while components are rendered with the letterbox translation, causing all
+tap/drag events to miss their targets.</p>
 </section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">Iterable&lt;Component&gt; componentsAtPoint(
+  <pre class="language-dart"><code class="language-dart">@override
+Iterable&lt;Component&gt; componentsAtPoint(
   Vector2 point, [
   List&lt;Vector2&gt;? nestedPoints,
 ]) {
-  return componentsAtLocation&lt;Vector2&gt;(
-    point,
-    nestedPoints,
-    (transform, point) =&gt; transform.parentToLocal(point),
-    (component, point) =&gt; component.containsLocalPoint(point),
-  );
+  if (_targetSize.x != 0) {
+    return super.componentsAtPoint(
+      point -
+          Vector2(
+            viewWindow.left - gameWindow.left,
+            viewWindow.top - gameWindow.top,
+          ),
+      nestedPoints,
+    );
+  }
+  return super.componentsAtPoint(point, nestedPoints);
 }</code></pre>
 </section>
 
@@ -118,7 +109,7 @@ components wherever they are.</p>
 </header>
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../../index.html">sizzle</a></li>
-    <li><a href="../../sizzle">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle</a></li>
     <li><a href="../../sizzle/SizzleGame-class.html">SizzleGame</a></li>
     <li class="self-crumb">componentsAtPoint method</li>
 </ol>
@@ -132,7 +123,7 @@ components wherever they are.</p>
 <footer>
   <span class="no-break">
     sizzle
-      0.1.0
+      0.1.3
   </span>
   
 </footer>
