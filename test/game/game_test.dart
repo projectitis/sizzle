@@ -12,6 +12,11 @@ class TestScene extends Scene {
   static Component create() => TestScene();
 }
 
+class LeveledScene extends Scene {
+  LeveledScene(this.level);
+  final int level;
+}
+
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
   AssetBundle assets = await DiskAssetBundle.loadFromPath('test/_resources/');
@@ -35,7 +40,7 @@ void main() async {
         scene.add(rect);
       },
       game: SizzleGame(
-        scene: Scene.create,
+        scene: Scene.new,
         targetSize: Vector2(150, 100),
       ),
       size: Vector2(300, 200),
@@ -54,7 +59,7 @@ void main() async {
         scene.add(rect);
       },
       game: SizzleGame(
-        scene: Scene.create,
+        scene: Scene.new,
         targetSize: Vector2(150, 100),
         letterBoxColor: const Color.fromARGB(255, 9, 60, 78),
       ),
@@ -80,7 +85,7 @@ void main() async {
         rect.add(sprite);
       },
       game: SizzleGame(
-        scene: Scene.create,
+        scene: Scene.new,
         targetSize: Vector2(80, 50),
         scaleToWholePixels: true,
         letterBoxColor: const Color.fromARGB(255, 9, 60, 78),
@@ -107,7 +112,7 @@ void main() async {
         rect.add(sprite);
       },
       game: SizzleGame(
-        scene: Scene.create,
+        scene: Scene.new,
         targetSize: Vector2(80, 50),
         letterBoxColor: const Color.fromARGB(255, 9, 60, 78),
         scale: Range(1.0, 2.5),
@@ -134,7 +139,7 @@ void main() async {
         rect.add(sprite);
       },
       game: SizzleGame(
-        scene: Scene.create,
+        scene: Scene.new,
         targetSize: Vector2(80, 50),
         letterBoxColor: const Color.fromARGB(255, 9, 60, 78),
         scale: Range(4.0, 10.0),
@@ -157,12 +162,50 @@ void main() async {
         game.onGameResize(Vector2(250, 150));
       },
       game: SizzleGame(
-        scene: Scene.create,
+        scene: Scene.new,
         targetSize: Vector2(150, 100),
         letterBoxColor: const Color.fromARGB(255, 9, 60, 78),
       ),
       size: Vector2(300, 200),
       goldenFile: '$goldens/game-resize.png',
+    );
+
+    testWithGame<SizzleGame>(
+      'Custom factory passes constructor arguments to the scene',
+      () => SizzleGame(
+        scenes: {
+          'level': () => LeveledScene(42),
+        },
+        targetSize: Vector2(150, 100),
+      ),
+      (game) async {
+        await game.ready();
+        final scene = game.currentScene;
+        expect(scene, isA<LeveledScene>());
+        expect((scene! as LeveledScene).level, 42);
+      },
+    );
+
+    testWithGame<SizzleGame>(
+      'Custom factory is invoked once per scene mount',
+      () {
+        int callCount = 0;
+        return SizzleGame(
+          scenes: {
+            'counted': () {
+              callCount++;
+              return LeveledScene(callCount);
+            },
+          },
+          targetSize: Vector2(150, 100),
+        );
+      },
+      (game) async {
+        await game.ready();
+        final scene = game.currentScene;
+        expect(scene, isA<LeveledScene>());
+        expect((scene! as LeveledScene).level, 1);
+      },
     );
 
     testGolden(
@@ -179,7 +222,7 @@ void main() async {
         game.onGameResize(Vector2(250, 150));
       },
       game: SizzleGame(
-        scene: Scene.create,
+        scene: Scene.new,
         targetSize: Vector2(150, 100),
         letterBoxColor: const Color.fromARGB(255, 9, 60, 78),
         scaleToWholePixels: true,

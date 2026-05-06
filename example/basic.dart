@@ -3,7 +3,7 @@ import 'package:sizzle/sizzle.dart';
 void main() {
   final game = SizzleGame(
     scenes: {
-      'example': ExampleScene.create,
+      'example': ExampleScene.new,
     },
     targetSize: Vector2(320, 240),
   );
@@ -11,6 +11,4 @@ void main() {
   runApp(GameWidget(game: game));
 }
 
-class ExampleScene extends Scene {
-  static Component create() => ExampleScene();
-}
+class ExampleScene extends Scene {}

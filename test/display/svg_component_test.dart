@@ -29,7 +29,7 @@ Future<void> testWithEnv(
 ) {
   return testWithGame<SizzleGame>(
     name,
-    () => SizzleGame(scene: Scene.create),
+    () => SizzleGame(scene: Scene.new),
     body,
   );
 }
@@ -266,8 +266,7 @@ void main() {
       top: const Color(0xFFFFFFFF),
     );
 
-    test('two directional lights at strength 0.5 each ≈ one at strength 1',
-        () {
+    test('two directional lights at strength 0.5 each ≈ one at strength 1', () {
       final twoHalf = [
         DirectionalLight(
           color: const Color(0xFF000000),
@@ -321,8 +320,7 @@ void main() {
       final env = Environment(
         lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
       );
-      final svg =
-          SvgComponent.fromSvg(buildMini(), anchor: Anchor.topLeft);
+      final svg = SvgComponent.fromSvg(buildMini(), anchor: Anchor.topLeft);
       env.add(svg);
       game.add(env);
       await game.ready();
@@ -400,8 +398,7 @@ void main() {
       expect(identical(svg.picture, first), isFalse);
     });
 
-    testWithEnv('addLight cascades to descendant SvgComponent',
-        (game) async {
+    testWithEnv('addLight cascades to descendant SvgComponent', (game) async {
       final env = Environment(
         lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
       );
@@ -420,8 +417,7 @@ void main() {
 
     testWithEnv(
         'angle vs environment: angle=0 and angle=π render differently '
-        'when the SVG has side-facing normals',
-        (game) async {
+        'when the SVG has side-facing normals', (game) async {
       // A side-facing path (normal +X via #FF8080) lit by a single
       // directional light from -X (rays travel +X). At angle=0, the
       // surface faces away from the light (back-lit). At angle=π the
@@ -527,7 +523,7 @@ void main() {
     testGolden(
       'normal-map matte',
       preparer(loadFixture('normal-map-matte.svg')),
-      game: SizzleGame(scene: Scene.create, targetSize: Vector2(220, 220)),
+      game: SizzleGame(scene: Scene.new, targetSize: Vector2(220, 220)),
       size: Vector2(220, 220),
       goldenFile: '$goldens/svg-normal-map-matte.png',
     );
@@ -535,7 +531,7 @@ void main() {
     testGolden(
       'normal-map dull',
       preparer(loadFixture('normal-map-dull.svg')),
-      game: SizzleGame(scene: Scene.create, targetSize: Vector2(220, 220)),
+      game: SizzleGame(scene: Scene.new, targetSize: Vector2(220, 220)),
       size: Vector2(220, 220),
       goldenFile: '$goldens/svg-normal-map-dull.png',
     );
@@ -543,7 +539,7 @@ void main() {
     testGolden(
       'normal-map gloss',
       preparer(loadFixture('normal-map-gloss.svg')),
-      game: SizzleGame(scene: Scene.create, targetSize: Vector2(220, 220)),
+      game: SizzleGame(scene: Scene.new, targetSize: Vector2(220, 220)),
       size: Vector2(220, 220),
       goldenFile: '$goldens/svg-normal-map-gloss.png',
     );
@@ -551,7 +547,7 @@ void main() {
     testGolden(
       'normal-map specular',
       preparer(loadFixture('normal-map-specular.svg')),
-      game: SizzleGame(scene: Scene.create, targetSize: Vector2(220, 220)),
+      game: SizzleGame(scene: Scene.new, targetSize: Vector2(220, 220)),
       size: Vector2(220, 220),
       goldenFile: '$goldens/svg-normal-map-specular.png',
     );
@@ -570,7 +566,7 @@ void main() {
         );
         scene.add(env);
       },
-      game: SizzleGame(scene: Scene.create, targetSize: Vector2(220, 220)),
+      game: SizzleGame(scene: Scene.new, targetSize: Vector2(220, 220)),
       size: Vector2(220, 220),
       goldenFile: '$goldens/svg-normal-map-matte-rotated.png',
     );

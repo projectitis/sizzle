@@ -7,8 +7,6 @@ import '../game/game.dart';
 class Scene extends Component with HasGameRef<SizzleGame> {
   bool paused = false;
 
-  static Component create() => Scene();
-
   @override
   void update(double dt) {
     if (paused) return;

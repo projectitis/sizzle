@@ -24,10 +24,10 @@ import '/src/scenes/credits_scene.dart';
 void main() {
   final game = SizzleGame(
     scenes: {
-      'intro': IntroScene.create,
-      'menu': MenuScene.create,
-      'game': GameScene.create,
-      'credits': CreditsScene.create,
+      'intro': IntroScene.new,
+      'menu': MenuScene.new,
+      'game': GameScene.new,
+      'credits': CreditsScene.new,
     },
     targetSize: Vector2(240, 180),
     maxSize: Vector2(360, 180),
@@ -52,9 +52,42 @@ Different parts of the game, such as the into, achievements, settings, etc
 would normally each be a different scene. games that have varied play - such
 as mini-games for example - could also be implemented as scenes.
 
-Scenes are implemented as classes that extend [`Scene`][Scene]. Each scene
-has a factory method called `create` to construct a new instance. This is
-because an instance of a scene is not created until it is required.
+Scenes are implemented as classes that extend [`Scene`][Scene]. The map
+passed to `scenes:` (or the value passed to `scene:`) is a *constructor
+reference*, not a scene instance - the scene is only constructed the first
+time it is needed. The simplest way to provide one is with the tear-off of
+the unnamed constructor:
+
+```dart
+class IntroScene extends Scene {
+  @override
+  Future<void> onLoad() async {
+    // Load assets, add components
+  }
+}
+
+// In main()
+SizzleGame(
+  scenes: {'intro': IntroScene.new},
+  // ...
+);
+```
+
+If a scene needs constructor arguments, or you want to do extra setup before
+the scene is constructed, supply your own factory in place of `.new`:
+
+```dart
+class GameScene extends Scene {
+  GameScene(this.level);
+  final int level;
+}
+
+SizzleGame(
+  scenes: {
+    'game': () => GameScene(currentLevel),
+  },
+);
+```
 
 Calling [`SizzleGame`][SizzleGame] from within a [`Scene`][Scene], or from
 within [`SizzleGame`][SizzleGame], will change the scene.

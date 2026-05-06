@@ -12,7 +12,7 @@ Future<void> testWithEnv(
 ) {
   return testWithGame<SizzleGame>(
     name,
-    () => SizzleGame(scene: Scene.create),
+    () => SizzleGame(scene: Scene.new),
     body,
   );
 }
@@ -109,8 +109,7 @@ void main() {
       expect(() => Environment.of(orphan), throwsStateError);
     });
 
-    testWithEnv('returns the closest ancestor when nested',
-        (game) async {
+    testWithEnv('returns the closest ancestor when nested', (game) async {
       final outer = Environment();
       final inner = Environment();
       final probe = PositionComponent();
@@ -124,8 +123,7 @@ void main() {
   });
 
   group('EnvironmentComponent', () {
-    testWithEnv('caches the Environment ancestor on mount',
-        (game) async {
+    testWithEnv('caches the Environment ancestor on mount', (game) async {
       final env = Environment();
       final probe = _Probe();
       env.add(probe);
@@ -160,8 +158,7 @@ void main() {
       expect(probe.needsRedraw, isTrue);
     });
 
-    testWithEnv(
-        'cascade descends through plain PositionComponent ancestors',
+    testWithEnv('cascade descends through plain PositionComponent ancestors',
         (game) async {
       final env = Environment();
       final mid = PositionComponent();
@@ -202,8 +199,7 @@ void main() {
       expect(innerProbe.needsRedraw, isTrue);
     });
 
-    testWithEnv('attaching a child to a dirty parent dirties it',
-        (game) async {
+    testWithEnv('attaching a child to a dirty parent dirties it', (game) async {
       final env = Environment();
       game.add(env);
       await game.ready();
@@ -256,4 +252,3 @@ void main() {
     });
   });
 }
-
