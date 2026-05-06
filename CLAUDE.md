@@ -86,7 +86,7 @@ dart doc --output=docs/api .
 
 **Scene** (`lib/src/game/scene.dart`)
 - Base class for all game screens/scenes
-- Extends Flame `Component` with `HasGameRef<SizzleGame>`
+- Extends Flame `Component` with `HasGameReference<SizzleGame>`
 - Each scene is mounted on-demand by the router
 - The `scenes:` map (or `scene:`) takes a constructor reference, not an instance. Use `MyScene.new` for the simple case, or supply a closure (`() => MyScene(arg)`) when the scene needs constructor arguments.
 - Use `changeScene(name)` to navigate between scenes

@@ -54,7 +54,5 @@ void main() {
   runApp(GameWidget(game: game));
 }
 
-class ExampleScene extends Scene {
-  static Component create() => ExampleScene();
-}
+class ExampleScene extends Scene {}
 ```
