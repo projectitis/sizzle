@@ -233,6 +233,75 @@ prior to caching.
   An animated lightning bolt effect
 </dd>
 
+          <dt id="LitSvgComponent">
+  <span class="name "><a href="../sizzle/LitSvgComponent-class.html">LitSvgComponent</a></span> 
+
+</dt>
+<dd>
+  Renders a parsed <a href="../sizzle/LitSvgData-class.html">LitSvgData</a> with lighting from the nearest <a href="../sizzle/Environment-class.html">Environment</a>
+ancestor.
+</dd>
+
+          <dt id="LitSvgData">
+  <span class="name "><a href="../sizzle/LitSvgData-class.html">LitSvgData</a></span> 
+
+</dt>
+<dd>
+  Parsed lit-SVG data.
+</dd>
+
+          <dt id="LitSvgGroup">
+  <span class="name "><a href="../sizzle/LitSvgGroup-class.html">LitSvgGroup</a></span> 
+
+</dt>
+<dd>
+  A group definition
+</dd>
+
+          <dt id="LitSvgMaterial">
+  <span class="name "><a href="../sizzle/LitSvgMaterial-class.html">LitSvgMaterial</a></span> 
+
+</dt>
+<dd>
+  The material definition for a group, as defined in the pp:material attribute.
+The attribute is either 1, 2 or 3 items separated by whitespace:
+"baseColor" (topColor = baseColor, sheen = matte)
+"baseColor sheen" (topColor = baseColor)
+"baseColor topColor sheen"
+The baseColor and topColor are 3, 6, or 8 digit hex:
+#RGB (each digit doubled, alpha is assumed to be 255)
+#RRGGBB (alpha is assumed to be 255)
+#AARRGGBB
+Sheen may be <code>dull</code>, <code>matte</code>, <code>gloss</code>, <code>specular</code>, or just the first letter
+(<code>d</code>, <code>m</code>, <code>g</code>, <code>s</code>).
+</dd>
+
+          <dt id="LitSvgPath">
+  <span class="name "><a href="../sizzle/LitSvgPath-class.html">LitSvgPath</a></span> 
+
+</dt>
+<dd>
+  A closed path baked as a <code>dart:ui</code> <code>Path</code>. Vertices are not retained
+separately — the parser writes them directly into <a href="../sizzle/LitSvgPath/uiPath.html">uiPath</a> and (where
+relevant) applies any <code>pp:expand</code> offset before doing so.
+</dd>
+
+          <dt id="LitSvgRenderItem">
+  <span class="name "><a href="../sizzle/LitSvgRenderItem-class.html">LitSvgRenderItem</a></span> 
+
+</dt>
+<dd>
+  An item on the render list
+</dd>
+
+          <dt id="LitSvgService">
+  <span class="name "><a href="../sizzle/LitSvgService-class.html">LitSvgService</a></span> 
+
+</dt>
+<dd>
+  A service for loading and caching parsed <a href="../sizzle/LitSvgData-class.html">LitSvgData</a> assets.
+</dd>
+
           <dt id="Logger">
   <span class="name "><a href="../sizzle/Logger-class.html">Logger</a></span> 
 
@@ -403,75 +472,6 @@ sprite, resulting in a much smaller image (sprite sheet).
   
 </dd>
 
-          <dt id="Svg">
-  <span class="name "><a href="../sizzle/Svg-class.html">Svg</a></span> 
-
-</dt>
-<dd>
-  SVG base class.
-</dd>
-
-          <dt id="SvgComponent">
-  <span class="name "><a href="../sizzle/SvgComponent-class.html">SvgComponent</a></span> 
-
-</dt>
-<dd>
-  Renders a parsed <a href="../sizzle/Svg-class.html">Svg</a> with lighting from the nearest <a href="../sizzle/Environment-class.html">Environment</a>
-ancestor.
-</dd>
-
-          <dt id="SvgGroup">
-  <span class="name "><a href="../sizzle/SvgGroup-class.html">SvgGroup</a></span> 
-
-</dt>
-<dd>
-  A group definition
-</dd>
-
-          <dt id="SvgMaterial">
-  <span class="name "><a href="../sizzle/SvgMaterial-class.html">SvgMaterial</a></span> 
-
-</dt>
-<dd>
-  The material definition for a group, as defined in the pp:material attribute.
-The attribute is either 1, 2 or 3 items separated by whitespace:
-"baseColor" (topColor = baseColor, sheen = matte)
-"baseColor sheen" (topColor = baseColor)
-"baseColor topColor sheen"
-The baseColor and topColor are 3, 6, or 8 digit hex:
-#RGB (each digit doubled, alpha is assumed to be 255)
-#RRGGBB (alpha is assumed to be 255)
-#AARRGGBB
-Sheen may be <code>dull</code>, <code>matte</code>, <code>gloss</code>, <code>specular</code>, or just the first letter
-(<code>d</code>, <code>m</code>, <code>g</code>, <code>s</code>).
-</dd>
-
-          <dt id="SvgPath">
-  <span class="name "><a href="../sizzle/SvgPath-class.html">SvgPath</a></span> 
-
-</dt>
-<dd>
-  A closed path baked as a <code>dart:ui</code> <code>Path</code>. Vertices are not retained
-separately — the parser writes them directly into <a href="../sizzle/SvgPath/uiPath.html">uiPath</a> and (where
-relevant) applies any <code>pp:expand</code> offset before doing so.
-</dd>
-
-          <dt id="SvgRenderItem">
-  <span class="name "><a href="../sizzle/SvgRenderItem-class.html">SvgRenderItem</a></span> 
-
-</dt>
-<dd>
-  An item on the render list
-</dd>
-
-          <dt id="SvgService">
-  <span class="name "><a href="../sizzle/SvgService-class.html">SvgService</a></span> 
-
-</dt>
-<dd>
-  A service for loading and caching parsed <a href="../sizzle/Svg-class.html">Svg</a> assets.
-</dd>
-
           <dt id="TextAreaComponent">
   <span class="name "><a href="../sizzle/TextAreaComponent-class.html">TextAreaComponent</a></span> 
 
@@ -526,6 +526,15 @@ relevant) applies any <code>pp:expand</code> offset before doing so.
   
 </dd>
 
+          <dt id="LitSvgMaterialSheen">
+  <span class="name "><a href="../sizzle/LitSvgMaterialSheen.html">LitSvgMaterialSheen</a></span> 
+
+</dt>
+<dd>
+  The sheen levels.
+matte is default
+</dd>
+
           <dt id="LogLevel">
   <span class="name "><a href="../sizzle/LogLevel.html">LogLevel</a></span> 
 
@@ -540,15 +549,6 @@ relevant) applies any <code>pp:expand</code> offset before doing so.
 </dt>
 <dd>
   A nine-tile grid implementation
-</dd>
-
-          <dt id="SvgMaterialSheen">
-  <span class="name "><a href="../sizzle/SvgMaterialSheen.html">SvgMaterialSheen</a></span> 
-
-</dt>
-<dd>
-  The sheen levels.
-matte is default
 </dd>
 
           <dt id="WidthFade">

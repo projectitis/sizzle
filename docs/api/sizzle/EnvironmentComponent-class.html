@@ -58,7 +58,7 @@
 lighting.</p>
 <p>Owns a <a href="../sizzle/EnvironmentComponent/needsRedraw.html">needsRedraw</a> flag plus a push-based cascade that marks every
 <a href="../sizzle/EnvironmentComponent-class.html">EnvironmentComponent</a> descendant when it flips. Subclasses (notably
-<a href="../sizzle/Environment-class.html">Environment</a> and <code>SvgComponent</code>) call <a href="../sizzle/EnvironmentComponent/markNeedsRedraw.html">markNeedsRedraw</a> from setters
+<a href="../sizzle/Environment-class.html">Environment</a> and <code>LitSvgComponent</code>) call <a href="../sizzle/EnvironmentComponent/markNeedsRedraw.html">markNeedsRedraw</a> from setters
 that affect their rendered output, then call <a href="../sizzle/EnvironmentComponent/clearNeedsRedraw.html">clearNeedsRedraw</a> after
 performing the redraw.</p>
 <p>Any rotating component sitting between an <a href="../sizzle/Environment-class.html">Environment</a> and an inner
@@ -78,7 +78,7 @@ lighting consumers in plain <code>PositionComponent</code>s breaks the cascade.<
           <dt>Implementers</dt>
           <dd><ul class="comma-separated clazz-relationships">
               <li><a href="../sizzle/Environment-class.html">Environment</a></li>
-              <li><a href="../sizzle/SvgComponent-class.html">SvgComponent</a></li>
+              <li><a href="../sizzle/LitSvgComponent-class.html">LitSvgComponent</a></li>
           </ul></dd>
 
         

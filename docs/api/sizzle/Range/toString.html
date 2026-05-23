@@ -54,10 +54,15 @@
 
     <section class="multi-line-signature">
       
+  <div>
+    <ol class="annotation-list">
+        <li>@override</li>
+    </ol>
+  </div>
 <span class="returntype">String</span>
 <span class="name ">toString</span>(<wbr>)
 
-      <div class="features"><span class="feature">inherited</span></div>
+      <div class="features"><span class="feature">override</span></div>
 
     </section>
     
@@ -78,7 +83,8 @@ mainly for debugging or logging.</p>
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">external String toString();</code></pre>
+  <pre class="language-dart"><code class="language-dart">@override
+String toString() =&gt; &#39;Range($_min, $_max)&#39;;</code></pre>
 </section>
 
 

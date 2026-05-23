@@ -125,6 +125,54 @@ myImage.dispose();
 ```
 
 
+## SVG assets
+
+`ImageService` also loads SVG files. Any asset whose path ends in `.svg`
+(case-insensitive) is rasterized to an `Image` at load time and cached
+exactly like a PNG — calling code does not need to know whether the source
+was raster or vector.
+
+```dart
+// Enqueue + load — same API as for raster images.
+Services.images.enqueue(path: 'images/ui/icon.svg');
+await Services.images.loadQueue();
+
+// Access — returns a normal Image.
+final Image icon = Services.images['images/ui/icon.svg']!;
+```
+
+Because SVGs are vector, **every geometric transform is baked in during
+rasterization** rather than applied to a rasterized bitmap afterwards. This
+keeps the SVG's lossless transform advantage: a large `scale` produces a
+crisp high-resolution image; a rotation is exact rather than interpolated
+from sampled pixels; a `crop` avoids rendering pixels that would be
+discarded.
+
+```dart
+// Rasterized at 4× design size — sharp, not upscaled.
+Services.images.enqueue(properties: ImageProperties(
+    'images/ui/icon.svg',
+    scale: Vector2.all(4.0),
+));
+```
+
+If no `scale` is set the SVG is rasterized at its intrinsic design size
+(taken from the SVG's `width`/`height` or `viewBox`).
+
+The following `ImageProperties` fields are **ignored for SVG sources**, since
+they only affect the post-rasterization draw step that SVGs skip:
+
+- `blendMode` — SVGs rasterize onto a transparent canvas, so a blend mode
+  has nothing to composite against.
+- `antiAlias` and `filterQuality` — vector rendering already applies canvas
+  antialiasing during `drawPicture`.
+
+> SVG support in `ImageService` is for treating SVGs as static images. If you
+> need runtime lit rendering of a vector shape (per-frame lighting changes,
+> normal-mapped surfaces), see the [Lit SVG service](services_lit_svg.md)
+> instead.
+
+
 ## Image properties
 
 `ImageProperties` describes both the asset to load and the transformations to
@@ -141,9 +189,9 @@ so the cached `Image` is already in its final form.
 | `fitCrop` | When rotating, scale the rotated image so that `crop`'s width and height fully fit. Position of the crop is ignored when `fitCrop` is true. |
 | `flipX` | Mirror the image horizontally. |
 | `flipY` | Mirror the image vertically. |
-| `antiAlias` | Use antialiasing when transforming the image (defaults to `true`). |
-| `blendMode` | `BlendMode` used while drawing the transformed image (defaults to `srcOver`). |
-| `filterQuality` | `FilterQuality` used while drawing the transformed image (defaults to `low`). |
+| `antiAlias` | Use antialiasing when transforming the image (defaults to `true`). Ignored for SVG sources. |
+| `blendMode` | `BlendMode` used while drawing the transformed image (defaults to `srcOver`). Ignored for SVG sources. |
+| `filterQuality` | `FilterQuality` used while drawing the transformed image (defaults to `low`). Ignored for SVG sources. |
 | `ignoreDefaultProperties` | When true, the global default properties are skipped for this image. |
 
 If no transforming properties are set, the original `Image` is cached as-is and

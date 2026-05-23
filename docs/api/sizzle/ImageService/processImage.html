@@ -75,118 +75,30 @@
   Image image,
   ImageProperties imageProperties,
 ) async {
-  final recorder = PictureRecorder();
-  final canvas = Canvas(recorder);
-  double width = image.width.toDouble();
-  double height = image.height.toDouble();
-  bool requiresProcessing = false;
+  final prepared = _prepareTransformedCanvas(
+    image.width.toDouble(),
+    image.height.toDouble(),
+    imageProperties,
+  );
 
-  &#47;&#47; Prepare properties
-  ImageProperties properties = imageProperties;
-  if (defaultProperties != null &amp;&amp; !imageProperties.ignoreDefaultProperties) {
-    properties = defaultProperties!.copyMerged(imageProperties);
-  }
-
-  &#47;&#47; Prepare crop
-  Rect propertyCrop = properties.crop ?? Rect.zero;
-  Rect c = propertyCrop;
-
-  &#47;&#47; Prepare scale
-  Vector2 propertyScale = properties.scale ?? Vector2.all(1.0);
-  if (propertyScale.x != 1.0 || propertyScale.y != 1.0) {
-    width *= propertyScale.x;
-    height *= propertyScale.y;
-  }
-
-  &#47;&#47; Prepare rotation
-  double propertyAngle = properties.angle ?? 0.0;
-  if (propertyAngle != 0.0) {
-    if ((properties.fitCrop ?? false) &amp;&amp; !propertyCrop.isEmpty) {
-      Rect b = propertyCrop.bounds(-propertyAngle);
-      double scale = max(b.width &#47; width, b.height &#47; height);
-      width *= scale;
-      height *= scale;
-      propertyScale.multiply(Vector2.all(scale));
-      b = boundingBox(Size(width, height), propertyAngle);
-      c = Rect.fromLTWH(
-        (width - propertyCrop.width) &#47; 2,
-        (height - propertyCrop.height) &#47; 2,
-        propertyCrop.width,
-        propertyCrop.height,
-      );
-    } else {
-      c = boundingBox(Size(width, height), propertyAngle);
-      if (!propertyCrop.isEmpty) {
-        c = propertyCrop.translate(c.left, c.top);
-      }
-    }
-    if (properties.flipX ?? false) {
-      c = Rect.fromLTWH(-c.left, c.top, c.width, c.height);
-    }
-    if (properties.flipY ?? false) {
-      c = Rect.fromLTWH(c.left, -c.top, c.width, c.height);
-    }
-  }
-
-  &#47;&#47; Flip X
-  if (properties.flipX ?? false) {
-    canvas.scale(-1.0, 1.0);
-    canvas.translate(-width, 0.0);
-    requiresProcessing = true;
-  }
-
-  &#47;&#47; Flip Y
-  if (properties.flipY ?? false) {
-    canvas.scale(1.0, -1.0);
-    canvas.translate(0.0, -height);
-    requiresProcessing = true;
-  }
-
-  &#47;&#47; Crop
-  if (!c.isEmpty) {
-    canvas.translate(-c.left, -c.top);
-    requiresProcessing = true;
-  }
-
-  &#47;&#47; Finish rotation
-  if (propertyAngle != 0.0) {
-    canvas.translate(width &#47; 2, height &#47; 2);
-    canvas.rotate(-propertyAngle);
-    canvas.translate(-width &#47; 2, -height &#47; 2);
-    requiresProcessing = true;
-  }
-
-  &#47;&#47; Scale
-  if (propertyScale.x != 1.0 || propertyScale.y != 1.0) {
-    canvas.scale(propertyScale.x, propertyScale.y);
-    requiresProcessing = true;
-  }
-
-  &#47;&#47; Quit early if no processing is required
-  if (!requiresProcessing) {
-    recorder.endRecording().dispose();
+  if (!prepared.requiresProcessing) {
+    prepared.recorder.endRecording().dispose();
     return image;
   }
 
-  &#47;&#47; Draw the image
-  canvas.drawImage(
+  prepared.canvas.drawImage(
     image,
     Offset.zero,
     Paint()
-      ..isAntiAlias = properties.antiAlias ?? true
-      ..blendMode = properties.blendMode ?? BlendMode.srcOver
-      ..filterQuality = properties.filterQuality ?? FilterQuality.low,
+      ..isAntiAlias = prepared.merged.antiAlias ?? true
+      ..blendMode = prepared.merged.blendMode ?? BlendMode.srcOver
+      ..filterQuality = prepared.merged.filterQuality ?? FilterQuality.low,
   );
 
-  &#47;&#47; Crop?
-  double cropWidth = c.width == 0.0 ? width : c.width;
-  double cropHeight = c.height == 0.0 ? height : c.height;
-
-  &#47;&#47; Return image
   image.dispose();
-  return await recorder.endRecording().toImageSafe(
-        cropWidth.toInt(),
-        cropHeight.toInt(),
+  return await prepared.recorder.endRecording().toImageSafe(
+        prepared.outWidth,
+        prepared.outHeight,
       );
 }</code></pre>
 </section>
