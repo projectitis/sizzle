@@ -108,8 +108,8 @@ dart doc --output=docs/api .
 - `defaultProperties` applies a baseline transform to every load (per-image properties merge on top, or set `ignoreDefaultProperties` to bypass)
 - Same enqueue/`loadQueue` flow as FileService
 
-**SvgService** (`lib/src/utils/services/svg_service.dart`)
-- Parses and caches `Svg` assets for `SvgComponent`
+**LitSvgService** (`lib/src/utils/services/lit_svg_service.dart`)
+- Parses and caches `LitSvgData` assets for `LitSvgComponent`
 - Same enqueue/`loadQueue` flow as the file and image services
 
 **FlagService** (`lib/src/utils/services/flag_service.dart`)
@@ -136,8 +136,8 @@ Located in `lib/src/display/`:
 - **lightning.dart**: Lightning visual effect (uses object pooling)
 - **tile.dart**: Tile/tilemap components
 - **environment.dart**: `EnvironmentComponent`, `Environment`, and `AmbientLight`/`DirectionalLight` for lit rendering
-- **svg.dart**: `Svg` parser for the project's narrow SVG subset (Paraplu namespace, line/move/close paths only)
-- **svg_component.dart**: `SvgComponent` — renders a parsed `Svg` with cascading lighting from the nearest `Environment` ancestor. Recomposes lazily; rotating ancestors must extend `EnvironmentComponent` for the dirty cascade to work.
+- **lit_svg_data.dart**: `LitSvgData` parser for the project's narrow SVG subset (Paraplu namespace, line/move/close paths only)
+- **lit_svg_component.dart**: `LitSvgComponent` — renders a parsed `LitSvgData` with cascading lighting from the nearest `Environment` ancestor. Recomposes lazily; rotating ancestors must extend `EnvironmentComponent` for the dirty cascade to work.
 
 ### Text
 
@@ -274,7 +274,7 @@ final img = await Services.images.load(path: 'sprite.png', cache: false);
 img.dispose();
 ```
 
-The same enqueue/`loadQueue` pattern applies to `Services.files` and `Services.svg`.
+The same enqueue/`loadQueue` pattern applies to `Services.files` and `Services.litSvg`.
 
 **Flags and State**
 ```dart

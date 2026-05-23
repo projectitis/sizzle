@@ -36,7 +36,7 @@ Future<void> testWithEnv(
 
 /// Test fixture: an [EnvironmentComponent] that cascades dirty when its
 /// angle changes, demonstrating the contract for custom rotating
-/// intermediaries between an [Environment] and an [SvgComponent].
+/// intermediaries between an [Environment] and an [LitSvgComponent].
 class _RotatingMid extends EnvironmentComponent {
   @override
   set angle(double v) {
@@ -46,7 +46,7 @@ class _RotatingMid extends EnvironmentComponent {
   }
 }
 
-SvgPath _pathWithFill(String fill) {
+LitSvgPath _pathWithFill(String fill) {
   // Build a unit-square path with normal decoded from `fill`.
   final src = '''
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:pp="http://paraplu.io/svg"
@@ -54,15 +54,15 @@ SvgPath _pathWithFill(String fill) {
   <defs><g id="g"><path fill="$fill" d="M0 0 L1 0 L1 1 L0 1 Z"/></g></defs>
   <use href="#g"/>
 </svg>''';
-  return Svg(src).groups.single.paths.single;
+  return LitSvgData(src).groups.single.paths.single;
 }
 
-SvgMaterial _material({
+LitSvgMaterial _material({
   required Color base,
   Color? top,
-  SvgMaterialSheen sheen = SvgMaterialSheen.matte,
+  LitSvgMaterialSheen sheen = LitSvgMaterialSheen.matte,
 }) {
-  return SvgMaterial()
+  return LitSvgMaterial()
     ..baseColor = base
     ..topColor = top ?? base
     ..sheen = sheen;
@@ -75,18 +75,18 @@ void main() {
   // Shading model — pure function tests
   // --------------------------------------------------------------------------
 
-  group('SvgComponent.resolvePathColor (single-colour, matte)', () {
+  group('LitSvgComponent.resolvePathColor (single-colour, matte)', () {
     final path = _pathWithFill('#8080ff'); // normal facing camera (0,0,1)
 
     test('no lights → darkened by the shadow factor', () {
       final mat = _material(base: const Color(0xFF808080));
-      final c = SvgComponent.resolvePathColor(path, mat, 0, []);
+      final c = LitSvgComponent.resolvePathColor(path, mat, 0, []);
       // shadeI = 0, delta = -0.5. Shadow side uses
-      //   shadowFactor + matte * shadowSheenWeight = 1.0 + 0.5*0.3 = 1.15.
-      // shift = -0.5 * 1.15 = -0.575. 0x80 -> 128 * (1 - 0.575) ≈ 54.
-      expect((c.toARGB32() >> 16) & 0xFF, closeTo(54, 1));
-      expect((c.toARGB32() >> 8) & 0xFF, closeTo(54, 1));
-      expect(c.toARGB32() & 0xFF, closeTo(54, 1));
+      //   shadowFactor + matte * shadowSheenWeight = 0.6 + 0.5*0.6 = 0.9.
+      // shift = -0.5 * 0.9 = -0.45. 0x80 -> 128 * (1 - 0.45) ≈ 70.
+      expect((c.toARGB32() >> 16) & 0xFF, closeTo(70, 1));
+      expect((c.toARGB32() >> 8) & 0xFF, closeTo(70, 1));
+      expect(c.toARGB32() & 0xFF, closeTo(70, 1));
       expect((c.toARGB32() >> 24) & 0xFF, 0xFF);
     });
 
@@ -99,7 +99,7 @@ void main() {
           direction: Vector3(0, 0, -1),
         ),
       ];
-      final c = SvgComponent.resolvePathColor(path, mat, 0, lights);
+      final c = LitSvgComponent.resolvePathColor(path, mat, 0, lights);
       // intensity = 1, shift = (1 - 0.5) * 0.5 = +0.25.
       // 0x80 -> 128 + (255 - 128) * 0.25 = 159.75 ≈ 160.
       // White light → no hue tint, channels stay at the lightened value.
@@ -117,7 +117,7 @@ void main() {
           direction: Vector3(0, 0, 1), // pointing toward +Z, away from surface
         ),
       ];
-      final c = SvgComponent.resolvePathColor(path, mat, 0, lights);
+      final c = LitSvgComponent.resolvePathColor(path, mat, 0, lights);
       // shadeI = -1, delta = -1.5. shift = -1.5 * 1.15 = -1.725, clamps to 0.
       expect((c.toARGB32() >> 16) & 0xFF, 0);
     });
@@ -135,9 +135,9 @@ void main() {
       ];
       // With totalAngle=0, normal is +X, light direction is +X, so
       // -dot(N, dir) = -1 → clamped to 0. Surface back-lit.
-      final lit0 = SvgComponent.resolvePathColor(p, mat, 0, lightLeft);
+      final lit0 = LitSvgComponent.resolvePathColor(p, mat, 0, lightLeft);
       // With totalAngle=π, normal rotates to -X. -dot(N, dir) = +1 → fully lit.
-      final litPi = SvgComponent.resolvePathColor(p, mat, pi, lightLeft);
+      final litPi = LitSvgComponent.resolvePathColor(p, mat, pi, lightLeft);
       expect(
         (lit0.toARGB32() >> 16) & 0xFF,
         lessThan((litPi.toARGB32() >> 16) & 0xFF),
@@ -145,22 +145,22 @@ void main() {
     });
   });
 
-  group('SvgComponent.resolvePathColor (specular)', () {
+  group('LitSvgComponent.resolvePathColor (specular)', () {
     final path = _pathWithFill('#8080ff');
 
     test('no aligned light → alpha ≈ 0', () {
       final mat = _material(
         base: const Color(0xFFFFFFFF),
-        sheen: SvgMaterialSheen.specular,
+        sheen: LitSvgMaterialSheen.specular,
       );
-      final c = SvgComponent.resolvePathColor(path, mat, 0, []);
+      final c = LitSvgComponent.resolvePathColor(path, mat, 0, []);
       expect((c.toARGB32() >> 24) & 0xFF, 0);
     });
 
     test('aligned directional light, strength 1 → alpha ≈ 255', () {
       final mat = _material(
         base: const Color(0xFFFFFFFF),
-        sheen: SvgMaterialSheen.specular,
+        sheen: LitSvgMaterialSheen.specular,
       );
       final lights = [
         DirectionalLight(
@@ -169,14 +169,14 @@ void main() {
           direction: Vector3(0, 0, -1),
         ),
       ];
-      final c = SvgComponent.resolvePathColor(path, mat, 0, lights);
+      final c = LitSvgComponent.resolvePathColor(path, mat, 0, lights);
       expect((c.toARGB32() >> 24) & 0xFF, closeTo(255, 1));
     });
 
     test('aligned light at half strength → partial alpha', () {
       final mat = _material(
         base: const Color(0xFFFFFFFF),
-        sheen: SvgMaterialSheen.specular,
+        sheen: LitSvgMaterialSheen.specular,
       );
       final lights = [
         DirectionalLight(
@@ -185,13 +185,13 @@ void main() {
           direction: Vector3(0, 0, -1),
         ),
       ];
-      final c = SvgComponent.resolvePathColor(path, mat, 0, lights);
+      final c = LitSvgComponent.resolvePathColor(path, mat, 0, lights);
       // specPower = pow(1, 16) * 0.5 = 0.5 → alpha = 127 or 128.
       expect((c.toARGB32() >> 24) & 0xFF, closeTo(128, 2));
     });
   });
 
-  group('SvgComponent.resolvePathColor (dual-colour)', () {
+  group('LitSvgComponent.resolvePathColor (dual-colour)', () {
     final path = _pathWithFill('#8080ff');
     final mat = _material(
       base: const Color(0xFF000000),
@@ -199,7 +199,7 @@ void main() {
     );
 
     test('intensity 0 → exactly base', () {
-      final c = SvgComponent.resolvePathColor(path, mat, 0, []);
+      final c = LitSvgComponent.resolvePathColor(path, mat, 0, []);
       expect((c.toARGB32() >> 16) & 0xFF, 0);
       expect((c.toARGB32() >> 8) & 0xFF, 0);
       expect(c.toARGB32() & 0xFF, 0);
@@ -213,7 +213,7 @@ void main() {
           direction: Vector3(0, 0, -1),
         ),
       ];
-      final c = SvgComponent.resolvePathColor(path, mat, 0, lights);
+      final c = LitSvgComponent.resolvePathColor(path, mat, 0, lights);
       // top is white; white light leaves it untinted.
       expect((c.toARGB32() >> 16) & 0xFF, 255);
       expect((c.toARGB32() >> 8) & 0xFF, 255);
@@ -228,20 +228,20 @@ void main() {
           direction: Vector3(0, 0, -1),
         ),
       ];
-      final c = SvgComponent.resolvePathColor(path, mat, 0, lights);
+      final c = LitSvgComponent.resolvePathColor(path, mat, 0, lights);
       // intensity = 1.0 * 0.5 = 0.5; lerp(0, 255, 0.5) = 128.
       // White light → no hue tint.
       expect((c.toARGB32() >> 16) & 0xFF, closeTo(128, 1));
     });
   });
 
-  group('SvgComponent.resolvePathColor (light tint)', () {
+  group('LitSvgComponent.resolvePathColor (light tint)', () {
     final path = _pathWithFill('#8080ff');
 
     test('red light shifts grey surface toward red', () {
       final mat = _material(
         base: const Color(0xFF808080),
-        sheen: SvgMaterialSheen.dull,
+        sheen: LitSvgMaterialSheen.dull,
       );
       final lights = [
         DirectionalLight(
@@ -250,7 +250,7 @@ void main() {
           direction: Vector3(0, 0, -1),
         ),
       ];
-      final c = SvgComponent.resolvePathColor(path, mat, 0, lights);
+      final c = LitSvgComponent.resolvePathColor(path, mat, 0, lights);
       final r = (c.toARGB32() >> 16) & 0xFF;
       final g = (c.toARGB32() >> 8) & 0xFF;
       final b = c.toARGB32() & 0xFF;
@@ -259,7 +259,7 @@ void main() {
     });
   });
 
-  group('SvgComponent.resolvePathColor (multi-light stacking)', () {
+  group('LitSvgComponent.resolvePathColor (multi-light stacking)', () {
     final path = _pathWithFill('#8080ff');
     final mat = _material(
       base: const Color(0xFF000000),
@@ -286,8 +286,8 @@ void main() {
           direction: Vector3(0, 0, -1),
         ),
       ];
-      final a = SvgComponent.resolvePathColor(path, mat, 0, twoHalf);
-      final b = SvgComponent.resolvePathColor(path, mat, 0, oneFull);
+      final a = LitSvgComponent.resolvePathColor(path, mat, 0, twoHalf);
+      final b = LitSvgComponent.resolvePathColor(path, mat, 0, oneFull);
       expect(
         (a.toARGB32() >> 16) & 0xFF,
         closeTo((b.toARGB32() >> 16) & 0xFF, 1),
@@ -299,14 +299,14 @@ void main() {
   // Component behaviour
   // --------------------------------------------------------------------------
 
-  group('SvgComponent', () {
-    Svg buildMini() => Svg(_miniSvg);
+  group('LitSvgComponent', () {
+    LitSvgData buildMini() => LitSvgData(_miniSvg);
 
     testWithEnv('loads, sizes, and anchors from pp:origin', (game) async {
       final env = Environment(
         lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
       );
-      final svg = SvgComponent.fromSvg(buildMini());
+      final svg = LitSvgComponent.fromLitSvgData(buildMini());
       env.add(svg);
       game.add(env);
       await game.ready();
@@ -320,7 +320,7 @@ void main() {
       final env = Environment(
         lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
       );
-      final svg = SvgComponent.fromSvg(buildMini(), anchor: Anchor.topLeft);
+      final svg = LitSvgComponent.fromLitSvgData(buildMini(), anchor: Anchor.topLeft);
       env.add(svg);
       game.add(env);
       await game.ready();
@@ -332,7 +332,7 @@ void main() {
       final env = Environment(
         lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
       );
-      final svg = SvgComponent.fromSvg(buildMini());
+      final svg = LitSvgComponent.fromLitSvgData(buildMini());
       env.add(svg);
       game.add(env);
       await game.ready();
@@ -346,7 +346,7 @@ void main() {
       final env = Environment(
         lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
       );
-      final svg = SvgComponent.fromSvg(buildMini());
+      final svg = LitSvgComponent.fromLitSvgData(buildMini());
       env.add(svg);
       game.add(env);
       await game.ready();
@@ -364,7 +364,7 @@ void main() {
       final env = Environment(
         lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
       );
-      final svg = SvgComponent.fromSvg(buildMini());
+      final svg = LitSvgComponent.fromLitSvgData(buildMini());
       env.add(svg);
       game.add(env);
       await game.ready();
@@ -384,7 +384,7 @@ void main() {
         lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
       );
       final mid = _RotatingMid();
-      final svg = SvgComponent.fromSvg(buildMini());
+      final svg = LitSvgComponent.fromLitSvgData(buildMini());
       mid.add(svg);
       env.add(mid);
       game.add(env);
@@ -398,11 +398,11 @@ void main() {
       expect(identical(svg.picture, first), isFalse);
     });
 
-    testWithEnv('addLight cascades to descendant SvgComponent', (game) async {
+    testWithEnv('addLight cascades to descendant LitSvgComponent', (game) async {
       final env = Environment(
         lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
       );
-      final svg = SvgComponent.fromSvg(buildMini());
+      final svg = LitSvgComponent.fromLitSvgData(buildMini());
       env.add(svg);
       game.add(env);
       await game.ready();
@@ -444,7 +444,7 @@ void main() {
           ),
         ],
       );
-      final svg = SvgComponent.fromSvg(Svg(sideFacingSvg));
+      final svg = LitSvgComponent.fromLitSvgData(LitSvgData(sideFacingSvg));
       env.add(svg);
       game.add(env);
       await game.ready();
@@ -458,7 +458,7 @@ void main() {
     });
 
     testWithEnv('throws when no Environment ancestor', (game) async {
-      final svg = SvgComponent.fromSvg(buildMini());
+      final svg = LitSvgComponent.fromLitSvgData(buildMini());
       await expectLater(
         () async {
           game.add(svg);
@@ -470,12 +470,99 @@ void main() {
   });
 
   // --------------------------------------------------------------------------
+  // snapshotAsImage
+  // --------------------------------------------------------------------------
+
+  group('LitSvgComponent.snapshotAsImage', () {
+    LitSvgData buildMini() => LitSvgData(_miniSvg);
+
+    testWithEnv('returns an Image of the requested size', (game) async {
+      final env = Environment(
+        lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
+      );
+      final svg = LitSvgComponent.fromLitSvgData(buildMini());
+      env.add(svg);
+      game.add(env);
+      await game.ready();
+
+      svg.render(_dummyCanvas());
+      final img = svg.snapshotAsImage(20, 20);
+      expect(img.width, 20);
+      expect(img.height, 20);
+      img.dispose();
+    });
+
+    testWithEnv('auto-composes when no render has occurred', (game) async {
+      final env = Environment(
+        lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
+      );
+      final svg = LitSvgComponent.fromLitSvgData(buildMini());
+      env.add(svg);
+      game.add(env);
+      await game.ready();
+
+      expect(svg.picture, isNull);
+      final img = svg.snapshotAsImage(20, 20);
+      expect(svg.picture, isNotNull);
+      expect(img.width, 20);
+      img.dispose();
+    });
+
+    testWithEnv('recomposes when needsRedraw is set', (game) async {
+      final env = Environment(
+        lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
+      );
+      final svg = LitSvgComponent.fromLitSvgData(buildMini());
+      env.add(svg);
+      game.add(env);
+      await game.ready();
+
+      svg.render(_dummyCanvas());
+      final first = svg.picture!;
+
+      svg.angle = 1.0; // marks dirty via setter
+      final img = svg.snapshotAsImage(20, 20);
+      expect(identical(svg.picture, first), isFalse);
+      img.dispose();
+    });
+
+    testWithEnv('applies the optional transform', (game) async {
+      final env = Environment(
+        lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
+      );
+      final svg = LitSvgComponent.fromLitSvgData(buildMini());
+      env.add(svg);
+      game.add(env);
+      await game.ready();
+
+      svg.render(_dummyCanvas());
+      final img = svg.snapshotAsImage(
+        40,
+        40,
+        transform: Matrix4.identity()..scaleByDouble(2.0, 2.0, 2.0, 1.0),
+      );
+      expect(img.width, 40);
+      expect(img.height, 40);
+      img.dispose();
+    });
+
+    testWithEnv('throws when not mounted under an Environment', (game) async {
+      final svg = LitSvgComponent.fromLitSvgData(buildMini());
+      // Not added to any parent — environment is null.
+      expect(
+        () => svg.snapshotAsImage(20, 20),
+        throwsA(isA<StateError>()),
+      );
+    });
+  });
+
+  // --------------------------------------------------------------------------
   // Goldens
   // --------------------------------------------------------------------------
 
-  group('SvgComponent goldens', () {
-    Svg loadFixture(String name) =>
-        Svg(File('test/_resources/svg/$name').readAsStringSync());
+  group('LitSvgComponent goldens', () {
+    LitSvgData loadFixture(String name) =>
+        LitSvgData(File('test/_resources/svg/$name').readAsStringSync());
 
     Environment buildLightingEnvironment({double sunYaw = 0.3}) {
       // Lighting setup:
@@ -506,12 +593,12 @@ void main() {
       );
     }
 
-    Future<void> Function(SizzleGame) preparer(Svg svg) {
+    Future<void> Function(SizzleGame) preparer(LitSvgData svg) {
       return (SizzleGame game) async {
         final scene = game.currentScene!;
         final env = buildLightingEnvironment();
         env.add(
-          SvgComponent.fromSvg(
+          LitSvgComponent.fromLitSvgData(
             svg,
             position: Vector2(110, 110),
           ),
@@ -525,7 +612,7 @@ void main() {
       preparer(loadFixture('normal-map-matte.svg')),
       game: SizzleGame(scene: Scene.new, targetSize: Vector2(220, 220)),
       size: Vector2(220, 220),
-      goldenFile: '$goldens/svg-normal-map-matte.png',
+      goldenFile: '$goldens/lit-svg-normal-map-matte.png',
     );
 
     testGolden(
@@ -533,7 +620,7 @@ void main() {
       preparer(loadFixture('normal-map-dull.svg')),
       game: SizzleGame(scene: Scene.new, targetSize: Vector2(220, 220)),
       size: Vector2(220, 220),
-      goldenFile: '$goldens/svg-normal-map-dull.png',
+      goldenFile: '$goldens/lit-svg-normal-map-dull.png',
     );
 
     testGolden(
@@ -541,7 +628,7 @@ void main() {
       preparer(loadFixture('normal-map-gloss.svg')),
       game: SizzleGame(scene: Scene.new, targetSize: Vector2(220, 220)),
       size: Vector2(220, 220),
-      goldenFile: '$goldens/svg-normal-map-gloss.png',
+      goldenFile: '$goldens/lit-svg-normal-map-gloss.png',
     );
 
     testGolden(
@@ -549,7 +636,7 @@ void main() {
       preparer(loadFixture('normal-map-specular.svg')),
       game: SizzleGame(scene: Scene.new, targetSize: Vector2(220, 220)),
       size: Vector2(220, 220),
-      goldenFile: '$goldens/svg-normal-map-specular.png',
+      goldenFile: '$goldens/lit-svg-normal-map-specular.png',
     );
 
     testGolden(
@@ -558,7 +645,7 @@ void main() {
         final scene = game.currentScene!;
         final env = buildLightingEnvironment();
         env.add(
-          SvgComponent.fromSvg(
+          LitSvgComponent.fromLitSvgData(
             loadFixture('normal-map-matte.svg'),
             position: Vector2(110, 110),
             angle: pi / 4,
@@ -568,7 +655,7 @@ void main() {
       },
       game: SizzleGame(scene: Scene.new, targetSize: Vector2(220, 220)),
       size: Vector2(220, 220),
-      goldenFile: '$goldens/svg-normal-map-matte-rotated.png',
+      goldenFile: '$goldens/lit-svg-normal-map-matte-rotated.png',
     );
   });
 }

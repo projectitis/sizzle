@@ -19,8 +19,8 @@ services, the others should feel familiar too.
   assets via `Services.images`
 - [File service](services_files.md) - load and cache arbitrary files (raw,
   string, JSON, JX) via `Services.files`
-- [SVG service](services_svg.md) - parse and cache `Svg` assets via
-  `Services.svg`
+- [Lit SVG service](services_lit_svg.md) - parse and cache `LitSvgData`
+  assets via `Services.litSvg`
 - [Dialog service](services_dialog.md) - load and run Yarn Spinner dialog via
   `Services.dialog`
 - [Flag service](services_flags.md) - track boolean game state via

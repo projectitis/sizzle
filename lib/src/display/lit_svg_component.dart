@@ -6,10 +6,10 @@ import 'package:flame/components.dart';
 import 'package:meta/meta.dart';
 
 import './environment.dart';
-import './svg.dart';
+import './lit_svg_data.dart';
 import '../utils/services.dart';
 
-/// Renders a parsed [Svg] with lighting from the nearest [Environment]
+/// Renders a parsed [LitSvgData] with lighting from the nearest [Environment]
 /// ancestor.
 ///
 /// The component caches a `ui.Picture` of the lit SVG and recomposes only
@@ -19,18 +19,18 @@ import '../utils/services.dart';
 /// * `this.angle` changes (the setter calls [markNeedsRedraw]).
 ///
 /// **Important:** any rotating component sitting between the [Environment]
-/// and this [SvgComponent] must itself extend [EnvironmentComponent] so
+/// and this [LitSvgComponent] must itself extend [EnvironmentComponent] so
 /// its rotation can cascade dirty state. Wrapping in a plain
 /// [PositionComponent] breaks the cascade and lighting will appear stale.
 ///
 /// Translation and scale are handled by the parent canvas transform and do
 /// not trigger a recompose.
 ///
-/// Construct with an asset [path]; the SVG is loaded via [Services.svg]
+/// Construct with an asset [path]; the SVG is loaded via [Services.litSvg]
 /// during [onLoad] and the component's [size] is set to the SVG's size.
 /// If [anchor] is not provided it is derived from the SVG's `pp:origin`.
-class SvgComponent extends EnvironmentComponent {
-  SvgComponent({
+class LitSvgComponent extends EnvironmentComponent {
+  LitSvgComponent({
     required String path,
     Anchor? anchor,
     super.position,
@@ -44,10 +44,10 @@ class SvgComponent extends EnvironmentComponent {
         _explicitAnchor = anchor,
         super(anchor: anchor ?? Anchor.topLeft);
 
-  /// Build directly from an already-parsed [Svg]. Useful for tests or when
+  /// Build directly from an already-parsed [LitSvgData]. Useful for tests or when
   /// the caller manages loading and caching themselves.
-  SvgComponent.fromSvg(
-    Svg svg, {
+  LitSvgComponent.fromLitSvgData(
+    LitSvgData svg, {
     Anchor? anchor,
     super.position,
     super.scale,
@@ -61,11 +61,11 @@ class SvgComponent extends EnvironmentComponent {
         super(anchor: anchor ?? Anchor.topLeft);
 
   final String _path;
-  final Svg? _preloadedSvg;
+  final LitSvgData? _preloadedSvg;
   final Anchor? _explicitAnchor;
 
-  Svg? _svg;
-  Svg? get svg => _svg;
+  LitSvgData? _svg;
+  LitSvgData? get svg => _svg;
 
   Picture? _picture;
 
@@ -75,7 +75,7 @@ class SvgComponent extends EnvironmentComponent {
 
   @override
   Future<void> onLoad() async {
-    final s = _preloadedSvg ?? await Services.svg.load(path: _path);
+    final s = _preloadedSvg ?? await Services.litSvg.load(path: _path);
     _svg = s;
     size = s.size;
     if (_explicitAnchor == null && s.size.x > 0 && s.size.y > 0) {
@@ -119,7 +119,43 @@ class SvgComponent extends EnvironmentComponent {
     super.onRemove();
   }
 
-  void _compose(Svg s, double totalAngle) {
+  /// Convert the cached lit picture to an [Image] of the given [width] and
+  /// [height] (in pixels). Use [transform] to position the snapshot inside
+  /// the image, or to apply other transforms before rasterisation.
+  ///
+  /// If the picture has not yet been composed (no [render] has occurred) or
+  /// is stale ([needsRedraw] is true), it is composed first. Requires the
+  /// SVG to have finished loading and the component to be mounted under an
+  /// [Environment]; otherwise a [StateError] is thrown.
+  ///
+  /// The caller owns the returned [Image] and must dispose it.
+  Image snapshotAsImage(int width, int height, {Matrix4? transform}) {
+    final s = _svg;
+    if (s == null) {
+      throw StateError('SVG has not loaded yet — cannot snapshot');
+    }
+    if (environment == null) {
+      throw StateError(
+        'LitSvgComponent must be mounted under an Environment to snapshot',
+      );
+    }
+    if (needsRedraw || _picture == null) {
+      final relAngle = absoluteAngle - environment!.absoluteAngle;
+      _compose(s, relAngle);
+      clearNeedsRedraw();
+    }
+    if (transform == null) {
+      return _picture!.toImageSync(width, height);
+    }
+    final recorder = PictureRecorder();
+    final canvas = Canvas(recorder);
+    canvas.transform(Float64List.fromList(transform.storage));
+    canvas.drawPicture(_picture!);
+    final picture = recorder.endRecording();
+    return picture.toImageSync(width, height);
+  }
+
+  void _compose(LitSvgData s, double totalAngle) {
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder);
 
@@ -167,12 +203,12 @@ class SvgComponent extends EnvironmentComponent {
   /// the surface lightens above the shading midpoint. Specular bypasses this
   /// and modulates alpha instead.
   @visibleForTesting
-  static const Map<SvgMaterialSheen, double> sheenFactor =
-      <SvgMaterialSheen, double>{
-    SvgMaterialSheen.dull: 0.2,
-    SvgMaterialSheen.matte: 0.50,
-    SvgMaterialSheen.gloss: 0.80,
-    SvgMaterialSheen.specular: 0.0,
+  static const Map<LitSvgMaterialSheen, double> sheenFactor =
+      <LitSvgMaterialSheen, double>{
+    LitSvgMaterialSheen.dull: 0.2,
+    LitSvgMaterialSheen.matte: 0.50,
+    LitSvgMaterialSheen.gloss: 0.80,
+    LitSvgMaterialSheen.specular: 0.0,
   };
 
   /// Sheen-independent shadow strength in single-colour mode. Below the
@@ -193,8 +229,8 @@ class SvgComponent extends EnvironmentComponent {
   /// environment's [lights]. Pure function — exposed for testing.
   @visibleForTesting
   static Color resolvePathColor(
-    SvgPath path,
-    SvgMaterial material,
+    LitSvgPath path,
+    LitSvgMaterial material,
     double totalAngle,
     List<Light> lights,
   ) {
@@ -215,7 +251,7 @@ class SvgComponent extends EnvironmentComponent {
     double intensity = 0;
     double tintR = 0, tintG = 0, tintB = 0;
     double specPower = 0;
-    final isSpec = material.sheen == SvgMaterialSheen.specular;
+    final isSpec = material.sheen == LitSvgMaterialSheen.specular;
 
     for (final l in lights) {
       double signed;
