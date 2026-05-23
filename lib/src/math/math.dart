@@ -167,6 +167,9 @@ class Range {
   double random() {
     return Random().nextDouble() * (max - min) + min;
   }
+
+  @override
+  String toString() => 'Range($_min, $_max)';
 }
 
 /// Calculate the bounding box of a rectangle rotated around its center.

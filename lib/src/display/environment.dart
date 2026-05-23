@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 ///
 /// Owns a [needsRedraw] flag plus a push-based cascade that marks every
 /// [EnvironmentComponent] descendant when it flips. Subclasses (notably
-/// [Environment] and `SvgComponent`) call [markNeedsRedraw] from setters
+/// [Environment] and `LitSvgComponent`) call [markNeedsRedraw] from setters
 /// that affect their rendered output, then call [clearNeedsRedraw] after
 /// performing the redraw.
 ///

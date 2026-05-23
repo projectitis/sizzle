@@ -10,7 +10,7 @@ import './services/dialog_service.dart';
 import './services/file_service.dart';
 import './services/flag_service.dart';
 import './services/image_service.dart';
-import './services/svg_service.dart';
+import './services/lit_svg_service.dart';
 import './logger.dart';
 
 typedef OnFileAccessCallback = void Function(Map<String, dynamic> data);
@@ -38,8 +38,8 @@ class Services {
   /// Reference to the image service
   static final ImageService images = ImageService(_assetFolder);
 
-  /// Reference to the SVG service
-  static final SvgService svg = SvgService(_assetFolder);
+  /// Reference to the lit-SVG service
+  static final LitSvgService litSvg = LitSvgService(_assetFolder);
 
   /// Reference to the flag service
   static final FlagService flags = FlagService();

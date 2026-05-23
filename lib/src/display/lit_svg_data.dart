@@ -4,10 +4,11 @@ import 'package:flame/extensions.dart';
 import 'package:meta/meta.dart';
 import 'package:xml/xml.dart';
 
-/// SVG base class.
+/// Parsed lit-SVG data.
 ///
 /// Parses a small subset of SVG into in-memory data structures suitable for
-/// later rendering. The supported subset is intentionally narrow:
+/// later rendering by `LitSvgComponent`. The supported subset is intentionally
+/// narrow:
 ///
 /// * The root `<svg>` element must declare the Paraplu namespace
 ///   (`xmlns:pp="http://paraplu.io/svg"`) and supplies `width`, `height`, and
@@ -20,17 +21,17 @@ import 'package:xml/xml.dart';
 ///   render list. All standard SVG transform functions are supported.
 /// * Path `d` data supports the line/move/close commands only:
 ///   `M m L l H h V v Z z` (curves and arcs are not yet supported).
-class Svg {
+class LitSvgData {
   /// The Paraplu namespace URI that must be declared on the root `<svg>`
-  /// element via `xmlns:pp="..."`. Without this, [Svg] refuses to parse.
+  /// element via `xmlns:pp="..."`. Without this, [LitSvgData] refuses to parse.
   static const String paraplu = 'http://paraplu.io/svg';
 
   final Vector2 size = Vector2.zero();
   final Vector2 origin = Vector2.zero();
-  final List<SvgGroup> groups = <SvgGroup>[];
-  final List<SvgRenderItem> renderList = <SvgRenderItem>[];
+  final List<LitSvgGroup> groups = <LitSvgGroup>[];
+  final List<LitSvgRenderItem> renderList = <LitSvgRenderItem>[];
 
-  Svg(String data) {
+  LitSvgData(String data) {
     final doc = XmlDocument.parse(data);
     final root = doc.rootElement;
     if (root.name.local != 'svg') {
@@ -62,7 +63,7 @@ class Svg {
       origin.y = double.parse(parts[1]);
     }
 
-    final groupsById = <String, SvgGroup>{};
+    final groupsById = <String, LitSvgGroup>{};
     for (final defs in root.findElements('defs')) {
       for (final g in defs.findElements('g')) {
         final group = _parseGroup(g);
@@ -84,12 +85,12 @@ class Svg {
         throw FormatException('use references unknown group: $id');
       }
       final transform = parseTransform(use.getAttribute('transform'));
-      renderList.add(SvgRenderItem(group, transform));
+      renderList.add(LitSvgRenderItem(group, transform));
     }
   }
 
-  SvgGroup _parseGroup(XmlElement g) {
-    final group = SvgGroup();
+  LitSvgGroup _parseGroup(XmlElement g) {
+    final group = LitSvgGroup();
     group.id = g.getAttribute('id') ?? '';
     group.expand = _parseExpand(g.getAttribute('pp:expand'));
 
@@ -117,7 +118,7 @@ class Svg {
       for (final verts in _PathParser(d).parse()) {
         final out =
             totalExpand == 0 ? verts : _expandPolygon(verts, totalExpand);
-        final svgPath = SvgPath()
+        final svgPath = LitSvgPath()
           ..normal = normal.clone()
           ..expand = pathExpand;
         _writeVertices(svgPath.uiPath, out);
@@ -242,14 +243,14 @@ class Svg {
   /// * `"#color sheen"` — base = top = color, sheen = parsed
   /// * `"#base #top sheen"` — base, top, sheen
   @visibleForTesting
-  static SvgMaterial parseMaterial(String s) {
+  static LitSvgMaterial parseMaterial(String s) {
     final tokens = s.trim().split(RegExp(r'\s+'));
-    final mat = SvgMaterial();
+    final mat = LitSvgMaterial();
     switch (tokens.length) {
       case 1:
         mat.baseColor = parseColor(tokens[0]);
         mat.topColor = mat.baseColor;
-        mat.sheen = SvgMaterialSheen.matte;
+        mat.sheen = LitSvgMaterialSheen.matte;
         break;
       case 2:
         mat.baseColor = parseColor(tokens[0]);
@@ -269,20 +270,20 @@ class Svg {
     return mat;
   }
 
-  static SvgMaterialSheen _parseSheen(String s) {
+  static LitSvgMaterialSheen _parseSheen(String s) {
     switch (s) {
       case 'd':
       case 'dull':
-        return SvgMaterialSheen.dull;
+        return LitSvgMaterialSheen.dull;
       case 'm':
       case 'matte':
-        return SvgMaterialSheen.matte;
+        return LitSvgMaterialSheen.matte;
       case 'g':
       case 'gloss':
-        return SvgMaterialSheen.gloss;
+        return LitSvgMaterialSheen.gloss;
       case 's':
       case 'specular':
-        return SvgMaterialSheen.specular;
+        return LitSvgMaterialSheen.specular;
       default:
         throw FormatException('Unknown sheen: "$s"');
     }
@@ -405,36 +406,36 @@ class Svg {
 }
 
 /// An item on the render list
-class SvgRenderItem {
-  final SvgGroup group;
+class LitSvgRenderItem {
+  final LitSvgGroup group;
   final Matrix4 transform;
-  SvgRenderItem(this.group, this.transform);
+  LitSvgRenderItem(this.group, this.transform);
 }
 
 /// A group definition
-class SvgGroup {
+class LitSvgGroup {
   String id = '';
-  final SvgMaterial material = SvgMaterial();
-  final List<SvgPath> paths = <SvgPath>[];
+  final LitSvgMaterial material = LitSvgMaterial();
+  final List<LitSvgPath> paths = <LitSvgPath>[];
 
   /// Optional `pp:expand` value on the group, in viewBox pixels. Each path
   /// in the group is offset outward (positive) or inward (negative) by this
-  /// many pixels per edge. Stacks additively with [SvgPath.expand].
+  /// many pixels per edge. Stacks additively with [LitSvgPath.expand].
   double expand = 0;
 }
 
 /// A closed path baked as a `dart:ui` [Path]. Vertices are not retained
 /// separately — the parser writes them directly into [uiPath] and (where
 /// relevant) applies any `pp:expand` offset before doing so.
-class SvgPath {
+class LitSvgPath {
   Vector3 normal = Vector3.zero();
 
   /// The closed path in viewBox coordinates. Shared across every
-  /// [SvgComponent] referencing the same parsed [Svg].
+  /// `LitSvgComponent` referencing the same parsed [LitSvgData].
   final Path uiPath = Path();
 
   /// Optional `pp:expand` value on the path, in viewBox pixels. Stacks
-  /// additively with the parent group's [SvgGroup.expand].
+  /// additively with the parent group's [LitSvgGroup.expand].
   double expand = 0;
 }
 
@@ -449,17 +450,17 @@ class SvgPath {
 /// #AARRGGBB
 /// Sheen may be `dull`, `matte`, `gloss`, `specular`, or just the first letter
 /// (`d`, `m`, `g`, `s`).
-class SvgMaterial {
-  SvgMaterialSheen sheen = SvgMaterialSheen.matte;
+class LitSvgMaterial {
+  LitSvgMaterialSheen sheen = LitSvgMaterialSheen.matte;
   Color baseColor = const Color(0xFF000000);
   Color topColor = const Color(0xFF000000);
 }
 
 /// The sheen levels.
 /// matte is default
-enum SvgMaterialSheen { dull, matte, gloss, specular }
+enum LitSvgMaterialSheen { dull, matte, gloss, specular }
 
-/// Parses the subset of SVG path commands documented on [Svg]:
+/// Parses the subset of SVG path commands documented on [LitSvgData]:
 /// `M m L l H h V v Z z`, plus implicit continuation per the SVG spec.
 ///
 /// Returns one vertex list per subpath. Each `M`/`m` after the first (or

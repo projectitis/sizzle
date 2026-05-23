@@ -14,109 +14,109 @@ Matcher _closeTo(double v) => closeTo(v, _eps);
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('Svg.parseColor', () {
+  group('LitSvgData.parseColor', () {
     test('parses #RRGGBB as opaque', () {
-      final c = Svg.parseColor('#FF8000');
+      final c = LitSvgData.parseColor('#FF8000');
       expect(c.toARGB32(), 0xFFFF8000);
     });
 
     test('parses #AARRGGBB literally', () {
-      final c = Svg.parseColor('#80FF8000');
+      final c = LitSvgData.parseColor('#80FF8000');
       expect(c.toARGB32(), 0x80FF8000);
     });
 
     test('parses #RGB by doubling each digit, opaque', () {
-      expect(Svg.parseColor('#abc').toARGB32(), 0xFFAABBCC);
-      expect(Svg.parseColor('#000').toARGB32(), 0xFF000000);
-      expect(Svg.parseColor('#fff').toARGB32(), 0xFFFFFFFF);
+      expect(LitSvgData.parseColor('#abc').toARGB32(), 0xFFAABBCC);
+      expect(LitSvgData.parseColor('#000').toARGB32(), 0xFF000000);
+      expect(LitSvgData.parseColor('#fff').toARGB32(), 0xFFFFFFFF);
     });
 
     test('throws without leading #', () {
-      expect(() => Svg.parseColor('FF8000'), throwsFormatException);
+      expect(() => LitSvgData.parseColor('FF8000'), throwsFormatException);
     });
 
     test('throws on wrong length', () {
-      expect(() => Svg.parseColor('#ab'), throwsFormatException);
-      expect(() => Svg.parseColor('#abcd'), throwsFormatException);
-      expect(() => Svg.parseColor('#abcde'), throwsFormatException);
+      expect(() => LitSvgData.parseColor('#ab'), throwsFormatException);
+      expect(() => LitSvgData.parseColor('#abcd'), throwsFormatException);
+      expect(() => LitSvgData.parseColor('#abcde'), throwsFormatException);
     });
   });
 
-  group('Svg.parseMaterial', () {
+  group('LitSvgData.parseMaterial', () {
     test('1 token: base = top, sheen = matte', () {
-      final m = Svg.parseMaterial('#ffffff');
+      final m = LitSvgData.parseMaterial('#ffffff');
       expect(m.baseColor.toARGB32(), 0xFFFFFFFF);
       expect(m.topColor.toARGB32(), 0xFFFFFFFF);
-      expect(m.sheen, SvgMaterialSheen.matte);
+      expect(m.sheen, LitSvgMaterialSheen.matte);
     });
 
     test('2 tokens: base = top, sheen parsed', () {
-      final m = Svg.parseMaterial('#ffffff gloss');
+      final m = LitSvgData.parseMaterial('#ffffff gloss');
       expect(m.baseColor.toARGB32(), 0xFFFFFFFF);
       expect(m.topColor.toARGB32(), 0xFFFFFFFF);
-      expect(m.sheen, SvgMaterialSheen.gloss);
+      expect(m.sheen, LitSvgMaterialSheen.gloss);
     });
 
     test('3 tokens: base, top, sheen', () {
-      final m = Svg.parseMaterial('#ffffff #000000 specular');
+      final m = LitSvgData.parseMaterial('#ffffff #000000 specular');
       expect(m.baseColor.toARGB32(), 0xFFFFFFFF);
       expect(m.topColor.toARGB32(), 0xFF000000);
-      expect(m.sheen, SvgMaterialSheen.specular);
+      expect(m.sheen, LitSvgMaterialSheen.specular);
     });
 
     test('all sheen keywords parse', () {
       expect(
-        Svg.parseMaterial('#000000 dull').sheen,
-        SvgMaterialSheen.dull,
+        LitSvgData.parseMaterial('#000000 dull').sheen,
+        LitSvgMaterialSheen.dull,
       );
       expect(
-        Svg.parseMaterial('#000000 matte').sheen,
-        SvgMaterialSheen.matte,
+        LitSvgData.parseMaterial('#000000 matte').sheen,
+        LitSvgMaterialSheen.matte,
       );
       expect(
-        Svg.parseMaterial('#000000 gloss').sheen,
-        SvgMaterialSheen.gloss,
+        LitSvgData.parseMaterial('#000000 gloss').sheen,
+        LitSvgMaterialSheen.gloss,
       );
       expect(
-        Svg.parseMaterial('#000000 specular').sheen,
-        SvgMaterialSheen.specular,
+        LitSvgData.parseMaterial('#000000 specular').sheen,
+        LitSvgMaterialSheen.specular,
       );
     });
 
     test('single-letter sheen shorthand', () {
-      expect(Svg.parseMaterial('#000 d').sheen, SvgMaterialSheen.dull);
-      expect(Svg.parseMaterial('#000 m').sheen, SvgMaterialSheen.matte);
-      expect(Svg.parseMaterial('#000 g').sheen, SvgMaterialSheen.gloss);
-      expect(Svg.parseMaterial('#000 s').sheen, SvgMaterialSheen.specular);
+      expect(LitSvgData.parseMaterial('#000 d').sheen, LitSvgMaterialSheen.dull);
+      expect(LitSvgData.parseMaterial('#000 m').sheen, LitSvgMaterialSheen.matte);
+      expect(LitSvgData.parseMaterial('#000 g').sheen, LitSvgMaterialSheen.gloss);
+      expect(LitSvgData.parseMaterial('#000 s').sheen, LitSvgMaterialSheen.specular);
     });
 
     test('mixes 3-digit hex with shorthand sheen', () {
-      final m = Svg.parseMaterial('#abc #def s');
+      final m = LitSvgData.parseMaterial('#abc #def s');
       expect(m.baseColor.toARGB32(), 0xFFAABBCC);
       expect(m.topColor.toARGB32(), 0xFFDDEEFF);
-      expect(m.sheen, SvgMaterialSheen.specular);
+      expect(m.sheen, LitSvgMaterialSheen.specular);
     });
 
     test('throws on unknown sheen', () {
       expect(
-        () => Svg.parseMaterial('#ffffff bogus'),
+        () => LitSvgData.parseMaterial('#ffffff bogus'),
         throwsFormatException,
       );
     });
 
     test('throws when more than 3 tokens', () {
       expect(
-        () => Svg.parseMaterial('#fff #fff #fff matte'),
+        () => LitSvgData.parseMaterial('#fff #fff #fff matte'),
         throwsFormatException,
       );
     });
   });
 
-  group('Svg.normalFromColor', () {
+  group('LitSvgData.normalFromColor', () {
     test('white #ffffff normalizes to (1,-1,1)/sqrt(3) (G inverted)', () {
       // The G channel is inverted at decode time so a high-G colour
       // represents a surface facing screen-up (-Y in screen Y-down).
-      final n = Svg.normalFromColor(const Color(0xFFFFFFFF));
+      final n = LitSvgData.normalFromColor(const Color(0xFFFFFFFF));
       final s = 1 / sqrt(3);
       expect(n.x, _closeTo(s));
       expect(n.y, _closeTo(-s));
@@ -124,7 +124,7 @@ void main() {
     });
 
     test('#80ff80 decodes to ≈ (0, -1, 0) (screen-up)', () {
-      final n = Svg.normalFromColor(const Color(0xFF80FF80));
+      final n = LitSvgData.normalFromColor(const Color(0xFF80FF80));
       // G=255 → tangent-up → screen-up = -Y in screen Y-down.
       expect(n.y, lessThan(-0.99));
       expect(n.x.abs(), lessThan(0.01));
@@ -132,45 +132,45 @@ void main() {
     });
 
     test('alpha is ignored', () {
-      final a = Svg.normalFromColor(const Color(0xFFFFFFFF));
-      final b = Svg.normalFromColor(const Color(0x00FFFFFF));
+      final a = LitSvgData.normalFromColor(const Color(0xFFFFFFFF));
+      final b = LitSvgData.normalFromColor(const Color(0x00FFFFFF));
       expect(a.x, _closeTo(b.x));
       expect(a.y, _closeTo(b.y));
       expect(a.z, _closeTo(b.z));
     });
   });
 
-  group('Svg.parseTransform', () {
+  group('LitSvgData.parseTransform', () {
     test('null/empty returns identity', () {
-      expect(Svg.parseTransform(null), Matrix4.identity());
-      expect(Svg.parseTransform(''), Matrix4.identity());
-      expect(Svg.parseTransform('   '), Matrix4.identity());
+      expect(LitSvgData.parseTransform(null), Matrix4.identity());
+      expect(LitSvgData.parseTransform(''), Matrix4.identity());
+      expect(LitSvgData.parseTransform('   '), Matrix4.identity());
     });
 
     test('translate with 1 and 2 args', () {
-      final m1 = Svg.parseTransform('translate(10)');
+      final m1 = LitSvgData.parseTransform('translate(10)');
       expect(m1.getTranslation(), Vector3(10, 0, 0));
 
-      final m2 = Svg.parseTransform('translate(10, 20)');
+      final m2 = LitSvgData.parseTransform('translate(10, 20)');
       expect(m2.getTranslation(), Vector3(10, 20, 0));
 
-      final m3 = Svg.parseTransform('translate(10 20)');
+      final m3 = LitSvgData.parseTransform('translate(10 20)');
       expect(m3.getTranslation(), Vector3(10, 20, 0));
     });
 
     test('scale uniform and non-uniform', () {
-      final m1 = Svg.parseTransform('scale(2)');
+      final m1 = LitSvgData.parseTransform('scale(2)');
       final p1 = m1.transform3(Vector3(3, 4, 0));
       expect(p1, Vector3(6, 8, 0));
 
-      final m2 = Svg.parseTransform('scale(2, 3)');
+      final m2 = LitSvgData.parseTransform('scale(2, 3)');
       final p2 = m2.transform3(Vector3(3, 4, 0));
       expect(p2.x, _closeTo(6));
       expect(p2.y, _closeTo(12));
     });
 
     test('rotate(90) maps (1,0) to (0,1)', () {
-      final m = Svg.parseTransform('rotate(90)');
+      final m = LitSvgData.parseTransform('rotate(90)');
       final p = m.transform3(Vector3(1, 0, 0));
       expect(p.x, _closeTo(0));
       expect(p.y, _closeTo(1));
@@ -178,36 +178,36 @@ void main() {
 
     test('rotate around pivot', () {
       // 180° around (10, 0): (20, 0) -> (0, 0)
-      final m = Svg.parseTransform('rotate(180 10 0)');
+      final m = LitSvgData.parseTransform('rotate(180 10 0)');
       final p = m.transform3(Vector3(20, 0, 0));
       expect(p.x, _closeTo(0));
       expect(p.y, _closeTo(0));
     });
 
     test('matrix(1,0,0,1,10,20) equals translate(10,20)', () {
-      final m1 = Svg.parseTransform('matrix(1,0,0,1,10,20)');
-      final m2 = Svg.parseTransform('translate(10,20)');
+      final m1 = LitSvgData.parseTransform('matrix(1,0,0,1,10,20)');
+      final m2 = LitSvgData.parseTransform('translate(10,20)');
       for (int i = 0; i < 16; i++) {
         expect(m1.storage[i], _closeTo(m2.storage[i]));
       }
     });
 
     test('matrix(0,1,-1,0,0,0) is 90° rotation', () {
-      final m = Svg.parseTransform('matrix(0,1,-1,0,0,0)');
+      final m = LitSvgData.parseTransform('matrix(0,1,-1,0,0,0)');
       final p = m.transform3(Vector3(1, 0, 0));
       expect(p.x, _closeTo(0));
       expect(p.y, _closeTo(1));
     });
 
     test('skewX(45) shears x by y', () {
-      final m = Svg.parseTransform('skewX(45)');
+      final m = LitSvgData.parseTransform('skewX(45)');
       final p = m.transform3(Vector3(0, 1, 0));
       expect(p.x, _closeTo(1));
       expect(p.y, _closeTo(1));
     });
 
     test('skewY(45) shears y by x', () {
-      final m = Svg.parseTransform('skewY(45)');
+      final m = LitSvgData.parseTransform('skewY(45)');
       final p = m.transform3(Vector3(1, 0, 0));
       expect(p.x, _closeTo(1));
       expect(p.y, _closeTo(1));
@@ -217,7 +217,7 @@ void main() {
       // translate(10) then rotate(90) — applied to (1,0):
       // translate first changes the coord system, so a point at (1,0)
       // ends up at translate·rotate·(1,0) = translate·(0,1) = (10, 1).
-      final m = Svg.parseTransform('translate(10) rotate(90)');
+      final m = LitSvgData.parseTransform('translate(10) rotate(90)');
       final p = m.transform3(Vector3(1, 0, 0));
       expect(p.x, _closeTo(10));
       expect(p.y, _closeTo(1));
@@ -225,30 +225,30 @@ void main() {
 
     test('throws on unknown function', () {
       expect(
-        () => Svg.parseTransform('warp(10)'),
+        () => LitSvgData.parseTransform('warp(10)'),
         throwsFormatException,
       );
     });
 
     test('throws when nothing parses', () {
       expect(
-        () => Svg.parseTransform('not a transform'),
+        () => LitSvgData.parseTransform('not a transform'),
         throwsFormatException,
       );
     });
   });
 
-  group('Svg path d parsing', () {
-    Svg buildOnePathSvg(String d) {
+  group('LitSvgData path d parsing', () {
+    LitSvgData buildOnePathLitSvgData(String d) {
       final src = '''
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:pp="http://paraplu.io/svg" width="10" height="10">
   <defs><g id="x"><path fill="#808080" d="$d"/></g></defs>
   <use href="#x"/>
 </svg>''';
-      return Svg(src);
+      return LitSvgData(src);
     }
 
-    void expectBounds(SvgPath p, double l, double t, double r, double b) {
+    void expectBounds(LitSvgPath p, double l, double t, double r, double b) {
       final rect = p.uiPath.getBounds();
       expect(rect.left, _closeTo(l));
       expect(rect.top, _closeTo(t));
@@ -257,7 +257,7 @@ void main() {
     }
 
     test('absolute square via M/L/Z', () {
-      final svg = buildOnePathSvg('M0 0 L10 0 L10 10 L0 10 Z');
+      final svg = buildOnePathLitSvgData('M0 0 L10 0 L10 10 L0 10 Z');
       final path = svg.groups[0].paths.single;
       expectBounds(path, 0, 0, 10, 10);
       expect(path.uiPath.contains(const Offset(5, 5)), isTrue);
@@ -265,13 +265,13 @@ void main() {
     });
 
     test('relative move + implicit l continuation', () {
-      final svg = buildOnePathSvg('m5 5 l10 0 10 10');
+      final svg = buildOnePathLitSvgData('m5 5 l10 0 10 10');
       // Vertices were (5,5), (15,5), (25,15).
       expectBounds(svg.groups[0].paths.single, 5, 5, 25, 15);
     });
 
     test('H/V shorthands', () {
-      final svg = buildOnePathSvg('M0 0 H10 V10 H0 Z');
+      final svg = buildOnePathLitSvgData('M0 0 H10 V10 H0 Z');
       final path = svg.groups[0].paths.single;
       expectBounds(path, 0, 0, 10, 10);
       expect(path.uiPath.contains(const Offset(5, 5)), isTrue);
@@ -281,13 +281,13 @@ void main() {
       // From example.svg group "a" first path:
       // m-6.4-7.3 1.65 16.25H4.7L6.35-7.3z
       // vertices: (-6.4,-7.3), (-4.75,8.95), (4.7,8.95), (6.35,-7.3)
-      final svg = buildOnePathSvg('m-6.4-7.3 1.65 16.25H4.7L6.35-7.3z');
+      final svg = buildOnePathLitSvgData('m-6.4-7.3 1.65 16.25H4.7L6.35-7.3z');
       expectBounds(svg.groups[0].paths.single, -6.4, -7.3, 6.35, 8.95);
     });
 
     test('Z resets current point; subsequent m is relative to subpath start',
         () {
-      final svg = buildOnePathSvg('M0 0 L10 0 Z m5 5 l10 0');
+      final svg = buildOnePathLitSvgData('M0 0 L10 0 Z m5 5 l10 0');
       final paths = svg.groups[0].paths;
       expect(paths.length, 2);
       // Path 1: vertices (0,0), (10,0). Degenerate line.
@@ -296,8 +296,8 @@ void main() {
       expectBounds(paths[1], 5, 5, 15, 5);
     });
 
-    test('multiple subpaths in one d become multiple SvgPaths', () {
-      final svg = buildOnePathSvg('M0 0 L10 0 ZM20 0 L30 0 Z');
+    test('multiple subpaths in one d become multiple LitSvgPaths', () {
+      final svg = buildOnePathLitSvgData('M0 0 L10 0 ZM20 0 L30 0 Z');
       final paths = svg.groups[0].paths;
       expect(paths.length, 2);
       expectBounds(paths[0], 0, 0, 10, 0);
@@ -305,13 +305,13 @@ void main() {
     });
   });
 
-  group('Svg parses example.svg', () {
-    late Svg svg;
+  group('LitSvgData parses example.svg', () {
+    late LitSvgData svg;
 
     setUpAll(() {
       final source =
           File('test/_resources/svg/example.svg').readAsStringSync();
-      svg = Svg(source);
+      svg = LitSvgData(source);
     });
 
     test('size and origin', () {
@@ -327,7 +327,7 @@ void main() {
       final a = svg.groups[0];
       expect(a.material.baseColor.toARGB32(), 0xFFFFFFFF);
       expect(a.material.topColor.toARGB32(), 0xFFFFFFFF);
-      expect(a.material.sheen, SvgMaterialSheen.specular);
+      expect(a.material.sheen, LitSvgMaterialSheen.specular);
     });
 
     test('group "c" has 6 paths (3 sources, each splits at z/m)', () {
@@ -336,7 +336,7 @@ void main() {
     });
 
     test('group "a" splits the multi-subpath fill into 19 paths', () {
-      // 18 <path> elements; one (#8009af) has two subpaths -> 19 SvgPaths.
+      // 18 <path> elements; one (#8009af) has two subpaths -> 19 LitSvgPaths.
       final a = svg.groups[0];
       expect(a.paths.length, 19);
     });
@@ -344,7 +344,7 @@ void main() {
     test('group "a" first path has the expected normal', () {
       // fill="#80f6af"
       final a = svg.groups[0];
-      final expected = Svg.normalFromColor(const Color(0xFF80F6AF));
+      final expected = LitSvgData.normalFromColor(const Color(0xFF80F6AF));
       final actual = a.paths.first.normal;
       expect(actual.x, _closeTo(expected.x));
       expect(actual.y, _closeTo(expected.y));
@@ -367,7 +367,7 @@ void main() {
   });
 
   group('pp:expand', () {
-    Svg buildSquare({double? groupExpand, double? pathExpand}) {
+    LitSvgData buildSquare({double? groupExpand, double? pathExpand}) {
       final groupAttr = groupExpand == null
           ? ''
           : ' pp:expand="$groupExpand"';
@@ -382,10 +382,10 @@ void main() {
   </defs>
   <use href="#g"/>
 </svg>''';
-      return Svg(src);
+      return LitSvgData(src);
     }
 
-    void expectBounds(SvgPath p, double l, double t, double r, double b) {
+    void expectBounds(LitSvgPath p, double l, double t, double r, double b) {
       final rect = p.uiPath.getBounds();
       expect(rect.left, _closeTo(l));
       expect(rect.top, _closeTo(t));
@@ -432,8 +432,8 @@ void main() {
       expectBounds(svg.groups[0].paths.single, 2, 2, 8, 8);
     });
 
-    test('Svg.expandPolygon offsets a unit square outward by 1', () {
-      final out = Svg.expandPolygon(
+    test('LitSvgData.expandPolygon offsets a unit square outward by 1', () {
+      final out = LitSvgData.expandPolygon(
         [Vector2(0, 0), Vector2(10, 0), Vector2(10, 10), Vector2(0, 10)],
         1,
       );
@@ -447,21 +447,21 @@ void main() {
       expect(out[3].y, _closeTo(11));
     });
 
-    test('Svg.expandPolygon returns input unchanged when amount is 0', () {
+    test('LitSvgData.expandPolygon returns input unchanged when amount is 0', () {
       final input = [Vector2(0, 0), Vector2(1, 0), Vector2(0, 1)];
-      final out = Svg.expandPolygon(input, 0);
+      final out = LitSvgData.expandPolygon(input, 0);
       expect(identical(out, input), isTrue);
     });
   });
 
-  group('Svg error cases', () {
+  group('LitSvgData error cases', () {
     test('throws when use references unknown id', () {
       const src = '''
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:pp="http://paraplu.io/svg" width="10" height="10">
   <defs></defs>
   <use href="#missing"/>
 </svg>''';
-      expect(() => Svg(src), throwsFormatException);
+      expect(() => LitSvgData(src), throwsFormatException);
     });
 
     test('throws when use has no href', () {
@@ -469,24 +469,24 @@ void main() {
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:pp="http://paraplu.io/svg" width="10" height="10">
   <use/>
 </svg>''';
-      expect(() => Svg(src), throwsFormatException);
+      expect(() => LitSvgData(src), throwsFormatException);
     });
 
     test('throws when root is not <svg>', () {
       const src = '<not-svg/>';
-      expect(() => Svg(src), throwsFormatException);
+      expect(() => LitSvgData(src), throwsFormatException);
     });
 
     test('throws when xmlns:pp is missing', () {
       const src = '''
 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"></svg>''';
-      expect(() => Svg(src), throwsFormatException);
+      expect(() => LitSvgData(src), throwsFormatException);
     });
 
     test('throws when xmlns:pp has the wrong URI', () {
       const src = '''
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:pp="http://other/" width="10" height="10"></svg>''';
-      expect(() => Svg(src), throwsFormatException);
+      expect(() => LitSvgData(src), throwsFormatException);
     });
   });
 }
