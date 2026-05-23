@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the resolvePathColor method from the LitSvgComponent class, for the Dart programming language.">
+  <title>resolvePathColor method - LitSvgComponent class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle.dart</a></li>
+    <li><a href="../../sizzle/LitSvgComponent-class.html">LitSvgComponent</a></li>
+    <li class="self-crumb">resolvePathColor static method</li>
+  </ol>
+  <div class="self-name">resolvePathColor</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;LitSvgComponent-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">resolvePathColor</span> static method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@visibleForTesting</li>
+    </ol>
+  </div>
+<span class="returntype">Color</span>
+<span class="name ">resolvePathColor</span>(<wbr><ol class="parameter-list"> <li><span class="parameter" id="resolvePathColor-param-path"><span class="type-annotation"><a href="../../sizzle/LitSvgPath-class.html">LitSvgPath</a></span> <span class="parameter-name">path</span>, </span></li>
+<li><span class="parameter" id="resolvePathColor-param-material"><span class="type-annotation"><a href="../../sizzle/LitSvgMaterial-class.html">LitSvgMaterial</a></span> <span class="parameter-name">material</span>, </span></li>
+<li><span class="parameter" id="resolvePathColor-param-totalAngle"><span class="type-annotation">double</span> <span class="parameter-name">totalAngle</span>, </span></li>
+<li><span class="parameter" id="resolvePathColor-param-lights"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../sizzle/Light-class.html">Light</a></span>&gt;</span></span> <span class="parameter-name">lights</span>, </span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Resolve the final fill colour for <code>path</code> given its group <code>material</code>, the
+accumulated rotation <code>totalAngle</code> from the <a href="../../sizzle/Environment-class.html">Environment</a>, and the
+environment's <code>lights</code>. Pure function — exposed for testing.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@visibleForTesting
+static Color resolvePathColor(
+  LitSvgPath path,
+  LitSvgMaterial material,
+  double totalAngle,
+  List&lt;Light&gt; lights,
+) {
+  &#47;&#47; Rotate the normal in the XY plane by totalAngle. Z is unaffected.
+  final cosA = cos(totalAngle);
+  final sinA = sin(totalAngle);
+  final wnx = cosA * path.normal.x - sinA * path.normal.y;
+  final wny = sinA * path.normal.x + cosA * path.normal.y;
+  final wnz = path.normal.z;
+
+  &#47;&#47; Two accumulators:
+  &#47;&#47;   `shadeI` is signed — back-facing directional contributions push it
+  &#47;&#47;   below 0 so surfaces facing away can darken below baseColor (single
+  &#47;&#47;   mode) or below the lerp floor (dual mode).
+  &#47;&#47;   `intensity` clamps directional contributions at 0 — represents the
+  &#47;&#47;   non-negative &quot;incident light energy&quot; used to normalise the tint hue.
+  double shadeI = 0;
+  double intensity = 0;
+  double tintR = 0, tintG = 0, tintB = 0;
+  double specPower = 0;
+  final isSpec = material.sheen == LitSvgMaterialSheen.specular;
+
+  for (final l in lights) {
+    double signed;
+    double clampedI;
+    if (l is AmbientLight) {
+      signed = l.strength;
+      clampedI = l.strength;
+    } else if (l is DirectionalLight) {
+      &#47;&#47; Surface faces the light when dot(N, -direction) &gt; 0.
+      final ndl =
+          -(wnx * l.direction.x + wny * l.direction.y + wnz * l.direction.z);
+      signed = ndl * l.strength;
+      final clamped = ndl &lt; 0 ? 0.0 : ndl;
+      clampedI = clamped * l.strength;
+      if (isSpec) {
+        specPower += pow(clamped, specularExponent) * l.strength;
+      }
+    } else {
+      continue;
+    }
+    shadeI += signed;
+    intensity += clampedI;
+    final argb = l.color.toARGB32();
+    final lr = ((argb &gt;&gt; 16) &amp; 0xFF) &#47; 255.0;
+    final lg = ((argb &gt;&gt; 8) &amp; 0xFF) &#47; 255.0;
+    final lb = (argb &amp; 0xFF) &#47; 255.0;
+    tintR += lr * clampedI;
+    tintG += lg * clampedI;
+    tintB += lb * clampedI;
+  }
+
+  final base = material.baseColor;
+  final top = material.topColor;
+  final dualMode = base.toARGB32() != top.toARGB32();
+
+  &#47;&#47; Average light hue, normalised to [0, 1] per channel. White light leaves
+  &#47;&#47; surfaces unchanged; coloured light pulls each channel toward
+  &#47;&#47; (channel * lightChannel) by [tintStrength]. Saturation is faded toward
+  &#47;&#47; neutral as total intensity approaches zero, otherwise the hue would
+  &#47;&#47; snap from &quot;fully tinted&quot; to &quot;no tint&quot; at the boundary where a
+  &#47;&#47; directional light&#39;s contribution clamps to 0, producing a visible edge.
+  double avgR = 1, avgG = 1, avgB = 1;
+  if (intensity &gt; 0) {
+    final inv = 1.0 &#47; intensity;
+    final hueR = (tintR * inv).clamp(0.0, 1.0);
+    final hueG = (tintG * inv).clamp(0.0, 1.0);
+    final hueB = (tintB * inv).clamp(0.0, 1.0);
+    final w = intensity.clamp(0.0, 1.0);
+    avgR = 1 + (hueR - 1) * w;
+    avgG = 1 + (hueG - 1) * w;
+    avgB = 1 + (hueB - 1) * w;
+  }
+
+  if (isSpec) {
+    &#47;&#47; Specular paths: nearly invisible except where light hits directly.
+    &#47;&#47; Colour is the (tinted) base; alpha is driven by the highlight power.
+    final r = _tintChannel(_channelR(base), avgR);
+    final g = _tintChannel(_channelG(base), avgG);
+    final b = _tintChannel(_channelB(base), avgB);
+    final a = _clamp255((255 * specPower).round());
+    return Color.fromARGB(a, r, g, b);
+  }
+
+  int r, g, b;
+  int alpha;
+  if (dualMode) {
+    final t = intensity.clamp(0.0, 1.0);
+    r = _lerpInt(_channelR(base), _channelR(top), t);
+    g = _lerpInt(_channelG(base), _channelG(top), t);
+    b = _lerpInt(_channelB(base), _channelB(top), t);
+    if (shadeI &gt; 1) {
+      final shift = (shadeI - 1) * outOfRangeFactor;
+      r = _shift(r, shift);
+      g = _shift(g, shift);
+      b = _shift(b, shift);
+    } else if (shadeI &lt; 0) {
+      final shift = shadeI * outOfRangeFactor;
+      r = _shift(r, shift);
+      g = _shift(g, shift);
+      b = _shift(b, shift);
+    }
+    alpha = _channelA(base);
+  } else {
+    &#47;&#47; Single-colour mode: asymmetric shading. Above the midpoint, sheen
+    &#47;&#47; drives the highlight (dull&#47;matte&#47;gloss read very differently). Below
+    &#47;&#47; it, a sheen-independent shadow factor dominates so all sheens darken
+    &#47;&#47; similarly — sheen still nudges the shadow depth via shadowSheenWeight,
+    &#47;&#47; just much less than it does on the lit side.
+    final delta = shadeI - 0.5;
+    final highlightScale = sheenFactor[material.sheen] ?? 0.0;
+    final shift = delta &gt;= 0
+        ? delta * highlightScale
+        : delta * (shadowFactor + highlightScale * shadowSheenWeight);
+    r = _shift(_channelR(base), shift);
+    g = _shift(_channelG(base), shift);
+    b = _shift(_channelB(base), shift);
+    alpha = _channelA(base);
+  }
+
+  r = _tintChannel(r, avgR);
+  g = _tintChannel(g, avgG);
+  b = _tintChannel(b, avgB);
+  return Color.fromARGB(alpha, r, g, b);
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle</a></li>
+    <li><a href="../../sizzle/LitSvgComponent-class.html">LitSvgComponent</a></li>
+    <li class="self-crumb">resolvePathColor static method</li>
+</ol>
+
+    <h5>LitSvgComponent class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.3
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

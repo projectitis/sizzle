@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the LitSvgData class from the sizzle library, for the Dart programming language.">
+  <title>LitSvgData class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle.dart</a></li>
+    <li class="self-crumb">LitSvgData class</li>
+  </ol>
+  <div class="self-name">LitSvgData</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;sizzle-library-sidebar.html"
+    data-below-sidebar="sizzle&#47;LitSvgData-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">LitSvgData</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>Parsed lit-SVG data.</p>
+<p>Parses a small subset of SVG into in-memory data structures suitable for
+later rendering by <code>LitSvgComponent</code>. The supported subset is intentionally
+narrow:</p>
+<ul>
+<li>The root <code>&lt;svg&gt;</code> element must declare the Paraplu namespace
+(<code>xmlns:pp="http://paraplu.io/svg"</code>) and supplies <code>width</code>, <code>height</code>, and
+the custom <code>pp:origin="x y"</code> attribute (the SVG's local origin in
+viewBox pixels — typically what a <code>PositionComponent</code> anchor will be
+derived from).</li>
+<li><code>&lt;defs&gt;</code> may contain <code>&lt;g id="..."&gt;</code> group definitions. Each group may
+carry the custom <code>pp:material</code> attribute and may contain <code>&lt;path&gt;</code> nodes.</li>
+<li>Top-level <code>&lt;use xlink:href="#id" transform="..."/&gt;</code> references build the
+render list. All standard SVG transform functions are supported.</li>
+<li>Path <code>d</code> data supports the line/move/close commands only:
+<code>M m L l H h V v Z z</code> (curves and arcs are not yet supported).</li>
+</ul>
+</section>
+
+
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="LitSvgData.new" class="callable">
+          <span class="name"><a href="../sizzle/LitSvgData/LitSvgData.html">LitSvgData</a></span><span class="signature">(<span class="parameter" id="-param-data"><span class="type-annotation">String</span> <span class="parameter-name">data</span></span>)</span>
+        </dt>
+        <dd>
+          
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="groups" class="property">
+  <span class="name"><a href="../sizzle/LitSvgData/groups.html">groups</a></span>
+  <span class="signature">&#8594; List<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/LitSvgGroup-class.html">LitSvgGroup</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="../sizzle/LitSvgData/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; int</span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="origin" class="property">
+  <span class="name"><a href="../sizzle/LitSvgData/origin.html">origin</a></span>
+  <span class="signature">&#8594; Vector2</span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="renderList" class="property">
+  <span class="name"><a href="../sizzle/LitSvgData/renderList.html">renderList</a></span>
+  <span class="signature">&#8594; List<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/LitSvgRenderItem-class.html">LitSvgRenderItem</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="../sizzle/LitSvgData/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; Type</span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="size" class="property">
+  <span class="name"><a href="../sizzle/LitSvgData/size.html">size</a></span>
+  <span class="signature">&#8594; Vector2</span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="../sizzle/LitSvgData/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="../sizzle/LitSvgData/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; String</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="../sizzle/LitSvgData/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation">Object</span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; bool</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">
+        <dt id="expandPolygon" class="callable">
+  <span class="name"><a href="../sizzle/LitSvgData/expandPolygon.html">expandPolygon</a></span><span class="signature">(<wbr><span class="parameter" id="expandPolygon-param-verts"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">Vector2</span>&gt;</span></span> <span class="parameter-name">verts</span>, </span><span class="parameter" id="expandPolygon-param-amount"><span class="type-annotation">double</span> <span class="parameter-name">amount</span></span>)
+    <span class="returntype parameter">&#8594; List<span class="signature">&lt;<wbr><span class="type-parameter">Vector2</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Offset each edge of a closed polygon outward (positive <code>amount</code>) or
+inward (negative) by <code>amount</code> pixels along its perpendicular. New
+vertices are computed as the intersection of adjacent shifted edges.
+Exposed for testing.
+  
+
+</dd>
+
+        <dt id="normalFromColor" class="callable">
+  <span class="name"><a href="../sizzle/LitSvgData/normalFromColor.html">normalFromColor</a></span><span class="signature">(<wbr><span class="parameter" id="normalFromColor-param-c"><span class="type-annotation">Color</span> <span class="parameter-name">c</span></span>)
+    <span class="returntype parameter">&#8594; Vector3</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Decode a Paraplu normal-map fill colour into a unit normal.
+  
+
+</dd>
+
+        <dt id="parseColor" class="callable">
+  <span class="name"><a href="../sizzle/LitSvgData/parseColor.html">parseColor</a></span><span class="signature">(<wbr><span class="parameter" id="parseColor-param-hex"><span class="type-annotation">String</span> <span class="parameter-name">hex</span></span>)
+    <span class="returntype parameter">&#8594; Color</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Parse a <code>#RGB</code>, <code>#RRGGBB</code>, or <code>#AARRGGBB</code> color literal.
+<code>#RGB</code> expands each digit (e.g. <code>#abc</code> → <code>#aabbcc</code>) and is fully opaque.
+  
+
+</dd>
+
+        <dt id="parseMaterial" class="callable">
+  <span class="name"><a href="../sizzle/LitSvgData/parseMaterial.html">parseMaterial</a></span><span class="signature">(<wbr><span class="parameter" id="parseMaterial-param-s"><span class="type-annotation">String</span> <span class="parameter-name">s</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../sizzle/LitSvgMaterial-class.html">LitSvgMaterial</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Parse a <code>pp:material</code> attribute value.
+  
+
+</dd>
+
+        <dt id="parseTransform" class="callable">
+  <span class="name"><a href="../sizzle/LitSvgData/parseTransform.html">parseTransform</a></span><span class="signature">(<wbr><span class="parameter" id="parseTransform-param-data"><span class="type-annotation">String?</span> <span class="parameter-name">data</span></span>)
+    <span class="returntype parameter">&#8594; Matrix4</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Parse an SVG <code>transform</code> attribute into a <code>Matrix4</code>. Returns identity if
+<code>data</code> is null or empty. Supports <code>translate</code>, <code>scale</code>, <code>rotate</code>,
+<code>skewX</code>, <code>skewY</code>, and <code>matrix</code>. Multiple functions compose left-to-right.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+
+  <section class="summary offset-anchor" id="constants">
+    <h2>Constants</h2>
+    <dl class="properties">
+        <dt id="paraplu" class="constant">
+    <span class="name "><a href="../sizzle/LitSvgData/paraplu-constant.html">paraplu</a></span>
+  <span class="signature">&#8594; const String</span>
+  
+
+</dt>
+<dd>
+  The Paraplu namespace URI that must be declared on the root <code>&lt;svg&gt;</code>
+element via <code>xmlns:pp="..."</code>. Without this, <a href="../sizzle/LitSvgData-class.html">LitSvgData</a> refuses to parse.
+  
+
+</dd>
+
+    </dl>
+  </section>
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle</a></li>
+    <li class="self-crumb">LitSvgData class</li>
+</ol>
+
+    <h5>sizzle library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.3
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

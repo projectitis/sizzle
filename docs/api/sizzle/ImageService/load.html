@@ -93,6 +93,9 @@ parameters can be provided to scale and resize the image. Only provide
     return _cache[assetName]!;
   }
   String assetPath = path ?? properties!.path;
+  if (assetPath.toLowerCase().endsWith(&#39;.svg&#39;)) {
+    return _loadSvg(properties, assetName, assetPath, cache);
+  }
   final data = await assetBundle.load(assetFolder + assetPath);
   final bytes = Uint8List.view(data.buffer);
   final image = await decodeImageFromList(bytes);

@@ -22,6 +22,7 @@ dependencies:
   meta: ^1.10.0
   jx: ^1.0.5
   xml: '>=6.6.1 <8.0.0'
+  flutter_svg: ^2.0.10+1
 
 dev_dependencies:
   lints: ^6.0.0

@@ -11,6 +11,12 @@ accessed via the global services class:
 Services.litSvg
 ```
 
+> Use this service when you need **runtime lit rendering** of a vector shape
+> (per-frame lighting changes, normal-mapped surfaces). If you just want to
+> load an SVG and treat it as a static `Image`, the [image
+> service](services_images.md#svg-assets) rasterizes any `.svg` asset on
+> load and caches it like a PNG.
+
 ## Workflow for caching SVGs
 
 The suggested workflow for working with SVGs is:

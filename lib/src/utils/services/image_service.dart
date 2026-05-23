@@ -4,6 +4,7 @@ import 'dart:ui' hide decodeImageFromList;
 import 'package:flame/extensions.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../math/math.dart';
 
@@ -36,13 +37,14 @@ class ImageProperties {
   /// Flip the image vertically.
   final bool? flipY;
 
-  /// Use antialias when transforming the image.
+  /// Use antialias when transforming the image. Ignored for SVG sources.
   final bool? antiAlias;
 
-  /// The blend mode to use when transforming the image.
+  /// The blend mode to use when transforming the image. Ignored for SVG
+  /// sources (SVGs rasterize onto a transparent canvas).
   final BlendMode? blendMode;
 
-  /// The quality used when transforming the image.
+  /// The quality used when transforming the image. Ignored for SVG sources.
   final FilterQuality? filterQuality;
 
   /// If true, the default properties will be replaced by the provided. If false
@@ -161,6 +163,9 @@ class ImageService {
       return _cache[assetName]!;
     }
     String assetPath = path ?? properties!.path;
+    if (assetPath.toLowerCase().endsWith('.svg')) {
+      return _loadSvg(properties, assetName, assetPath, cache);
+    }
     final data = await assetBundle.load(assetFolder + assetPath);
     final bytes = Uint8List.view(data.buffer);
     final image = await decodeImageFromList(bytes);
@@ -211,15 +216,102 @@ class ImageService {
   /// Check if the cache is not empty
   bool get isNotEmpty => _cache.isNotEmpty;
 
+  /// Load an SVG and rasterize it to an [Image]. Geometric transforms in
+  /// [properties] (scale, rotation, flip, crop) are baked into the
+  /// rasterization so the output is lossless. [ImageProperties.blendMode],
+  /// [ImageProperties.antiAlias] and [ImageProperties.filterQuality] are
+  /// ignored for SVG sources.
+  Future<Image> _loadSvg(
+    ImageProperties? properties,
+    String assetName,
+    String assetPath,
+    bool cache,
+  ) async {
+    final svgString = await assetBundle.loadString(assetFolder + assetPath);
+    final pictureInfo = await vg.loadPicture(SvgStringLoader(svgString), null);
+
+    final Image image;
+    if (properties == null) {
+      final recorder = PictureRecorder();
+      final canvas = Canvas(recorder);
+      canvas.drawPicture(pictureInfo.picture);
+      image = await recorder.endRecording().toImageSafe(
+            pictureInfo.size.width.toInt(),
+            pictureInfo.size.height.toInt(),
+          );
+    } else {
+      final prepared = _prepareTransformedCanvas(
+        pictureInfo.size.width,
+        pictureInfo.size.height,
+        properties,
+      );
+      prepared.canvas.drawPicture(pictureInfo.picture);
+      image = await prepared.recorder.endRecording().toImageSafe(
+            prepared.outWidth,
+            prepared.outHeight,
+          );
+    }
+
+    pictureInfo.picture.dispose();
+    if (cache) {
+      _cache[assetName] = image;
+    }
+    return image;
+  }
+
   /// Process an image
   Future<Image> processImage(
     Image image,
     ImageProperties imageProperties,
   ) async {
+    final prepared = _prepareTransformedCanvas(
+      image.width.toDouble(),
+      image.height.toDouble(),
+      imageProperties,
+    );
+
+    if (!prepared.requiresProcessing) {
+      prepared.recorder.endRecording().dispose();
+      return image;
+    }
+
+    prepared.canvas.drawImage(
+      image,
+      Offset.zero,
+      Paint()
+        ..isAntiAlias = prepared.merged.antiAlias ?? true
+        ..blendMode = prepared.merged.blendMode ?? BlendMode.srcOver
+        ..filterQuality = prepared.merged.filterQuality ?? FilterQuality.low,
+    );
+
+    image.dispose();
+    return await prepared.recorder.endRecording().toImageSafe(
+          prepared.outWidth,
+          prepared.outHeight,
+        );
+  }
+
+  /// Builds a [PictureRecorder]/[Canvas] pair with the geometric transform
+  /// sequence (flip → crop → rotate → scale) pre-applied for the given base
+  /// dimensions and [imageProperties]. Caller draws into [Canvas] (with
+  /// `drawImage` for raster input, `drawPicture` for vector input) and
+  /// rasterizes via `endRecording().toImageSafe(outWidth, outHeight)`.
+  ({
+    PictureRecorder recorder,
+    Canvas canvas,
+    int outWidth,
+    int outHeight,
+    bool requiresProcessing,
+    ImageProperties merged,
+  }) _prepareTransformedCanvas(
+    double baseWidth,
+    double baseHeight,
+    ImageProperties imageProperties,
+  ) {
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder);
-    double width = image.width.toDouble();
-    double height = image.height.toDouble();
+    double width = baseWidth;
+    double height = baseHeight;
     bool requiresProcessing = false;
 
     // Prepare properties
@@ -303,31 +395,16 @@ class ImageService {
       requiresProcessing = true;
     }
 
-    // Quit early if no processing is required
-    if (!requiresProcessing) {
-      recorder.endRecording().dispose();
-      return image;
-    }
-
-    // Draw the image
-    canvas.drawImage(
-      image,
-      Offset.zero,
-      Paint()
-        ..isAntiAlias = properties.antiAlias ?? true
-        ..blendMode = properties.blendMode ?? BlendMode.srcOver
-        ..filterQuality = properties.filterQuality ?? FilterQuality.low,
-    );
-
-    // Crop?
     double cropWidth = c.width == 0.0 ? width : c.width;
     double cropHeight = c.height == 0.0 ? height : c.height;
 
-    // Return image
-    image.dispose();
-    return await recorder.endRecording().toImageSafe(
-          cropWidth.toInt(),
-          cropHeight.toInt(),
-        );
+    return (
+      recorder: recorder,
+      canvas: canvas,
+      outWidth: cropWidth.toInt(),
+      outHeight: cropHeight.toInt(),
+      requiresProcessing: requiresProcessing,
+      merged: properties,
+    );
   }
 }
