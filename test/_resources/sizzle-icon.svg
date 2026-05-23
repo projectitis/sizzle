@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 591 591" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+<svg width="100%" height="100%" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
     <g>
-        <g transform="matrix(0.16835,0,0,0.238095,0,0)">
+        <g transform="matrix(0.0729787,0,0,0.103213,0,0)">
             <rect x="0" y="0" width="3507.87" height="2480.32" style="fill:rgb(48,48,48);"/>
         </g>
-        <g transform="matrix(1,0,0,1,-907.147,-546.118)">
+        <g transform="matrix(0.433493,0,0,0.433493,-393.242,-236.739)">
             <g id="flame" transform="matrix(1,0,0,1,-14.0221,-30.9347)">
                 <g>
                     <path d="M1248.22,983.548L1184.67,983.548L1152.89,983.548L1152.89,951.771L1121.11,951.771L1121.11,888.217L1121.4,888.217L1121.4,856.44L1152.89,856.44L1152.89,792.886L1184.67,792.886L1184.67,761.109L1216.44,761.109L1216.44,824.663L1248.22,824.663L1248.22,856.44L1280,856.44L1280,888.217L1311.78,888.217L1311.78,951.771L1280,951.771L1280,983.548L1248.22,983.548Z" style="fill:url(#_Radial1);"/>
