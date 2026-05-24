@@ -186,6 +186,51 @@ class Config {
     );
   }
 
+  /// Read a numeric value at `"section.property"` and interpret it as an RGB
+  /// color. The low 24 bits supply red/green/blue and alpha is forced to
+  /// fully opaque (`0xFF`). JX supports RGBA literals but they're not
+  /// distinguishable here, so the value is always treated as RGB. Returns
+  /// [defaultValue] (or `null`) if the key is missing. Throws [ArgumentError]
+  /// for non-numeric values.
+  Color? asColor(String path, {Color? defaultValue}) {
+    final v = this[path];
+    if (v == null) return defaultValue;
+    if (v is num) return Color(0xFF000000 | v.toInt());
+    throw ArgumentError(
+      'Expected numeric color at "$path" but got ${v.runtimeType}',
+    );
+  }
+
+  /// Read a numeric value at `"section.property"` and interpret it as an ARGB
+  /// color (alpha in the high byte, `0xAARRGGBB`). Returns [defaultValue] (or
+  /// `null`) if the key is missing. Throws [ArgumentError] for non-numeric
+  /// values.
+  Color? asARGBColor(String path, {Color? defaultValue}) {
+    final v = this[path];
+    if (v == null) return defaultValue;
+    if (v is num) return Color(v.toInt());
+    throw ArgumentError(
+      'Expected numeric color at "$path" but got ${v.runtimeType}',
+    );
+  }
+
+  /// Read a numeric value at `"section.property"` and interpret it as an RGBA
+  /// color (alpha in the low byte, `0xRRGGBBAA`). The alpha byte is rotated
+  /// into the high position to produce a Flutter [Color]. Returns
+  /// [defaultValue] (or `null`) if the key is missing. Throws [ArgumentError]
+  /// for non-numeric values.
+  Color? asRGBAColor(String path, {Color? defaultValue}) {
+    final v = this[path];
+    if (v == null) return defaultValue;
+    if (v is num) {
+      final n = v.toInt();
+      return Color(((n & 0xff) << 24) | ((n >> 8) & 0xffffff));
+    }
+    throw ArgumentError(
+      'Expected numeric color at "$path" but got ${v.runtimeType}',
+    );
+  }
+
   /// Read a double value at `"section.property"`. Accepts `double` as-is and
   /// widens `int` via `toDouble()`. Returns [defaultValue] (or `null`) if the
   /// key is missing. Throws [ArgumentError] for non-numeric values.

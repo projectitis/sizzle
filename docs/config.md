@@ -154,13 +154,45 @@ if the value is present but doesn't have the expected type.
   accepts `double`, or `int` via `toDouble()`
 - [`asBool`](../lib/src/utils/config.dart#:~:text=asBool) — bool; strict,
   strings like `'true'` are not coerced
+- [`asColor`](../lib/src/utils/config.dart#:~:text=asColor) — `Color` from an
+  RGB int; alpha is forced to fully opaque
+- [`asARGBColor`](../lib/src/utils/config.dart#:~:text=asARGBColor) — `Color`
+  from an ARGB int (`0xAARRGGBB`), used as-is
+- [`asRGBAColor`](../lib/src/utils/config.dart#:~:text=asRGBAColor) — `Color`
+  from an RGBA int (`0xRRGGBBAA`); the low alpha byte is rotated into the
+  high position
 
 ```dart
 final title = config.asStr('ui.titleText', defaultValue: 'Untitled');
 final scale = config.asDouble('ui.titleScale', defaultValue: 1.0);
 final speed = config.asInt('physics.maxSpeed', defaultValue: 100);
 final debug = config.asBool('debug.enabled', defaultValue: false);
+final tint  = config.asColor('ui.tint', defaultValue: const Color(0xffffffff));
 ```
+
+The three color helpers all accept a numeric value and differ only in how
+they interpret it:
+
+| Helper          | Source format | Example input | Resulting `Color`  |
+| --------------- | ------------- | ------------- | ------------------ |
+| `asColor`       | `0xRRGGBB`    | `0xff8800`    | `Color(0xffff8800)`|
+| `asARGBColor`   | `0xAARRGGBB`  | `0x80ff0000`  | `Color(0x80ff0000)`|
+| `asRGBAColor`   | `0xRRGGBBAA`  | `0xff000080`  | `Color(0x80ff0000)`|
+
+JX hex literals make these readable in the file itself:
+
+```js
+ui: {
+    tint:      0xff8800;       // RGB     -> opaque orange
+    overlay:   0x80000000;     // ARGB    -> 50% black
+    highlight: 0xff000080;     // RGBA    -> red, 50% alpha
+};
+```
+
+`asColor` is the right choice when the source values are plain RGB and you
+just want them opaque. Use `asARGBColor` or `asRGBAColor` when the source
+file deliberately encodes alpha — pick the one that matches the convention
+of whoever authored the file.
 
 ### Raw access
 

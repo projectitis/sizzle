@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sizzle/sizzle.dart';
@@ -126,6 +128,13 @@ void main() async {
         strs: {
           s: 'hello';
         };
+        colors: {
+          magenta: 0xff00ff;
+          black: 0x000000;
+          white: 0xffffff;
+          argbHalfRed: 0x80ff0000;
+          rgbaHalfRed: 0xff000080;
+        };
       }
     ''';
 
@@ -161,6 +170,50 @@ void main() async {
       );
     });
 
+    test('asColor wraps an int as an opaque RGB Color', () {
+      final config = Config.parse(src);
+      expect(config.asColor('colors.magenta'), const Color(0xffff00ff));
+      expect(config.asColor('colors.black'), const Color(0xff000000));
+      expect(config.asColor('colors.white'), const Color(0xffffffff));
+      // ARGB and RGBA sources still get forced to opaque RGB
+      expect(config.asColor('colors.argbHalfRed'), const Color(0xffff0000));
+      expect(config.asColor('colors.rgbaHalfRed'), const Color(0xff000080));
+      expect(
+        () => config.asColor('strs.s'),
+        throwsArgumentError,
+      );
+    });
+
+    test('asARGBColor uses the int directly (alpha in high byte)', () {
+      final config = Config.parse(src);
+      expect(
+        config.asARGBColor('colors.argbHalfRed'),
+        const Color(0x80ff0000),
+      );
+      // A value with no alpha bits set comes back fully transparent
+      expect(config.asARGBColor('colors.magenta'), const Color(0x00ff00ff));
+      expect(
+        () => config.asARGBColor('strs.s'),
+        throwsArgumentError,
+      );
+    });
+
+    test('asRGBAColor rotates the low alpha byte into the high position', () {
+      final config = Config.parse(src);
+      // 0xff000080 RGBA = red 0xff, green 0x00, blue 0x00, alpha 0x80
+      expect(
+        config.asRGBAColor('colors.rgbaHalfRed'),
+        const Color(0x80ff0000),
+      );
+      // 0xffffff RGBA, zero-padded to 0x00ffffff = R 0x00, G 0xff, B 0xff,
+      // A 0xff → opaque cyan
+      expect(config.asRGBAColor('colors.white'), const Color(0xff00ffff));
+      expect(
+        () => config.asRGBAColor('strs.s'),
+        throwsArgumentError,
+      );
+    });
+
     test('Missing key returns defaultValue (or null)', () {
       final config = Config.parse(src);
       expect(config.asStr('strs.missing'), isNull);
@@ -171,6 +224,27 @@ void main() async {
       expect(config.asInt('nums.missing', defaultValue: 42), 42);
       expect(config.asDouble('nums.missing', defaultValue: 1.5), 1.5);
       expect(config.asBool('bools.missing', defaultValue: true), isTrue);
+      expect(
+        config.asColor('colors.missing', defaultValue: const Color(0xff123456)),
+        const Color(0xff123456),
+      );
+      expect(config.asColor('colors.missing'), isNull);
+      expect(
+        config.asARGBColor(
+          'colors.missing',
+          defaultValue: const Color(0x80123456),
+        ),
+        const Color(0x80123456),
+      );
+      expect(config.asARGBColor('colors.missing'), isNull);
+      expect(
+        config.asRGBAColor(
+          'colors.missing',
+          defaultValue: const Color(0x80123456),
+        ),
+        const Color(0x80123456),
+      );
+      expect(config.asRGBAColor('colors.missing'), isNull);
       expect(config['missingSection.missingProp'], isNull);
     });
 
