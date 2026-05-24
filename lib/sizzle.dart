@@ -33,6 +33,7 @@ export 'src/math/vector_math.dart';
 export 'src/physics/lifetime.dart';
 export 'src/physics/movement.dart';
 export 'src/text/text.dart';
+export 'src/utils/config.dart';
 export 'src/utils/device.dart';
 export 'src/utils/logger.dart';
 export 'src/utils/pool.dart';
