@@ -1,0 +1,49 @@
+{
+    section1Name: {
+
+        // Defaults for desktop
+        property1Name: 'default';
+        property2Name: 'default';
+        property3Name: 'default';
+
+        #landscape: {
+            property2Name: 'landscape';
+        };
+
+        #watch: {
+            property1Name: 'watch';
+        };
+        #mobile: {
+            property1Name: 'mobile';
+            #landscape: {
+                property2Name: 'landscape';
+            };
+        };
+        #tablet: {
+            property1Name: 'mobile';
+            #portrait: {
+                property2Name: 'portrait';
+            };
+        };
+        #desktop: {
+            property1Name: 'desktop';
+        };
+    };
+
+    section2Name: {
+        property1Name: 'default';
+
+        rawPropertyExample: {
+            value: 0.5,
+            ref: 'viewTL'
+        };
+
+        #mobile: {
+            rawPropertyExample: {
+                value: 0.25,
+                ref: 'viewBL'
+            };
+        };
+    };
+
+}

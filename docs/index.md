@@ -20,6 +20,7 @@ package also regularly contribute to Flame itself.
 - [Game services](services.md)
 - [Scaling sprites (Snap)](snap.md)
 - [Memory pooling](pool.md)
+- [Config files](config.md)
 
 ## API
 
