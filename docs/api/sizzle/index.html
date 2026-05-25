@@ -83,6 +83,22 @@
   Character codes
 </dd>
 
+          <dt id="ColorTween">
+  <span class="name "><a href="../sizzle/ColorTween-class.html">ColorTween</a></span> 
+
+</dt>
+<dd>
+  A <a href="../sizzle/Tween-class.html">Tween</a> that interpolates between two <code>Color</code>s using <code>Color.lerp</code>.
+</dd>
+
+          <dt id="Config">
+  <span class="name "><a href="../sizzle/Config-class.html">Config</a></span> 
+
+</dt>
+<dd>
+  Runtime configuration loaded from a <code>.jx</code> file.
+</dd>
+
           <dt id="Device">
   <span class="name "><a href="../sizzle/Device-class.html">Device</a></span> 
 
@@ -139,6 +155,16 @@
   Parallel-ray light from <a href="../sizzle/DirectionalLight/direction.html">direction</a> (think sunlight). The vector is
 normalised at construction and on assignment, so callers may pass any
 non-zero vector. A zero vector is preserved as-is (no NaN).
+</dd>
+
+          <dt id="Easing">
+  <span class="name "><a href="../sizzle/Easing-class.html">Easing</a></span> 
+
+</dt>
+<dd>
+  Collection of easing functions that map a normalized progress value
+<code>p</code> in <code>[0, 1]</code> to an eased value (typically also in <code>[0, 1]</code>, though
+some functions overshoot).
 </dd>
 
           <dt id="Environment">
@@ -504,6 +530,25 @@ sprite, resulting in a much smaller image (sprite sheet).
   
 </dd>
 
+          <dt id="Tween">
+  <span class="name "><a href="../sizzle/Tween-class.html">Tween</a></span> 
+
+</dt>
+<dd>
+  Handle to a tween scheduled on <a href="../sizzle/TweenService-class.html">TweenService</a>. The service owns the
+instance; callers receive it from <a href="../sizzle/TweenService/add.html">TweenService.add</a> and use it to
+inspect state, <a href="../sizzle/Tween/pause.html">pause</a>/<a href="../sizzle/Tween/resume.html">resume</a>, or <a href="../sizzle/Tween/cancel.html">cancel</a>.
+</dd>
+
+          <dt id="TweenService">
+  <span class="name "><a href="../sizzle/TweenService-class.html">TweenService</a></span> 
+
+</dt>
+<dd>
+  Drives a list of <a href="../sizzle/Tween-class.html">Tween</a>s every frame. The default instance lives at
+<code>Services.tween</code> and is ticked automatically by <code>SizzleGame.update</code>.
+</dd>
+
           <dt id="Walkable">
   <span class="name "><a href="../sizzle/Walkable-class.html">Walkable</a></span> 
 
@@ -667,6 +712,36 @@ supported.
       <h2>Typedefs</h2>
       <dl>
           
+  <dt id="ColorTweenCallback" class="callable">
+    <span class="name"><a href="../sizzle/ColorTweenCallback.html">ColorTweenCallback</a></span><span class="signature">
+      <span class="returntype parameter">= void Function<span class="signature">(<span class="parameter" id="param-value"><span class="type-annotation">Color</span> <span class="parameter-name">value</span></span>)</span></span>
+    </span>
+    
+
+  </dt>
+  <dd>
+    Callback for <a href="../sizzle/ColorTween-class.html">ColorTween</a> lifecycle events. Receives the current
+interpolated colour.
+    
+
+  </dd>
+
+          
+  <dt id="EasingFunction" class="callable">
+    <span class="name"><a href="../sizzle/EasingFunction.html">EasingFunction</a></span><span class="signature">
+      <span class="returntype parameter">= double Function<span class="signature">(<span class="parameter" id="param-t"><span class="type-annotation">double</span> <span class="parameter-name">t</span></span>)</span></span>
+    </span>
+    
+
+  </dt>
+  <dd>
+    Signature for an easing function used by <a href="../sizzle/TweenService/add.html">TweenService.add</a>. Receives a
+normalised time <code>t</code> in <code>[0, 1]</code> and returns the eased progress.
+    
+
+  </dd>
+
+          
   <dt id="OnFileAccessCallback" class="callable">
     <span class="name"><a href="../sizzle/OnFileAccessCallback.html">OnFileAccessCallback</a></span><span class="signature">
       <span class="returntype parameter">= void Function<span class="signature">(<span class="parameter" id="param-data"><span class="type-annotation">Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">dynamic</span>&gt;</span></span> <span class="parameter-name">data</span></span>)</span></span>
@@ -704,6 +779,22 @@ supported.
   </dt>
   <dd>
     
+    
+
+  </dd>
+
+          
+  <dt id="TweenCallback" class="callable">
+    <span class="name"><a href="../sizzle/TweenCallback.html">TweenCallback</a></span><span class="signature">
+      <span class="returntype parameter">= void Function<span class="signature">(<span class="parameter" id="param-value"><span class="type-annotation">double</span> <span class="parameter-name">value</span></span>)</span></span>
+    </span>
+    
+
+  </dt>
+  <dd>
+    Callback for tween lifecycle events. Receives the current value:
+<code>from</code> for <code>onStart</code>, the eased value for <code>onUpdate</code>, <code>to</code> for
+<code>onComplete</code>.
     
 
   </dd>

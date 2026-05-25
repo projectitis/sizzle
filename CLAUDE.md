@@ -122,6 +122,27 @@ dart doc --output=docs/api .
 - API: `Services.dialog.load(files)`, `parse(data)`, `start(node, views)`, `clear(...)`
 - Yarn scripts can read/write flags via the auto-registered `flag` command and `flagged()` function
 
+**TweenService** (`lib/src/utils/services/tween_service.dart`)
+- Drives arbitrary `double` property tweens between `from` and `to` over a duration with an `Easing` function. Callback-driven (no pointer/setter trickery)
+- `SizzleGame.update` calls `Services.tween.update(dt)` automatically — game pause pauses tweens for free
+- API: `Services.tween.add(from:, to:, duration:, delay:, ease:, onStart:, onUpdate:, onComplete:)` returns a `Tween` handle with `pause()` / `resume()` / `cancel()`. `cancel()` does *not* fire `onComplete`
+- All callbacks share `TweenCallback = void Function(double value)`: `onStart` receives `from`, `onUpdate` receives the eased value, `onComplete` receives `to`
+- Lifecycle: nothing fires during `delay`; the first post-delay tick fires `onStart(from)` then `onUpdate(from)`. The final tick lands the value exactly on `to` then fires `onComplete(to)`
+- Global `Services.tween.timeScale` slows or freezes every tween (set to `0` for a global pause). Easing functions live in `lib/src/math/easing.dart` (`Easing.cubicEaseInOut`, `Easing.bounceEaseOut`, etc.)
+
+```dart
+final tween = Services.tween.add(
+  from: 0,
+  to: 100,
+  duration: 1.0,
+  ease: Easing.cubicEaseInOut,
+  onUpdate: (v) => sprite.position.x = v,
+  onComplete: (v) => print('done at $v'),
+);
+// Later, if the caller wants to abort:
+tween.cancel();
+```
+
 **Logger** (`lib/src/utils/logger.dart`)
 - Accessed via `Services.log`. Defaults to `PrintLogger`; `PrintJsonLogger` and `FileLogger` are also provided. Implement the `Logger` interface for custom sinks.
 

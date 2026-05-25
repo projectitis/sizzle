@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the Config class from the sizzle library, for the Dart programming language.">
+  <title>Config class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle.dart</a></li>
+    <li class="self-crumb">Config class</li>
+  </ol>
+  <div class="self-name">Config</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;sizzle-library-sidebar.html"
+    data-below-sidebar="sizzle&#47;Config-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">Config</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>Runtime configuration loaded from a <code>.jx</code> file.</p>
+<p>A <code>.jx</code> config file is structured as top-level sections each containing
+properties and optional <code>#</code>-prefixed modifier blocks. Modifier blocks may
+be nested (meaning logical AND). At load time the tree is flattened to a
+single <code>section → property → value</code> snapshot using the supplied
+capabilities map to decide which modifier blocks apply.</p>
+<p>Capabilities are an arbitrary <code>Map&lt;String, bool&gt;</code> keyed by modifier name
+(without the <code>#</code> prefix). A modifier block applies when its name is mapped
+to <code>true</code>; a missing key or a key mapped to <code>false</code> skips the block.</p>
+<p>Walk order is document order: every matching write overwrites the previous
+value. Property values are taken literally (a value that is itself an
+object or array is not entered when resolving modifiers).</p>
+<p>Example:</p>
+<pre class="language-dart"><code class="language-dart">final config = await Config.load('game.config.jx', {
+  'mobile': true,
+  'landscape': true,
+  'touch': true,
+});
+final title = config.asStr('ui.title');
+final scale = config.asDouble('view.scale', defaultValue: 1.0);
+</code></pre>
+<p>To re-flatten after e.g. an orientation change, assign new capabilities:</p>
+<pre class="language-dart"><code class="language-dart">config.onChange = () =&gt; refreshDerivedValues();
+config.capabilities = {'mobile': true, 'portrait': true};
+</code></pre>
+</section>
+
+
+
+    
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="capabilities" class="property">
+  <span class="name"><a href="../sizzle/Config/capabilities.html">capabilities</a></span>
+  <span class="signature">&#8596; Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">bool</span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  The capabilities used to flatten the current snapshot. Assigning a new
+value re-flattens in place and fires <a href="../sizzle/Config/onChange.html">onChange</a>. Assigning a value that
+is equivalent to the current one (treating missing keys as <code>false</code>) is a
+no-op.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="../sizzle/Config/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; int</span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onChange" class="property">
+  <span class="name"><a href="../sizzle/Config/onChange.html">onChange</a></span>
+  <span class="signature">&#8596; void Function<span class="signature">()</span>?</span>
+  
+
+</dt>
+<dd>
+  Called after the <a href="../sizzle/Config/capabilities.html">capabilities</a> setter rebuilds the snapshot. Not called
+when the new capabilities are equivalent to the old ones (treating any
+missing key as <code>false</code>). Assign directly:
+<code>config.onChange = () =&gt; ...;</code>
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="../sizzle/Config/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; Type</span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="asARGBColor" class="callable">
+  <span class="name"><a href="../sizzle/Config/asARGBColor.html">asARGBColor</a></span><span class="signature">(<wbr><span class="parameter" id="asARGBColor-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, {</span><span class="parameter" id="asARGBColor-param-defaultValue"><span class="type-annotation">Color?</span> <span class="parameter-name">defaultValue</span></span>})
+    <span class="returntype parameter">&#8594; Color?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Read a numeric value at <code>"section.property"</code> and interpret it as an ARGB
+color (alpha in the high byte, <code>0xAARRGGBB</code>). Returns <code>defaultValue</code> (or
+<code>null</code>) if the key is missing. Throws <code>ArgumentError</code> for non-numeric
+values.
+  
+
+</dd>
+
+        <dt id="asBool" class="callable">
+  <span class="name"><a href="../sizzle/Config/asBool.html">asBool</a></span><span class="signature">(<wbr><span class="parameter" id="asBool-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, {</span><span class="parameter" id="asBool-param-defaultValue"><span class="type-annotation">bool?</span> <span class="parameter-name">defaultValue</span></span>})
+    <span class="returntype parameter">&#8594; bool?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Read a bool value at <code>"section.property"</code>. Strict: the value must already
+be a bool — strings like <code>'true'</code> are not coerced. Returns <code>defaultValue</code>
+(or <code>null</code>) if the key is missing. Throws <code>ArgumentError</code> for any other
+type.
+  
+
+</dd>
+
+        <dt id="asColor" class="callable">
+  <span class="name"><a href="../sizzle/Config/asColor.html">asColor</a></span><span class="signature">(<wbr><span class="parameter" id="asColor-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, {</span><span class="parameter" id="asColor-param-defaultValue"><span class="type-annotation">Color?</span> <span class="parameter-name">defaultValue</span></span>})
+    <span class="returntype parameter">&#8594; Color?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Read a numeric value at <code>"section.property"</code> and interpret it as an RGB
+color. The low 24 bits supply red/green/blue and alpha is forced to
+fully opaque (<code>0xFF</code>). JX supports RGBA literals but they're not
+distinguishable here, so the value is always treated as RGB. Returns
+<code>defaultValue</code> (or <code>null</code>) if the key is missing. Throws <code>ArgumentError</code>
+for non-numeric values.
+  
+
+</dd>
+
+        <dt id="asDouble" class="callable">
+  <span class="name"><a href="../sizzle/Config/asDouble.html">asDouble</a></span><span class="signature">(<wbr><span class="parameter" id="asDouble-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, {</span><span class="parameter" id="asDouble-param-defaultValue"><span class="type-annotation">double?</span> <span class="parameter-name">defaultValue</span></span>})
+    <span class="returntype parameter">&#8594; double?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Read a double value at <code>"section.property"</code>. Accepts <code>double</code> as-is and
+widens <code>int</code> via <code>toDouble()</code>. Returns <code>defaultValue</code> (or <code>null</code>) if the
+key is missing. Throws <code>ArgumentError</code> for non-numeric values.
+  
+
+</dd>
+
+        <dt id="asInt" class="callable">
+  <span class="name"><a href="../sizzle/Config/asInt.html">asInt</a></span><span class="signature">(<wbr><span class="parameter" id="asInt-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, {</span><span class="parameter" id="asInt-param-defaultValue"><span class="type-annotation">int?</span> <span class="parameter-name">defaultValue</span></span>})
+    <span class="returntype parameter">&#8594; int?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Read an int value at <code>"section.property"</code>. Accepts <code>int</code> as-is and
+truncates <code>double</code> via <code>toInt()</code>. Returns <code>defaultValue</code> (or <code>null</code>) if
+the key is missing. Throws <code>ArgumentError</code> for non-numeric values.
+  
+
+</dd>
+
+        <dt id="asOffset" class="callable">
+  <span class="name"><a href="../sizzle/Config/asOffset.html">asOffset</a></span><span class="signature">(<wbr><span class="parameter" id="asOffset-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, </span><span class="parameter" id="asOffset-param-min"><span class="type-annotation">double</span> <span class="parameter-name">min</span>, </span><span class="parameter" id="asOffset-param-max"><span class="type-annotation">double</span> <span class="parameter-name">max</span>, {</span><span class="parameter" id="asOffset-param-defaultValue"><span class="type-annotation">double?</span> <span class="parameter-name">defaultValue</span></span>})
+    <span class="returntype parameter">&#8594; double?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Read a numeric value at <code>"section.property"</code> and interpret it as an
+offset between <code>min</code> and <code>max</code>:
+  
+
+</dd>
+
+        <dt id="asPos" class="callable">
+  <span class="name"><a href="../sizzle/Config/asPos.html">asPos</a></span><span class="signature">(<wbr><span class="parameter" id="asPos-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, {</span><span class="parameter" id="asPos-param-defaultValue"><span class="type-annotation">Vector2?</span> <span class="parameter-name">defaultValue</span></span>})
+    <span class="returntype parameter">&#8594; Vector2?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Read an object value at <code>"section.property"</code> and interpret it as a
+position in screen pixels, relative to a window on the current
+<a href="../sizzle/SizzleGame-class.html">SizzleGame</a>. The object can carry:
+  
+
+</dd>
+
+        <dt id="asRGBAColor" class="callable">
+  <span class="name"><a href="../sizzle/Config/asRGBAColor.html">asRGBAColor</a></span><span class="signature">(<wbr><span class="parameter" id="asRGBAColor-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, {</span><span class="parameter" id="asRGBAColor-param-defaultValue"><span class="type-annotation">Color?</span> <span class="parameter-name">defaultValue</span></span>})
+    <span class="returntype parameter">&#8594; Color?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Read a numeric value at <code>"section.property"</code> and interpret it as an RGBA
+color (alpha in the low byte, <code>0xRRGGBBAA</code>). The alpha byte is rotated
+into the high position to produce a Flutter <code>Color</code>. Returns
+<code>defaultValue</code> (or <code>null</code>) if the key is missing. Throws <code>ArgumentError</code>
+for non-numeric values.
+  
+
+</dd>
+
+        <dt id="asStr" class="callable">
+  <span class="name"><a href="../sizzle/Config/asStr.html">asStr</a></span><span class="signature">(<wbr><span class="parameter" id="asStr-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, {</span><span class="parameter" id="asStr-param-defaultValue"><span class="type-annotation">String?</span> <span class="parameter-name">defaultValue</span></span>})
+    <span class="returntype parameter">&#8594; String?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Read a string value at <code>"section.property"</code>. Returns <code>defaultValue</code> (or
+<code>null</code>) if the key is missing. Throws <code>ArgumentError</code> if the value is
+present but not a string.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="../sizzle/Config/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="../sizzle/Config/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; String</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="../sizzle/Config/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation">Object</span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; bool</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="operator []" class="callable">
+  <span class="name"><a href="../sizzle/Config/operator_get.html">operator []</a></span><span class="signature">(<wbr><span class="parameter" id="[]-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Raw indexed access. Path must be exactly <code>"section.property"</code> — a single
+dot separating two non-empty parts. Returns <code>null</code> if the key is missing.
+Throws <code>ArgumentError</code> for any other path shape.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">
+        <dt id="load" class="callable">
+  <span class="name"><a href="../sizzle/Config/load.html">load</a></span><span class="signature">(<wbr><span class="parameter" id="load-param-path"><span class="type-annotation">String</span> <span class="parameter-name">path</span>, [</span><span class="parameter" id="load-param-capabilities"><span class="type-annotation">Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">bool</span>&gt;</span></span> <span class="parameter-name">capabilities</span> = <span class="default-value">const {}</span></span>])
+    <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/Config-class.html">Config</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Load and parse a JX config file from the asset bundle via
+<a href="../sizzle/Services/files.html">Services.files</a>. The file is not added to the file cache.
+  
+
+</dd>
+
+        <dt id="parse" class="callable">
+  <span class="name"><a href="../sizzle/Config/parse.html">parse</a></span><span class="signature">(<wbr><span class="parameter" id="parse-param-jxSource"><span class="type-annotation">String</span> <span class="parameter-name">jxSource</span>, [</span><span class="parameter" id="parse-param-capabilities"><span class="type-annotation">Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">bool</span>&gt;</span></span> <span class="parameter-name">capabilities</span> = <span class="default-value">const {}</span></span>])
+    <span class="returntype parameter">&#8594; <a href="../sizzle/Config-class.html">Config</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Parse a JX config from a string. Useful for tests and inline configs.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle</a></li>
+    <li class="self-crumb">Config class</li>
+</ol>
+
+    <h5>sizzle library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.3
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
