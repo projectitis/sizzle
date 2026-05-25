@@ -57,26 +57,20 @@
   <div>
     <ol class="annotation-list">
         <li>@override</li>
-        <li>@mustCallSuper</li>
     </ol>
   </div>
 <span class="returntype">void</span>
 <span class="name ">update</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="update-param-dt"><span class="type-annotation">double</span> <span class="parameter-name">dt</span></span></li>
 </ol>)
 
-      <div class="features"><span class="feature">inherited</span></div>
+      
 
     </section>
     
 <section class="desc markdown">
-  <p>This method is called periodically by the game engine to request that your
-component updates itself.</p>
-<p>The time <code>dt</code> in seconds (with microseconds precision provided by Flutter)
-since the last update cycle.
-This time can vary according to hardware capacity, so make sure to update
-your state considering this.
-All components in the tree are always updated by the same amount. The time
-each one takes to update adds up to the next update cycle.</p>
+  <p>Ticks Flame's component tree, then drives any global per-frame
+services (currently the tween service). Pausing the game pauses
+these services for free because Flame stops calling <a href="../../sizzle/SizzleGame/update.html">update</a>.</p>
 </section>
 
 
@@ -84,11 +78,9 @@ each one takes to update adds up to the next update cycle.</p>
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
-@mustCallSuper
 void update(double dt) {
-  if (parent == null) {
-    updateTree(dt);
-  }
+  super.update(dt);
+  Services.tween.update(dt);
 }</code></pre>
 </section>
 

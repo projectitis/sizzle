@@ -9,6 +9,7 @@ import 'package:flame/game.dart';
 
 import './scene.dart';
 import '../math/math.dart';
+import '../utils/services.dart';
 
 /// The root [FlameGame] for a Sizzle title.
 ///
@@ -234,6 +235,15 @@ class SizzleGame extends FlameGame
       );
     }
     super.onGameResize(canvasSize);
+  }
+
+  /// Ticks Flame's component tree, then drives any global per-frame
+  /// services (currently the tween service). Pausing the game pauses
+  /// these services for free because Flame stops calling [update].
+  @override
+  void update(double dt) {
+    super.update(dt);
+    Services.tween.update(dt);
   }
 
   /// Transforms event coordinates to account for the letterbox offset

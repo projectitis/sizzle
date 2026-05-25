@@ -1739,17 +1739,18 @@ loaded by the game widget.
 
 </dd>
 
-        <dt id="update" class="callable inherited">
+        <dt id="update" class="callable">
   <span class="name"><a href="../sizzle/SizzleGame/update.html">update</a></span><span class="signature">(<wbr><span class="parameter" id="update-param-dt"><span class="type-annotation">double</span> <span class="parameter-name">dt</span></span>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
-<dd class="inherited">
-  This method is called periodically by the game engine to request that your
-component updates itself.
-  <div class="features"><span class="feature">inherited</span></div>
+<dd>
+  Ticks Flame's component tree, then drives any global per-frame
+services (currently the tween service). Pausing the game pauses
+these services for free because Flame stops calling <a href="../sizzle/SizzleGame/update.html">update</a>.
+  
 
 </dd>
 

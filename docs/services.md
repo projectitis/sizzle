@@ -25,6 +25,8 @@ services, the others should feel familiar too.
   `Services.dialog`
 - [Flag service](services_flags.md) - track boolean game state via
   `Services.flags`
+- [Tween service](services_tween.md) - drive arbitrary `double` and `Color`
+  property tweens via `Services.tween`
 - [Save games](services_save.md) - persist flags, dialog state and your own
   data via `Services.save` / `Services.load`
 - [Logging](services_log.md) - structured logging via `Services.log`

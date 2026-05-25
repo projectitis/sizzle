@@ -11,6 +11,7 @@ import './services/file_service.dart';
 import './services/flag_service.dart';
 import './services/image_service.dart';
 import './services/lit_svg_service.dart';
+import './services/tween_service.dart';
 import './logger.dart';
 
 typedef OnFileAccessCallback = void Function(Map<String, dynamic> data);
@@ -46,6 +47,10 @@ class Services {
 
   /// Reference to the dialog service
   static final DialogService dialog = DialogService(files, flags);
+
+  /// Reference to the tween service. Ticked automatically by
+  /// `SizzleGame.update`.
+  static final TweenService tween = TweenService();
 
   // Logger
   static Logger log = PrintLogger();
