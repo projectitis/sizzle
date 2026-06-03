@@ -30,3 +30,7 @@ doc/api/
 # wip folders
 art
 fonts
+
+# Per-test failure artefacts produced under test/**/failures (e.g. golden
+# diff dumps). Never tracked; regenerated on the next run.
+test/**/failures/

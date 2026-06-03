@@ -6,7 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
 class Device {
-  static String get os => Platform.operatingSystemVersion.toLowerCase();
+  static String get os =>
+      '${Platform.operatingSystem.toLowerCase()} ${Platform.operatingSystemVersion.toLowerCase()}';
 
   static bool get isAndroid => Platform.isAndroid;
   static bool get isIOS => Platform.isIOS;
@@ -18,8 +19,22 @@ class Device {
   static bool get isMobile => (isAndroid || isIOS) && !isWatch;
   static bool get isWeb => kIsWeb;
   static bool get isDesktop => isWindows || isLinux || isMacOS;
-  static bool get isWatch =>
-      (isAndroid && os.contains('wear')) || (isIOS && os.contains('watch'));
+  static bool get isWatch {
+    if (isIOS && os.contains('watch')) return true;
+    if (isAndroid) {
+      if (os.contains('wear')) return true;
+      // Wear OS 4+ no longer surfaces "wear" in operatingSystemVersion
+      // (e.g. TicWatch Pro 5 reports "tmdb.240925.002"). Fall back to a
+      // shape heuristic: small + nearly-square is unique to watches.
+      final size = screenSize;
+      final logicalShort = (size.x < size.y ? size.x : size.y) / pixelRatio;
+      final aspect = size.x / size.y;
+      final nearlySquare = (aspect - 1.0).abs() < 0.1;
+      final smallScreen = logicalShort <= 320;
+      return nearlySquare && smallScreen;
+    }
+    return false;
+  }
 
   static FlutterView? _view;
   static FlutterView get view {
@@ -49,7 +64,7 @@ class Device {
                         : isFuchsia
                             ? 'Fuchsia'
                             : 'Unknown OS';
-    s += ', ';
+    s += ' ($os), ';
     s += isWatch
         ? 'Watch'
         : isMobile
