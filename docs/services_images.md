@@ -173,6 +173,105 @@ they only affect the post-rasterization draw step that SVGs skip:
 > instead.
 
 
+### Rasterizing an SVG string
+
+- [Services.images.rasterizeSvgString](../lib/src/utils/services/image_service.dart#:~:text=rasterizeSvgString)
+
+When the SVG source is already in memory (for example, after mutating it at
+runtime) you can rasterize it directly without going through the asset
+bundle. The same transform pipeline as path-based loading is applied.
+
+```dart
+final svgString = '<svg ...>...</svg>';
+final Image image = await Services.images.rasterizeSvgString(
+    svgString,
+    ImageProperties('memory.svg', name: 'tinted-icon', scale: Vector2.all(2)),
+);
+```
+
+If `properties` is supplied and `cache: true` (default), the result is stored
+under `properties.name`, **overwriting any existing entry**. The previous
+`Image` is **not** auto-disposed because it may still be referenced by a live
+`Sprite` — the caller owns that lifecycle. See `SvgImage.render` below for an
+example of swapping a sprite's image safely.
+
+
+## SvgImage — DPR-aware sprite with re-render
+
+`SvgImage` is a small helper that wraps an SVG into a `Sprite` sized for the
+display surface's physical-pixel resolution. It hides the DPR / context-scale
+arithmetic and, with an optional `onRender` callback, can re-rasterize the
+sprite from a mutated SVG string at runtime.
+
+### Loading once
+
+```dart
+final svg = await SvgImage.load(
+    'images/ui/icon.svg',
+    contextScale: game.size.x / designSize.x, // game-specific
+    dpr: window.devicePixelRatio,
+);
+component.sprite = svg.sprite;
+component.size = svg.displaySize;
+```
+
+| Parameter | Description |
+| --------- | ----------- |
+| `contextScale` | The game's design→screen multiplier (e.g. `screenSize / designSize`). |
+| `dpr` | Device pixel ratio. |
+| `displayScale` | Asset's intended on-screen scale at 100% camera zoom. Defaults to `1.0`. |
+| `renderScale` | Texture-density multiplier. `2.0` rasterizes at 2× density without growing `displaySize`. Defaults to `1.0`. |
+
+The pixel-scale baked into the cached image is
+`displayScale * contextScale * dpr * renderScale`. The cache name is keyed by
+`path@pixelScale` so the same SVG loaded at different scales gets distinct
+cached images.
+
+### Re-rendering with mutated SVG
+
+Pass an `onRender` callback to mutate the SVG source before each
+rasterization. The callback always receives the **original** asset SVG string
+(modifications are not cumulative — every render starts from scratch).
+
+```dart
+String tint = 'rgb(48,48,48)';
+
+final svg = await SvgImage.load(
+    'images/ui/icon.svg',
+    contextScale: ctx, dpr: dpr,
+    onRender: (src) => src.replaceAll('rgb(48,48,48)', tint),
+);
+component.sprite = svg.sprite;
+
+// Later, when game state changes:
+tint = 'rgb(255,80,80)';
+await svg.render(); // sprite.image is swapped in place; previous Image disposed.
+```
+
+`onRender` is a public settable field — assign it any time to change how
+future renders mutate the SVG. `render()` also accepts a one-shot
+`onRender:` argument that overrides the stored callback for a single call.
+
+The sprite is mutated in place: `svg.sprite` keeps the same `Sprite`
+instance across renders, so any component holding a reference to it
+automatically picks up the new pixels on the next frame. The previous
+`Image` is disposed inside `render()` after the swap.
+
+> **Concurrency:** `render()` is not protected against overlapping calls. If
+> you call it from a high-frequency source (e.g. a tween), the caller is
+> responsible for serializing.
+>
+> **Shared cache caveat:** two `SvgImage` instances loaded from the same path
+> at the same pixel scale share a cache entry. Calling `render()` on one
+> replaces the shared entry and disposes the `Image` the other instance's
+> sprite still references. Avoid this by using different `displayScale` or
+> `renderScale` values, or by re-rendering only one of them.
+
+For testing or when you need a non-default service, `SvgImage.load` accepts
+optional `fileService:` and `imageService:` parameters; both default to the
+global `Services.files` / `Services.images`.
+
+
 ## Image properties
 
 `ImageProperties` describes both the asset to load and the transformations to
