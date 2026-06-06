@@ -228,6 +228,31 @@ class ImageService {
     bool cache,
   ) async {
     final svgString = await assetBundle.loadString(assetFolder + assetPath);
+    if (properties != null) {
+      return await rasterizeSvgString(svgString, properties, cache: cache);
+    }
+    final image = await rasterizeSvgString(svgString, null, cache: false);
+    if (cache) {
+      _cache[assetName] = image;
+    }
+    return image;
+  }
+
+  /// Rasterize an in-memory SVG string into an [Image]. Geometric transforms
+  /// in [properties] (scale, rotation, flip, crop) are baked in the same way
+  /// as the asset-loading SVG path. [ImageProperties.blendMode],
+  /// [ImageProperties.antiAlias] and [ImageProperties.filterQuality] are
+  /// ignored for SVG sources.
+  ///
+  /// If [cache] is true and [properties] is non-null, the result is stored at
+  /// `properties.name`, overwriting any existing entry. The previous entry
+  /// (if any) is **not** disposed — the caller owns that lifecycle, because
+  /// the previous Image may still be referenced by a live [Sprite].
+  Future<Image> rasterizeSvgString(
+    String svgString,
+    ImageProperties? properties, {
+    bool cache = true,
+  }) async {
     final pictureInfo = await vg.loadPicture(SvgStringLoader(svgString), null);
 
     final Image image;
@@ -253,8 +278,8 @@ class ImageService {
     }
 
     pictureInfo.picture.dispose();
-    if (cache) {
-      _cache[assetName] = image;
+    if (cache && properties != null) {
+      _cache[properties.name] = image;
     }
     return image;
   }
