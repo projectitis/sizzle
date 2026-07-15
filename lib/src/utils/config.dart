@@ -146,6 +146,11 @@ class Config {
     return true;
   }
 
+  /// The section names present in the flattened snapshot, in document order.
+  /// Lets callers enumerate an open-ended set of sections (e.g. one section
+  /// per catalogue entry) without hard-coding their keys.
+  Iterable<String> get sections => _flat.keys;
+
   /// Raw indexed access. Path must be exactly `"section.property"` — a single
   /// dot separating two non-empty parts. Returns `null` if the key is missing.
   /// Throws [ArgumentError] for any other path shape.

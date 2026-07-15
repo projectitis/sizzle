@@ -159,6 +159,7 @@ Located in `lib/src/display/`:
 - **environment.dart**: `EnvironmentComponent`, `Environment`, and `AmbientLight`/`DirectionalLight` for lit rendering
 - **lit_svg_data.dart**: `LitSvgData` parser for the project's narrow SVG subset (Paraplu namespace, line/move/close paths only)
 - **lit_svg_component.dart**: `LitSvgComponent` — renders a parsed `LitSvgData` with cascading lighting from the nearest `Environment` ancestor. Recomposes lazily; rotating ancestors must extend `EnvironmentComponent` for the dirty cascade to work.
+- **variable_width_stroke.dart**: `VariableWidthStroke` — generates randomised, calligraphic variable-width stroke `Path`s (lines, quadratic curves, multi-segment `StrokePath`s, closed rings) with `StrokeEnd`/`StrokeEndStyle` caps. Pure `dart:ui` geometry; fill the returned `Path` in any component. See `docs/variable_width_stroke.md`.
 
 ### Text
 
