@@ -21,6 +21,7 @@ package also regularly contribute to Flame itself.
 - [Scaling sprites (Snap)](snap.md)
 - [Memory pooling](pool.md)
 - [Config files](config.md)
+- [Variable-width strokes (calligraphy)](variable_width_stroke.md)
 
 ## API
 

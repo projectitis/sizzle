@@ -29,6 +29,7 @@ export 'src/display/lit_svg_component.dart';
 export 'src/display/svg_image.dart';
 export 'src/display/tile.dart';
 export 'src/display/ninegrid.dart';
+export 'src/display/variable_width_stroke.dart';
 export 'src/math/easing.dart';
 export 'src/math/math.dart';
 export 'src/math/vector_math.dart';

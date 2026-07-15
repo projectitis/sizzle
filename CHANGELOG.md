@@ -1,5 +1,14 @@
 # Changes
 
+## Unreleased
+
+- Variable-width strokes (`VariableWidthStroke`)
+  - Randomised calligraphic lines, quadratic curves, and multi-segment paths
+  - Line-cap treatments (butt, round, square, blot)
+  - Closed paths stroked as rings
+  - Pixel-based segment length for consistent tessellation density
+
+
 ## 0.1.3
 
 - Game improvements
