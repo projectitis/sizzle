@@ -30,3 +30,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   glob: ^2.1.2
+
+flutter:
+  shaders:
+    - shaders/halftone.frag
+    - shaders/halftone_image.frag
+    - shaders/halftone_path.frag

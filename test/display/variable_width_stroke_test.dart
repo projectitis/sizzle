@@ -193,6 +193,44 @@ void main() {
     });
   });
 
+  group('StrokePath.toPath', () {
+    test('traces a closed lines+curve spec into a fillable region', () {
+      final spec = StrokePath(const Offset(20, 20), close: true)
+        ..lineTo(const Offset(120, 20))
+        ..curveTo(const Offset(140, 70), const Offset(120, 120))
+        ..lineTo(const Offset(20, 120));
+
+      final path = spec.toPath();
+
+      // Bounds hug the traced contour. The quadratic bulges right to x≈130
+      // (its control point at x=140 pulls the curve out past the 120 endpoints).
+      final b = path.getBounds();
+      expect(b.left, closeTo(20, 0.5));
+      expect(b.top, closeTo(20, 0.5));
+      expect(b.bottom, closeTo(120, 0.5));
+      expect(b.right, greaterThanOrEqualTo(129));
+
+      // Membership: interior filled, well outside not.
+      expect(path.contains(const Offset(70, 70)), isTrue);
+      expect(path.contains(const Offset(128, 70)), isTrue); // inside the bulge
+      expect(path.contains(const Offset(5, 5)), isFalse);
+      expect(path.contains(const Offset(200, 70)), isFalse);
+
+      // A closed spec closes its contour.
+      expect(path.computeMetrics().first.isClosed, isTrue);
+    });
+
+    test('an open spec leaves the contour unclosed', () {
+      final spec = StrokePath(const Offset(0, 0))
+        ..lineTo(const Offset(100, 0))
+        ..curveTo(const Offset(150, 50), const Offset(200, 0));
+
+      final path = spec.toPath();
+
+      expect(path.computeMetrics().first.isClosed, isFalse);
+    });
+  });
+
   group('segmentLength drives a consistent tessellation density', () {
     test('sample count scales with the line length', () {
       final short = VariableWidthStroke.generate(

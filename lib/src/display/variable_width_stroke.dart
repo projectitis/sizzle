@@ -77,6 +77,33 @@ class StrokePath {
     _segments.add(_CurveSegment(control, end));
     return this;
   }
+
+  /// Builds a fillable [Path] tracing this centreline's contour: a `moveTo` to
+  /// [start], then a line or quadratic for each segment, closed into a ring when
+  /// [close] is set.
+  ///
+  /// Use this to *fill* the region the path encloses (e.g. with a halftone or
+  /// gradient), as opposed to [VariableWidthStroke.path], which strokes the
+  /// centreline into a variable-width outline. For a sensible fill the path
+  /// should be closed.
+  Path toPath() {
+    final path = Path()..moveTo(start.dx, start.dy);
+    for (final seg in _segments) {
+      switch (seg) {
+        case _LineSegment():
+          path.lineTo(seg.end.dx, seg.end.dy);
+        case _CurveSegment():
+          path.quadraticBezierTo(
+            seg.control.dx,
+            seg.control.dy,
+            seg.end.dx,
+            seg.end.dy,
+          );
+      }
+    }
+    if (close) path.close();
+    return path;
+  }
 }
 
 /// One piece of a [StrokePath]. Its start is implied by the previous piece's end

@@ -160,6 +160,7 @@ Located in `lib/src/display/`:
 - **lit_svg_data.dart**: `LitSvgData` parser for the project's narrow SVG subset (Paraplu namespace, line/move/close paths only)
 - **lit_svg_component.dart**: `LitSvgComponent` — renders a parsed `LitSvgData` with cascading lighting from the nearest `Environment` ancestor. Recomposes lazily; rotating ancestors must extend `EnvironmentComponent` for the dirty cascade to work.
 - **variable_width_stroke.dart**: `VariableWidthStroke` — generates randomised, calligraphic variable-width stroke `Path`s (lines, quadratic curves, multi-segment `StrokePath`s, closed rings) with `StrokeEnd`/`StrokeEndStyle` caps. Pure `dart:ui` geometry; fill the returned `Path` in any component. See `docs/variable_width_stroke.md`.
+- **halftone.dart**: `HalftoneRenderer` — fragment-shader-driven halftone dot rendering (`HalftoneGradient`, `HalftoneStop`, `HalftoneGrowth`, `HalftoneBake`). Three uses: gradient fill, shape fill (`clip` per-pixel vs whole-`bakePathDots`), and image reproduction (`halftoneImage`). Call `load()` once, then apply `shaderFor`/`shaderForPathDots` as a `Paint.shader` in your own `render`, or `bake`/`bakePathDots` to a cached `ui.Image` for blit-while-scrolling. Pure `dart:ui`; ships the `shaders/halftone*.frag` programs (loaded via `packages/sizzle/shaders/...`). Bridges to `StrokePath.toPath()` for filling stroke-defined shapes. See `docs/halftone.md`.
 
 ### Text
 
