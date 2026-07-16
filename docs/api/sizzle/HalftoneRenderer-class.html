@@ -58,8 +58,8 @@
 baked images from a <a href="../sizzle/HalftoneGradient-class.html">HalftoneGradient</a>.</p>
 <p>This is a pure <code>dart:ui</code> utility: build a shader with <a href="../sizzle/HalftoneRenderer/shaderFor.html">shaderFor</a> /
 <a href="../sizzle/HalftoneRenderer/shaderForPathDots.html">shaderForPathDots</a> and apply it as a <code>Paint.shader</code> inside your own
-component's <code>render(canvas)</code>, or <a href="../sizzle/HalftoneRenderer/bake.html">bake</a> to a cached <code>Image</code> for the
-blit-while-scrolling path. See <code>docs/halftone.md</code>.</p>
+component's <code>render(canvas)</code>, or <a href="../sizzle/HalftoneRenderer/bake.html">bake</a> to a cached <code>Image</code> that can be
+drawn directly for as long as the fill is needed. See <code>docs/halftone.md</code>.</p>
 </section>
 
 
@@ -112,11 +112,12 @@ blit-while-scrolling path. See <code>docs/halftone.md</code>.</p>
 
 </dt>
 <dd>
-  Renders <code>gradient</code>, filling <code>path</code>, into an offscreen image. This is the
-production path: bake a slice once, then blit the image while it scrolls.
-The output auto-fits <code>path</code>'s bounds and <a href="../sizzle/HalftoneBake/origin.html">HalftoneBake.origin</a> gives the
-placement offset. For a Sizzle <code>StrokePath</code>, pass its <code>toPath()</code>; to fill a
-plain rectangle, pass a rectangular path.
+  Renders <code>gradient</code>, filling <code>path</code>, into an offscreen image. When the fill
+does not change from frame to frame, baking it once and drawing the cached
+image is preferable to re-running the shader every frame. The output
+auto-fits <code>path</code>'s bounds and <a href="../sizzle/HalftoneBake/origin.html">HalftoneBake.origin</a> gives the placement
+offset. For a Sizzle <code>StrokePath</code>, pass its <code>toPath()</code>; to fill a plain
+rectangle, pass a rectangular path.
   
 
 </dd>

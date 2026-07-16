@@ -62,12 +62,14 @@
       </section>
       
 <section class="desc markdown">
-  <p>Phase offset in pixels, shifting the dot lattice in the fill's local pixel
-space (x and y). Since a bake auto-fits its output and re-anchors the
-lattice to the crop origin, this is how you align the lattices of two
-independently-baked slices across a shared seam: compute each slice's
-offset from its position in world space. <code>Offset.zero</code> leaves the lattice
-at its default (crop-anchored) position.</p>
+  <p>Phase offset in pixels, shifting the dot lattice within the fill's local
+pixel space (independently in x and y). Because a bake auto-fits its output
+and re-anchors the lattice to its crop origin, images baked separately each
+begin their lattice afresh, so the dot pattern is discontinuous where two
+such images meet. To keep the lattice continuous across images that are
+baked separately but drawn adjacent to one another, give each image an
+offset derived from its position in the shared coordinate space.
+<code>Offset.zero</code> leaves the lattice at its default (crop-anchored) position.</p>
 </section>
 
       
