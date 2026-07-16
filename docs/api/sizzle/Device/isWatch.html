@@ -70,8 +70,22 @@
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">static bool get isWatch =&gt;
-    (isAndroid &amp;&amp; os.contains(&#39;wear&#39;)) || (isIOS &amp;&amp; os.contains(&#39;watch&#39;));</code></pre>
+  <pre class="language-dart"><code class="language-dart">static bool get isWatch {
+  if (isIOS &amp;&amp; os.contains(&#39;watch&#39;)) return true;
+  if (isAndroid) {
+    if (os.contains(&#39;wear&#39;)) return true;
+    &#47;&#47; Wear OS 4+ no longer surfaces &quot;wear&quot; in operatingSystemVersion
+    &#47;&#47; (e.g. TicWatch Pro 5 reports &quot;tmdb.240925.002&quot;). Fall back to a
+    &#47;&#47; shape heuristic: small + nearly-square is unique to watches.
+    final size = screenSize;
+    final logicalShort = (size.x &lt; size.y ? size.x : size.y) &#47; pixelRatio;
+    final aspect = size.x &#47; size.y;
+    final nearlySquare = (aspect - 1.0).abs() &lt; 0.1;
+    final smallScreen = logicalShort &lt;= 320;
+    return nearlySquare &amp;&amp; smallScreen;
+  }
+  return false;
+}</code></pre>
 </section>
 
   </section>

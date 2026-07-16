@@ -75,6 +75,16 @@
   Non-directional fill — lifts overall scene brightness uniformly.
 </dd>
 
+          <dt id="Bitset">
+  <span class="name "><a href="../sizzle/Bitset-class.html">Bitset</a></span> 
+
+</dt>
+<dd>
+  A growable bit array, indexed by <code>[]</code> like a <code>List&lt;bool&gt;</code> but packed
+into 32-bit words for compact storage and fast <code>json.encode</code>
+round-trips.
+</dd>
+
           <dt id="CharCode">
   <span class="name "><a href="../sizzle/CharCode-class.html">CharCode</a></span> 
 
@@ -216,6 +226,48 @@ open and close the sink for every write?
 </dt>
 <dd>
   
+</dd>
+
+          <dt id="GeneratedStroke">
+  <span class="name "><a href="../sizzle/GeneratedStroke-class.html">GeneratedStroke</a></span> 
+
+</dt>
+<dd>
+  The result of generating a stroke: the centreline it was grown from, the two
+offset edges, and the fillable outline that wraps them.
+</dd>
+
+          <dt id="HalftoneBake">
+  <span class="name "><a href="../sizzle/HalftoneBake-class.html">HalftoneBake</a></span> 
+
+</dt>
+<dd>
+  The result of a bake: the rendered <a href="../sizzle/HalftoneBake/image.html">image</a> plus where it belongs.
+</dd>
+
+          <dt id="HalftoneGradient">
+  <span class="name "><a href="../sizzle/HalftoneGradient-class.html">HalftoneGradient</a></span> 
+
+</dt>
+<dd>
+  Immutable description of a halftone gradient fill.
+</dd>
+
+          <dt id="HalftoneRenderer">
+  <span class="name "><a href="../sizzle/HalftoneRenderer-class.html">HalftoneRenderer</a></span> 
+
+</dt>
+<dd>
+  Loads the halftone <code>FragmentProgram</code>s once and produces configured shaders /
+baked images from a <a href="../sizzle/HalftoneGradient-class.html">HalftoneGradient</a>.
+</dd>
+
+          <dt id="HalftoneStop">
+  <span class="name "><a href="../sizzle/HalftoneStop-class.html">HalftoneStop</a></span> 
+
+</dt>
+<dd>
+  A single stop on the halftone amount curve.
 </dd>
 
           <dt id="ImageProperties">
@@ -498,6 +550,37 @@ sprite, resulting in a much smaller image (sprite sheet).
   
 </dd>
 
+          <dt id="StrokeEnd">
+  <span class="name "><a href="../sizzle/StrokeEnd-class.html">StrokeEnd</a></span> 
+
+</dt>
+<dd>
+  An explicit end treatment: a fixed <a href="../sizzle/StrokeEnd/width.html">width</a> (full thickness, clamped to the
+stroke's <code>maxWidth</code>) finished with a <a href="../sizzle/StrokeEnd/style.html">style</a>.
+</dd>
+
+          <dt id="StrokePath">
+  <span class="name "><a href="../sizzle/StrokePath-class.html">StrokePath</a></span> 
+
+</dt>
+<dd>
+  A builder for a multi-segment centreline made of straight and quadratic
+Bézier pieces, to be stroked as a single continuous variable-width stroke by
+<a href="../sizzle/VariableWidthStroke/path.html">VariableWidthStroke.path</a>.
+</dd>
+
+          <dt id="SvgImage">
+  <span class="name "><a href="../sizzle/SvgImage-class.html">SvgImage</a></span> 
+
+</dt>
+<dd>
+  Loads an SVG once and rasterizes it into a <code>Sprite</code> sized at the display
+surface's physical-pixel resolution, then sizes the sprite in logical
+pixels so it lands at the intended on-screen size. The DPR multiply keeps
+icons crisp on high-DPI surfaces (e.g. Wear OS at DPR 2) without
+over-rendering on DPR 1.
+</dd>
+
           <dt id="TextAreaComponent">
   <span class="name "><a href="../sizzle/TextAreaComponent-class.html">TextAreaComponent</a></span> 
 
@@ -549,6 +632,17 @@ inspect state, <a href="../sizzle/Tween/pause.html">pause</a>/<a href="../sizzle
 <code>Services.tween</code> and is ticked automatically by <code>SizzleGame.update</code>.
 </dd>
 
+          <dt id="VariableWidthStroke">
+  <span class="name "><a href="../sizzle/VariableWidthStroke-class.html">VariableWidthStroke</a></span> 
+
+</dt>
+<dd>
+  Generates a filled <code>Path</code> that outlines a stroke whose width varies along a
+centreline (its "spine"). Filling this path — rather than stroking a line
+with a fixed <code>Paint.strokeWidth</code> — is what lets the edge swell and taper the
+way an ink-loaded nib does in calligraphy.
+</dd>
+
           <dt id="Walkable">
   <span class="name "><a href="../sizzle/Walkable-class.html">Walkable</a></span> 
 
@@ -569,6 +663,14 @@ inspect state, <a href="../sizzle/Tween/pause.html">pause</a>/<a href="../sizzle
 </dt>
 <dd>
   
+</dd>
+
+          <dt id="HalftoneGrowth">
+  <span class="name "><a href="../sizzle/HalftoneGrowth.html">HalftoneGrowth</a></span> 
+
+</dt>
+<dd>
+  How the gradient's <a href="../sizzle/HalftoneStop/amount.html">HalftoneStop.amount</a> maps to dot radius.
 </dd>
 
           <dt id="LitSvgMaterialSheen">
@@ -594,6 +696,14 @@ matte is default
 </dt>
 <dd>
   A nine-tile grid implementation
+</dd>
+
+          <dt id="StrokeEndStyle">
+  <span class="name "><a href="../sizzle/StrokeEndStyle.html">StrokeEndStyle</a></span> 
+
+</dt>
+<dd>
+  How a stroke is finished off at an end that has non-zero thickness.
 </dd>
 
           <dt id="WidthFade">
@@ -701,6 +811,39 @@ supported.
 </dt>
 <dd>
   Calculate the bounding box of a rectangle rotated around its center.
+  
+
+</dd>
+
+          <dt id="buildAmountLut" class="callable">
+  <span class="name"><a href="../sizzle/buildAmountLut.html">buildAmountLut</a></span><span class="signature">(<wbr><span class="parameter" id="buildAmountLut-param-stops"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/HalftoneStop-class.html">HalftoneStop</a></span>&gt;</span></span> <span class="parameter-name">stops</span>, {</span><span class="parameter" id="buildAmountLut-param-growth"><span class="type-annotation"><a href="../sizzle/HalftoneGrowth.html">HalftoneGrowth</a></span> <span class="parameter-name">growth</span> = <span class="default-value">HalftoneGrowth.linear</span></span>})
+    <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">Image</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Builds a 256x1 RGBA lookup image encoding radius-fraction-vs-position for
+<code>stops</code>. The value is stored in the red channel and sampled by the shader
+(which multiplies it by the max radius). The <code>growth</code> mapping is applied
+here, so the shader stays identical regardless of mode.
+  
+
+</dd>
+
+          <dt id="pathDotsBakeBounds" class="callable">
+  <span class="name"><a href="../sizzle/pathDotsBakeBounds.html">pathDotsBakeBounds</a></span><span class="signature">(<wbr><span class="parameter" id="pathDotsBakeBounds-param-path"><span class="type-annotation">Path</span> <span class="parameter-name">path</span>, </span><span class="parameter" id="pathDotsBakeBounds-param-spill"><span class="type-annotation">double</span> <span class="parameter-name">spill</span></span>)
+    <span class="returntype parameter">&#8594; Rect</span>
+  </span>
+  
+
+</dt>
+<dd>
+  The pixel-snapped output rectangle a whole-dot <a href="../sizzle/HalftoneRenderer/bake.html">HalftoneRenderer.bake</a>
+(<code>clip: false</code>) uses when auto-fitting: <code>path</code>'s bounds inflated by <code>spill</code>
+(from <a href="../sizzle/HalftoneRenderer/pathDotsSpill.html">HalftoneRenderer.pathDotsSpill</a>) and rounded outward to whole pixels.
+Its <code>topLeft</code> is the resulting <a href="../sizzle/HalftoneBake/origin.html">HalftoneBake.origin</a> and its <code>size</code> the image
+dimensions.
   
 
 </dd>

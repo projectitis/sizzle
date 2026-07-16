@@ -13,8 +13,9 @@ precision highp float;
 uniform vec2 uAxisStart;
 uniform vec2 uAxisEnd;
 uniform float uGridSize;
-uniform float uOffset;
-uniform float uScreenAngle;
+// Phase offset in pixels (x, y), shifting the dot lattice in screen space.
+uniform vec2 uOffset;
+uniform float uRotation;
 uniform vec4 uForeground;
 uniform vec4 uBackground;
 
@@ -34,11 +35,11 @@ const float AA = 0.75;
 // centre is looked up in the (optionally feathered) path mask: full membership
 // inside, tapering to 0 through the soft band just outside the path, so edge
 // dots shrink smoothly rather than popping off — an antialiased silhouette.
-float radiusAt(vec2 index, float c, float s, vec2 axis, float len2, vec2 normal) {
+float radiusAt(vec2 index, float c, float s, vec2 axis, float len2) {
     vec2 centre = (index + 0.5) * uGridSize;
     // Cell centre back in screen space (undo rotation, then the phase offset).
     vec2 back = vec2(c * centre.x - s * centre.y, s * centre.x + c * centre.y);
-    vec2 screenPos = back + uOffset * normal;
+    vec2 screenPos = back + uOffset;
 
     vec2 muv = clamp(screenPos / uSize, 0.0, 1.0);
     // Membership >= 0.5 (inside) keeps the dot full; below that it tapers to 0
@@ -58,12 +59,10 @@ void main() {
 
     vec2 axis = uAxisEnd - uAxisStart;
     float len2 = dot(axis, axis);
-    vec2 dir = (len2 > 0.0) ? normalize(axis) : vec2(0.0, 1.0);
-    vec2 normal = vec2(-dir.y, dir.x);
 
-    float c = cos(uScreenAngle);
-    float s = sin(uScreenAngle);
-    vec2 q0 = p - uOffset * normal;
+    float c = cos(uRotation);
+    float s = sin(uRotation);
+    vec2 q0 = p - uOffset;
     vec2 q = vec2(c * q0.x + s * q0.y, -s * q0.x + c * q0.y);
 
     vec2 cellIndex = floor(q / uGridSize);
@@ -74,7 +73,7 @@ void main() {
     for (int dy = -1; dy <= 1; dy++) {
         for (int dx = -1; dx <= 1; dx++) {
             vec2 index = cellIndex + vec2(float(dx), float(dy));
-            float radius = radiusAt(index, c, s, axis, len2, normal);
+            float radius = radiusAt(index, c, s, axis, len2);
             if (radius <= 0.0) continue;
             vec2 centre = (index + 0.5) * uGridSize;
             float dist = length(q - centre);

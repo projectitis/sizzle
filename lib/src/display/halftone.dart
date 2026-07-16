@@ -56,8 +56,8 @@ class HalftoneGradient {
     required this.axisEnd,
     required this.gridSize,
     required this.stops,
-    this.offset = 0.0,
-    this.screenAngle = 0.0,
+    this.offset = Offset.zero,
+    this.rotation = 0.0,
     this.growth = HalftoneGrowth.linear,
     this.foreground = const Color(0xFF000000),
     this.background = const Color(0xFFFFFFFF),
@@ -72,12 +72,16 @@ class HalftoneGradient {
   /// Lattice spacing in pixels.
   final double gridSize;
 
-  /// Phase offset in pixels along the gradient normal. Used to align the
-  /// lattices of two independently-drawn slices across a shared seam.
-  final double offset;
+  /// Phase offset in pixels, shifting the dot lattice in the fill's local pixel
+  /// space (x and y). Since a bake auto-fits its output and re-anchors the
+  /// lattice to the crop origin, this is how you align the lattices of two
+  /// independently-baked slices across a shared seam: compute each slice's
+  /// offset from its position in world space. [Offset.zero] leaves the lattice
+  /// at its default (crop-anchored) position.
+  final Offset offset;
 
-  /// Lattice rotation ("screen angle") in radians.
-  final double screenAngle;
+  /// Lattice rotation in radians.
+  final double rotation;
 
   /// How amount maps to dot radius. Baked into the amount LUT, not the shader.
   final HalftoneGrowth growth;
@@ -91,13 +95,14 @@ class HalftoneGradient {
   /// Amount-vs-position curve. Should be sorted by [HalftoneStop.position].
   final List<HalftoneStop> stops;
 
-  /// Convenience for a vertical gradient over a box of [size].
+  /// Convenience for a top-to-bottom gradient over a box of [size]: the axis
+  /// runs down the vertical centre line.
   factory HalftoneGradient.vertical({
     required Size size,
     required double gridSize,
     required List<HalftoneStop> stops,
-    double offset = 0.0,
-    double screenAngle = 0.0,
+    Offset offset = Offset.zero,
+    double rotation = 0.0,
     HalftoneGrowth growth = HalftoneGrowth.linear,
     Color foreground = const Color(0xFF000000),
     Color background = const Color(0xFFFFFFFF),
@@ -108,7 +113,32 @@ class HalftoneGradient {
       gridSize: gridSize,
       stops: stops,
       offset: offset,
-      screenAngle: screenAngle,
+      rotation: rotation,
+      growth: growth,
+      foreground: foreground,
+      background: background,
+    );
+  }
+
+  /// Convenience for a left-to-right gradient over a box of [size]: the axis
+  /// runs across the horizontal centre line.
+  factory HalftoneGradient.horizontal({
+    required Size size,
+    required double gridSize,
+    required List<HalftoneStop> stops,
+    Offset offset = Offset.zero,
+    double rotation = 0.0,
+    HalftoneGrowth growth = HalftoneGrowth.linear,
+    Color foreground = const Color(0xFF000000),
+    Color background = const Color(0xFFFFFFFF),
+  }) {
+    return HalftoneGradient(
+      axisStart: Offset(0, size.height / 2),
+      axisEnd: Offset(size.width, size.height / 2),
+      gridSize: gridSize,
+      stops: stops,
+      offset: offset,
+      rotation: rotation,
       growth: growth,
       foreground: foreground,
       background: background,
@@ -119,15 +149,15 @@ class HalftoneGradient {
 /// The result of a bake: the rendered [image] plus where it belongs.
 ///
 /// [origin] is the coordinate, in the path's own space, of the image's
-/// top-left pixel. When a bake auto-sizes to fit spilled dots, [origin] sits
-/// above-left of the path bounds by the spill margin. Placement:
+/// top-left pixel. A [HalftoneRenderer.bake] auto-fits its output to the path's
+/// bounds — tightly when clipping, or inflated by the dot spill for whole-dot
+/// fills, so [origin] then sits above-left of the path bounds by that margin.
+/// Placement:
 ///
 /// * to draw the shape exactly where its path is defined:
 ///   `canvas.drawImage(bake.image, bake.origin, paint)`;
 /// * to put the path's own (0,0) at some target `t`:
 ///   `canvas.drawImage(bake.image, t + bake.origin, paint)`.
-///
-/// [origin] is [Offset.zero] whenever an explicit `size` was supplied.
 ///
 /// See `docs/halftone.md`.
 @immutable
@@ -146,8 +176,8 @@ class HalftoneBake {
 ///
 /// This is a pure `dart:ui` utility: build a shader with [shaderFor] /
 /// [shaderForPathDots] and apply it as a [Paint.shader] inside your own
-/// component's `render(canvas)`, or [bake] / [bakePathDots] to a cached [Image]
-/// for the blit-while-scrolling path. See `docs/halftone.md`.
+/// component's `render(canvas)`, or [bake] to a cached [Image] for the
+/// blit-while-scrolling path. See `docs/halftone.md`.
 class HalftoneRenderer {
   HalftoneRenderer._(this._program, this._imageProgram, this._pathProgram);
 
@@ -195,8 +225,9 @@ class HalftoneRenderer {
     shader.setFloat(i++, gradient.axisEnd.dx);
     shader.setFloat(i++, gradient.axisEnd.dy);
     shader.setFloat(i++, gradient.gridSize);
-    shader.setFloat(i++, gradient.offset);
-    shader.setFloat(i++, gradient.screenAngle);
+    shader.setFloat(i++, gradient.offset.dx);
+    shader.setFloat(i++, gradient.offset.dy);
+    shader.setFloat(i++, gradient.rotation);
     _setColor(shader, () => i++, gradient.foreground);
     _setColor(shader, () => i++, gradient.background);
     shader.setImageSampler(0, lut);
@@ -209,45 +240,73 @@ class HalftoneRenderer {
   Future<Image> buildLut(HalftoneGradient gradient) =>
       buildAmountLut(gradient.stops, growth: gradient.growth);
 
-  /// Renders [gradient] into an offscreen image. This is the production path:
-  /// bake a slice once, then blit the image while it scrolls.
+  /// Renders [gradient], filling [path], into an offscreen image. This is the
+  /// production path: bake a slice once, then blit the image while it scrolls.
+  /// The output auto-fits [path]'s bounds and [HalftoneBake.origin] gives the
+  /// placement offset. For a Sizzle `StrokePath`, pass its `toPath()`; to fill a
+  /// plain rectangle, pass a rectangular path.
   ///
-  /// If [clip] is given, the halftone only fills that path (in the gradient's
-  /// coordinate space) and everything outside it is left transparent. For a
-  /// Sizzle `StrokePath`, pass its `toPath()`.
+  /// [clip] chooses how the boundary is treated:
   ///
-  /// [size] is optional: supply it for a fixed output rectangle, or omit it (a
-  /// [clip] is then required) to auto-size the image tightly to the clip's
-  /// bounds. The returned [HalftoneBake.origin] gives the placement offset.
+  /// * `true` (default) — the halftone is clipped to [path] per pixel: dots are
+  ///   sliced at the boundary and nothing spills. The output is fitted tightly
+  ///   to [path]'s bounds. [feather] is ignored.
+  /// * `false` — dots are kept whole when their *centre* is inside [path] and
+  ///   drawn in full, so circles spill past the edge (the background stays
+  ///   bounded by [path]). The output is inflated by [pathDotsSpill] so the
+  ///   spilled dots are captured, and [feather] antialiases the silhouette
+  ///   (edge dots shrink smoothly instead of popping off; defaults to
+  ///   `gridSize * 0.6`, pass 0 for a crisp cutoff).
   ///
-  /// The amount LUT is built internally from the gradient. For hot loops that
-  /// reuse the same stops across many bakes, pass a cached [lut] (from
-  /// [buildLut]) to skip rebuilding it each time.
+  /// The amount LUT (and, for whole-dot fills, the path mask) is built
+  /// internally. For hot loops that reuse the same stops across many bakes, pass
+  /// a cached [lut] (from [buildLut]) to skip rebuilding it each time.
   Future<HalftoneBake> bake(
-    HalftoneGradient gradient, {
-    Size? size,
-    Path? clip,
+    HalftoneGradient gradient,
+    Path path, {
+    bool clip = true,
+    double? feather,
     Image? lut,
   }) async {
-    if (size == null && clip == null) {
-      throw ArgumentError('bake needs a size or a clip to size the output.');
-    }
     final amountLut = lut ?? await buildLut(gradient);
 
-    final bounds =
-        size != null ? Offset.zero & size : _pixelBounds(clip!.getBounds());
+    if (clip) {
+      final bounds = _pixelBounds(path.getBounds());
+      final origin = bounds.topLeft;
+      final g =
+          origin == Offset.zero ? gradient : _shiftGradient(gradient, -origin);
+      final localClip = origin == Offset.zero ? path : path.shift(-origin);
+
+      final recorder = PictureRecorder();
+      final canvas = Canvas(recorder);
+      canvas.clipPath(localClip);
+      canvas.drawRect(
+        Offset.zero & bounds.size,
+        Paint()..shader = shaderFor(g, amountLut),
+      );
+      final image = await recorder
+          .endRecording()
+          .toImage(bounds.width.ceil(), bounds.height.ceil());
+      return HalftoneBake(image: image, origin: origin);
+    }
+
+    final f = feather ?? gradient.gridSize * 0.6;
+    final bounds = pathDotsBakeBounds(
+      path,
+      pathDotsSpill(gridSize: gradient.gridSize, feather: f),
+    );
     final origin = bounds.topLeft;
     final g =
         origin == Offset.zero ? gradient : _shiftGradient(gradient, -origin);
-    final localClip =
-        (clip != null && origin != Offset.zero) ? clip.shift(-origin) : clip;
+    final localPath = origin == Offset.zero ? path : path.shift(-origin);
+
+    final mask = await rasterizePathMask(localPath, bounds.size, feather: f);
 
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder);
-    if (localClip != null) canvas.clipPath(localClip);
     canvas.drawRect(
       Offset.zero & bounds.size,
-      Paint()..shader = shaderFor(g, amountLut),
+      Paint()..shader = shaderForPathDots(g, amountLut, mask, bounds.size),
     );
     final image = await recorder
         .endRecording()
@@ -259,8 +318,8 @@ class HalftoneRenderer {
   ///
   /// Each lattice dot takes the tone of the source luminance at its centre, so
   /// the result reads as the image rendered in dots. All the usual controls
-  /// apply: [gridSize] (dot spacing, px), [screenAngle] (lattice rotation,
-  /// radians), [growth] (radius vs. area), [offset] (lattice phase in px, for
+  /// apply: [gridSize] (dot spacing, px), [rotation] (lattice rotation,
+  /// radians), [growth] (radius vs. area), [offset] (2D lattice phase in px, for
   /// tiling), and the two [foreground]/[background] colours.
   ///
   /// [tone] maps source luminance (0..1) to dot amount and doubles as a
@@ -273,8 +332,8 @@ class HalftoneRenderer {
   Future<Image> halftoneImage(
     Image source, {
     required double gridSize,
-    double offset = 0.0,
-    double screenAngle = 0.0,
+    Offset offset = Offset.zero,
+    double rotation = 0.0,
     HalftoneGrowth growth = HalftoneGrowth.linear,
     List<HalftoneStop> tone = defaultTone,
     Color foreground = const Color(0xFF000000),
@@ -296,8 +355,9 @@ class HalftoneRenderer {
     shader.setFloat(i++, source.width.toDouble());
     shader.setFloat(i++, source.height.toDouble());
     shader.setFloat(i++, gridSize);
-    shader.setFloat(i++, offset);
-    shader.setFloat(i++, screenAngle);
+    shader.setFloat(i++, offset.dx);
+    shader.setFloat(i++, offset.dy);
+    shader.setFloat(i++, rotation);
     _setColor(shader, () => i++, foreground);
     _setColor(shader, () => i++, background);
     shader.setImageSampler(0, sampled);
@@ -368,8 +428,9 @@ class HalftoneRenderer {
     shader.setFloat(i++, gradient.axisEnd.dx);
     shader.setFloat(i++, gradient.axisEnd.dy);
     shader.setFloat(i++, gradient.gridSize);
-    shader.setFloat(i++, gradient.offset);
-    shader.setFloat(i++, gradient.screenAngle);
+    shader.setFloat(i++, gradient.offset.dx);
+    shader.setFloat(i++, gradient.offset.dy);
+    shader.setFloat(i++, gradient.rotation);
     _setColor(shader, () => i++, gradient.foreground);
     _setColor(shader, () => i++, gradient.background);
     shader.setFloat(i++, size.width);
@@ -381,68 +442,18 @@ class HalftoneRenderer {
 
   /// The largest distance (px) a whole/feathered dot can extend past the path
   /// edge, for a given [gridSize] and [feather] (defaults to `gridSize * 0.6`).
-  /// This is the margin [bakePathDots] adds when auto-sizing; expose it if you
-  /// want to size/offset a bake yourself.
+  /// This is the margin a whole-dot [bake] (`clip: false`) adds when
+  /// auto-fitting; expose it if you want to size/offset a bake yourself.
   static double pathDotsSpill({required double gridSize, double? feather}) {
     final f = feather ?? gridSize * 0.6;
     return gridSize * 0.70710678 + 0.75 + 2 * f;
   }
-
-  /// Like [bake] with a clip, but dots are included whole when their centre is
-  /// inside [path] rather than being sliced at the boundary — circles spill
-  /// past the edge. The background is still bounded by [path].
-  ///
-  /// [size] is optional: supply it for a fixed output rectangle, or omit it to
-  /// auto-size the image to the path bounds inflated by [pathDotsSpill] so the
-  /// spilled dots are fully captured. The returned [HalftoneBake.origin] is the
-  /// placement offset (its inset from the path bounds is the spill margin).
-  ///
-  /// [feather] (blur sigma in px) antialiases the silhouette: edge dots shrink
-  /// smoothly through the soft band outside the path instead of popping off.
-  /// Defaults to `gridSize * 0.6`; pass 0 for a crisp cutoff.
-  ///
-  /// The amount LUT and the path mask are built internally; pass a cached [lut]
-  /// (from [buildLut]) to skip rebuilding it in a hot loop.
-  Future<HalftoneBake> bakePathDots(
-    HalftoneGradient gradient,
-    Path path, {
-    Size? size,
-    Image? lut,
-    double? feather,
-  }) async {
-    final f = feather ?? gradient.gridSize * 0.6;
-    final amountLut = lut ?? await buildLut(gradient);
-
-    final bounds = size != null
-        ? Offset.zero & size
-        : pathDotsBakeBounds(
-            path,
-            pathDotsSpill(gridSize: gradient.gridSize, feather: f),
-          );
-    final origin = bounds.topLeft;
-    final g =
-        origin == Offset.zero ? gradient : _shiftGradient(gradient, -origin);
-    final localPath = origin == Offset.zero ? path : path.shift(-origin);
-
-    final mask = await rasterizePathMask(localPath, bounds.size, feather: f);
-
-    final recorder = PictureRecorder();
-    final canvas = Canvas(recorder);
-    canvas.drawRect(
-      Offset.zero & bounds.size,
-      Paint()..shader = shaderForPathDots(g, amountLut, mask, bounds.size),
-    );
-    final image = await recorder
-        .endRecording()
-        .toImage(bounds.width.ceil(), bounds.height.ceil());
-    return HalftoneBake(image: image, origin: origin);
-  }
 }
 
-/// The pixel-snapped output rectangle [HalftoneRenderer.bakePathDots] uses when
-/// auto-sizing: [path]'s bounds inflated by [spill] (from
-/// [HalftoneRenderer.pathDotsSpill]) and rounded outward to whole pixels. Its
-/// `topLeft` is the resulting [HalftoneBake.origin] and its `size` the image
+/// The pixel-snapped output rectangle a whole-dot [HalftoneRenderer.bake]
+/// (`clip: false`) uses when auto-fitting: [path]'s bounds inflated by [spill]
+/// (from [HalftoneRenderer.pathDotsSpill]) and rounded outward to whole pixels.
+/// Its `topLeft` is the resulting [HalftoneBake.origin] and its `size` the image
 /// dimensions.
 Rect pathDotsBakeBounds(Path path, double spill) =>
     _pixelBounds(path.getBounds().inflate(spill));
@@ -463,7 +474,7 @@ HalftoneGradient _shiftGradient(HalftoneGradient g, Offset d) =>
       gridSize: g.gridSize,
       stops: g.stops,
       offset: g.offset,
-      screenAngle: g.screenAngle,
+      rotation: g.rotation,
       growth: g.growth,
       foreground: g.foreground,
       background: g.background,
