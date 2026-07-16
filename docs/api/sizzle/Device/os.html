@@ -70,7 +70,8 @@
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">static String get os =&gt; Platform.operatingSystemVersion.toLowerCase();</code></pre>
+  <pre class="language-dart"><code class="language-dart">static String get os =&gt;
+    &#39;${Platform.operatingSystem.toLowerCase()} ${Platform.operatingSystemVersion.toLowerCase()}&#39;;</code></pre>
 </section>
 
   </section>

@@ -83,7 +83,7 @@
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
         <dt id="TileService.new" class="callable">
-          <span class="name"><a href="../sizzle/TileService/TileService.html">TileService</a></span><span class="signature">(<span class="parameter" id="-param-assetFolder"><span class="type-annotation">String</span> <span class="parameter-name">assetFolder</span>, </span><span class="parameter" id="-param-tileWidth"><span class="type-annotation">int</span> <span class="parameter-name">tileWidth</span>, </span><span class="parameter" id="-param-tileHeight"><span class="type-annotation">int</span> <span class="parameter-name">tileHeight</span>, {</span><span class="parameter" id="-param-assetBundle"><span class="type-annotation">AssetBundle?</span> <span class="parameter-name">assetBundle</span>, </span><span class="parameter" id="-param-defaultProperties"><span class="type-annotation"><a href="../sizzle/ImageProperties-class.html">ImageProperties</a>?</span> <span class="parameter-name">defaultProperties</span></span>})</span>
+          <span class="name"><a href="../sizzle/TileService/TileService.html">TileService</a></span><span class="signature">(<span class="parameter" id="param-assetFolder"><span class="type-annotation">String</span> <span class="parameter-name">assetFolder</span>, </span><span class="parameter" id="param-tileWidth"><span class="type-annotation">int</span> <span class="parameter-name">tileWidth</span>, </span><span class="parameter" id="param-tileHeight"><span class="type-annotation">int</span> <span class="parameter-name">tileHeight</span>, {</span><span class="parameter" id="param-assetBundle"><span class="type-annotation">AssetBundle?</span> <span class="parameter-name">assetBundle</span>, </span><span class="parameter" id="param-defaultProperties"><span class="type-annotation"><a href="../sizzle/ImageProperties-class.html">ImageProperties</a>?</span> <span class="parameter-name">defaultProperties</span></span>})</span>
         </dt>
         <dd>
           
@@ -381,6 +381,23 @@ parameters can be provided to scale and resize the image. Only provide
 </dt>
 <dd class="inherited">
   Process an image
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="rasterizeSvgString" class="callable inherited">
+  <span class="name"><a href="../sizzle/ImageService/rasterizeSvgString.html">rasterizeSvgString</a></span><span class="signature">(<wbr><span class="parameter" id="rasterizeSvgString-param-svgString"><span class="type-annotation">String</span> <span class="parameter-name">svgString</span>, </span><span class="parameter" id="rasterizeSvgString-param-properties"><span class="type-annotation"><a href="../sizzle/ImageProperties-class.html">ImageProperties</a>?</span> <span class="parameter-name">properties</span>, {</span><span class="parameter" id="rasterizeSvgString-param-cache"><span class="type-annotation">bool</span> <span class="parameter-name">cache</span> = <span class="default-value">true</span></span>})
+    <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">Image</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Rasterize an in-memory SVG string into an <code>Image</code>. Geometric transforms
+in <code>properties</code> (scale, rotation, flip, crop) are baked in the same way
+as the asset-loading SVG path. <a href="../sizzle/ImageProperties/blendMode.html">ImageProperties.blendMode</a>,
+<a href="../sizzle/ImageProperties/antiAlias.html">ImageProperties.antiAlias</a> and <a href="../sizzle/ImageProperties/filterQuality.html">ImageProperties.filterQuality</a> are
+ignored for SVG sources.
   <div class="features"><span class="feature">inherited</span></div>
 
 </dd>

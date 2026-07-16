@@ -120,11 +120,17 @@ void main() {
         gridSize: 8,
         stops: const [HalftoneStop(0.0, 0.0), HalftoneStop(1.0, 1.0)],
       );
-      final bake = await renderer.bake(gradient, size: const Size(32, 32));
+      final rect = Path()..addRect(const Rect.fromLTWH(0, 0, 32, 32));
 
-      expect(bake.image.width, 32);
-      expect(bake.image.height, 32);
-      expect(bake.origin, Offset.zero);
+      final clipped = await renderer.bake(gradient, rect);
+      expect(clipped.image.width, 32);
+      expect(clipped.image.height, 32);
+      expect(clipped.origin, Offset.zero);
+
+      // Whole-dot mode auto-inflates by the spill margin.
+      final dots = await renderer.bake(gradient, rect, clip: false);
+      expect(dots.image.width, greaterThan(32));
+      expect(dots.origin.dx, lessThan(0));
     });
   });
 }

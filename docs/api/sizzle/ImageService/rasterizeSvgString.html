@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the rasterizeSvgString method from the ImageService class, for the Dart programming language.">
+  <title>rasterizeSvgString method - ImageService class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle.dart</a></li>
+    <li><a href="../../sizzle/ImageService-class.html">ImageService</a></li>
+    <li class="self-crumb">rasterizeSvgString method</li>
+  </ol>
+  <div class="self-name">rasterizeSvgString</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;ImageService-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">rasterizeSvgString</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype">Future<span class="signature">&lt;<wbr><span class="type-parameter">Image</span>&gt;</span></span>
+<span class="name ">rasterizeSvgString</span>(<wbr><ol class="parameter-list"> <li><span class="parameter" id="rasterizeSvgString-param-svgString"><span class="type-annotation">String</span> <span class="parameter-name">svgString</span>, </span></li>
+<li><span class="parameter" id="rasterizeSvgString-param-properties"><span class="type-annotation"><a href="../../sizzle/ImageProperties-class.html">ImageProperties</a>?</span> <span class="parameter-name">properties</span>, {</span></li>
+<li><span class="parameter" id="rasterizeSvgString-param-cache"><span class="type-annotation">bool</span> <span class="parameter-name">cache</span> = <span class="default-value">true</span>, </span></li>
+</ol>})
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Rasterize an in-memory SVG string into an <code>Image</code>. Geometric transforms
+in <code>properties</code> (scale, rotation, flip, crop) are baked in the same way
+as the asset-loading SVG path. <a href="../../sizzle/ImageProperties/blendMode.html">ImageProperties.blendMode</a>,
+<a href="../../sizzle/ImageProperties/antiAlias.html">ImageProperties.antiAlias</a> and <a href="../../sizzle/ImageProperties/filterQuality.html">ImageProperties.filterQuality</a> are
+ignored for SVG sources.</p>
+<p>If <code>cache</code> is true and <code>properties</code> is non-null, the result is stored at
+<code>properties.name</code>, overwriting any existing entry. The previous entry
+(if any) is <strong>not</strong> disposed — the caller owns that lifecycle, because
+the previous Image may still be referenced by a live <code>Sprite</code>.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Future&lt;Image&gt; rasterizeSvgString(
+  String svgString,
+  ImageProperties? properties, {
+  bool cache = true,
+}) async {
+  final pictureInfo = await vg.loadPicture(SvgStringLoader(svgString), null);
+
+  final Image image;
+  if (properties == null) {
+    final recorder = PictureRecorder();
+    final canvas = Canvas(recorder);
+    canvas.drawPicture(pictureInfo.picture);
+    image = await recorder.endRecording().toImageSafe(
+          pictureInfo.size.width.toInt(),
+          pictureInfo.size.height.toInt(),
+        );
+  } else {
+    final prepared = _prepareTransformedCanvas(
+      pictureInfo.size.width,
+      pictureInfo.size.height,
+      properties,
+    );
+    prepared.canvas.drawPicture(pictureInfo.picture);
+    image = await prepared.recorder.endRecording().toImageSafe(
+          prepared.outWidth,
+          prepared.outHeight,
+        );
+  }
+
+  pictureInfo.picture.dispose();
+  if (cache &amp;&amp; properties != null) {
+    _cache[properties.name] = image;
+  }
+  return image;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle</a></li>
+    <li><a href="../../sizzle/ImageService-class.html">ImageService</a></li>
+    <li class="self-crumb">rasterizeSvgString method</li>
+</ol>
+
+    <h5>ImageService class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.3
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

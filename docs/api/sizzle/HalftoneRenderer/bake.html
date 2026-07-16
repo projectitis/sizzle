@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the bake method from the HalftoneRenderer class, for the Dart programming language.">
+  <title>bake method - HalftoneRenderer class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle.dart</a></li>
+    <li><a href="../../sizzle/HalftoneRenderer-class.html">HalftoneRenderer</a></li>
+    <li class="self-crumb">bake method</li>
+  </ol>
+  <div class="self-name">bake</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;HalftoneRenderer-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">bake</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype">Future<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../sizzle/HalftoneBake-class.html">HalftoneBake</a></span>&gt;</span></span>
+<span class="name ">bake</span>(<wbr><ol class="parameter-list"> <li><span class="parameter" id="bake-param-gradient"><span class="type-annotation"><a href="../../sizzle/HalftoneGradient-class.html">HalftoneGradient</a></span> <span class="parameter-name">gradient</span>, </span></li>
+<li><span class="parameter" id="bake-param-path"><span class="type-annotation">Path</span> <span class="parameter-name">path</span>, {</span></li>
+<li><span class="parameter" id="bake-param-clip"><span class="type-annotation">bool</span> <span class="parameter-name">clip</span> = <span class="default-value">true</span>, </span></li>
+<li><span class="parameter" id="bake-param-feather"><span class="type-annotation">double?</span> <span class="parameter-name">feather</span>, </span></li>
+<li><span class="parameter" id="bake-param-lut"><span class="type-annotation">Image?</span> <span class="parameter-name">lut</span>, </span></li>
+</ol>})
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Renders <code>gradient</code>, filling <code>path</code>, into an offscreen image. This is the
+production path: bake a slice once, then blit the image while it scrolls.
+The output auto-fits <code>path</code>'s bounds and <a href="../../sizzle/HalftoneBake/origin.html">HalftoneBake.origin</a> gives the
+placement offset. For a Sizzle <code>StrokePath</code>, pass its <code>toPath()</code>; to fill a
+plain rectangle, pass a rectangular path.</p>
+<p><code>clip</code> chooses how the boundary is treated:</p>
+<ul>
+<li><code>true</code> (default) — the halftone is clipped to <code>path</code> per pixel: dots are
+sliced at the boundary and nothing spills. The output is fitted tightly
+to <code>path</code>'s bounds. <code>feather</code> is ignored.</li>
+<li><code>false</code> — dots are kept whole when their <em>centre</em> is inside <code>path</code> and
+drawn in full, so circles spill past the edge (the background stays
+bounded by <code>path</code>). The output is inflated by <a href="../../sizzle/HalftoneRenderer/pathDotsSpill.html">pathDotsSpill</a> so the
+spilled dots are captured, and <code>feather</code> antialiases the silhouette
+(edge dots shrink smoothly instead of popping off; defaults to
+<code>gridSize * 0.6</code>, pass 0 for a crisp cutoff).</li>
+</ul>
+<p>The amount LUT (and, for whole-dot fills, the path mask) is built
+internally. For hot loops that reuse the same stops across many bakes, pass
+a cached <code>lut</code> (from <a href="../../sizzle/HalftoneRenderer/buildLut.html">buildLut</a>) to skip rebuilding it each time.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Future&lt;HalftoneBake&gt; bake(
+  HalftoneGradient gradient,
+  Path path, {
+  bool clip = true,
+  double? feather,
+  Image? lut,
+}) async {
+  final amountLut = lut ?? await buildLut(gradient);
+
+  if (clip) {
+    final bounds = _pixelBounds(path.getBounds());
+    final origin = bounds.topLeft;
+    final g =
+        origin == Offset.zero ? gradient : _shiftGradient(gradient, -origin);
+    final localClip = origin == Offset.zero ? path : path.shift(-origin);
+
+    final recorder = PictureRecorder();
+    final canvas = Canvas(recorder);
+    canvas.clipPath(localClip);
+    canvas.drawRect(
+      Offset.zero &amp; bounds.size,
+      Paint()..shader = shaderFor(g, amountLut),
+    );
+    final image = await recorder
+        .endRecording()
+        .toImage(bounds.width.ceil(), bounds.height.ceil());
+    return HalftoneBake(image: image, origin: origin);
+  }
+
+  final f = feather ?? gradient.gridSize * 0.6;
+  final bounds = pathDotsBakeBounds(
+    path,
+    pathDotsSpill(gridSize: gradient.gridSize, feather: f),
+  );
+  final origin = bounds.topLeft;
+  final g =
+      origin == Offset.zero ? gradient : _shiftGradient(gradient, -origin);
+  final localPath = origin == Offset.zero ? path : path.shift(-origin);
+
+  final mask = await rasterizePathMask(localPath, bounds.size, feather: f);
+
+  final recorder = PictureRecorder();
+  final canvas = Canvas(recorder);
+  canvas.drawRect(
+    Offset.zero &amp; bounds.size,
+    Paint()..shader = shaderForPathDots(g, amountLut, mask, bounds.size),
+  );
+  final image = await recorder
+      .endRecording()
+      .toImage(bounds.width.ceil(), bounds.height.ceil());
+  return HalftoneBake(image: image, origin: origin);
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">sizzle</a></li>
+    <li><a href="../../sizzle/">sizzle</a></li>
+    <li><a href="../../sizzle/HalftoneRenderer-class.html">HalftoneRenderer</a></li>
+    <li class="self-crumb">bake method</li>
+</ol>
+
+    <h5>HalftoneRenderer class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.3
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

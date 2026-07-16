@@ -15,11 +15,12 @@ uniform vec2 uImageSize;
 // Lattice spacing in pixels.
 uniform float uGridSize;
 
-// Phase offset in pixels along the lattice x-axis (for tiling alignment).
-uniform float uOffset;
+// Phase offset in pixels (x, y), shifting the dot lattice (for tiling
+// alignment).
+uniform vec2 uOffset;
 
-// Lattice rotation ("screen angle") in radians.
-uniform float uScreenAngle;
+// Lattice rotation in radians.
+uniform float uRotation;
 
 // Dot colour and field colour.
 uniform vec4 uForeground;
@@ -46,7 +47,7 @@ vec2 dotAt(vec2 index, float c, float s) {
     vec2 centre = (index + 0.5) * uGridSize;
     // Map the cell centre back into image space to sample the source there.
     vec2 back = vec2(c * centre.x - s * centre.y, s * centre.x + c * centre.y);
-    vec2 uv = clamp((back + vec2(uOffset, 0.0)) / uImageSize, 0.0, 1.0);
+    vec2 uv = clamp((back + uOffset) / uImageSize, 0.0, 1.0);
     vec4 src = texture(uSource, uv);
     float lum = dot(src.rgb, LUMA);
     float frac = texture(uToneLUT, vec2(lum, 0.5)).r;
@@ -57,11 +58,11 @@ vec2 dotAt(vec2 index, float c, float s) {
 void main() {
     vec2 p = FlutterFragCoord().xy;
 
-    float c = cos(uScreenAngle);
-    float s = sin(uScreenAngle);
+    float c = cos(uRotation);
+    float s = sin(uRotation);
 
     // Into lattice space: shift by the phase offset, then rotate.
-    vec2 q0 = p - vec2(uOffset, 0.0);
+    vec2 q0 = p - uOffset;
     vec2 q = vec2(c * q0.x + s * q0.y, -s * q0.x + c * q0.y);
 
     vec2 cellIndex = floor(q / uGridSize);
