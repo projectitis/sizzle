@@ -72,12 +72,14 @@ class HalftoneGradient {
   /// Lattice spacing in pixels.
   final double gridSize;
 
-  /// Phase offset in pixels, shifting the dot lattice in the fill's local pixel
-  /// space (x and y). Since a bake auto-fits its output and re-anchors the
-  /// lattice to the crop origin, this is how you align the lattices of two
-  /// independently-baked slices across a shared seam: compute each slice's
-  /// offset from its position in world space. [Offset.zero] leaves the lattice
-  /// at its default (crop-anchored) position.
+  /// Phase offset in pixels, shifting the dot lattice within the fill's local
+  /// pixel space (independently in x and y). Because a bake auto-fits its output
+  /// and re-anchors the lattice to its crop origin, images baked separately each
+  /// begin their lattice afresh, so the dot pattern is discontinuous where two
+  /// such images meet. To keep the lattice continuous across images that are
+  /// baked separately but drawn adjacent to one another, give each image an
+  /// offset derived from its position in the shared coordinate space.
+  /// [Offset.zero] leaves the lattice at its default (crop-anchored) position.
   final Offset offset;
 
   /// Lattice rotation in radians.
@@ -176,8 +178,8 @@ class HalftoneBake {
 ///
 /// This is a pure `dart:ui` utility: build a shader with [shaderFor] /
 /// [shaderForPathDots] and apply it as a [Paint.shader] inside your own
-/// component's `render(canvas)`, or [bake] to a cached [Image] for the
-/// blit-while-scrolling path. See `docs/halftone.md`.
+/// component's `render(canvas)`, or [bake] to a cached [Image] that can be
+/// drawn directly for as long as the fill is needed. See `docs/halftone.md`.
 class HalftoneRenderer {
   HalftoneRenderer._(this._program, this._imageProgram, this._pathProgram);
 
@@ -240,11 +242,12 @@ class HalftoneRenderer {
   Future<Image> buildLut(HalftoneGradient gradient) =>
       buildAmountLut(gradient.stops, growth: gradient.growth);
 
-  /// Renders [gradient], filling [path], into an offscreen image. This is the
-  /// production path: bake a slice once, then blit the image while it scrolls.
-  /// The output auto-fits [path]'s bounds and [HalftoneBake.origin] gives the
-  /// placement offset. For a Sizzle `StrokePath`, pass its `toPath()`; to fill a
-  /// plain rectangle, pass a rectangular path.
+  /// Renders [gradient], filling [path], into an offscreen image. When the fill
+  /// does not change from frame to frame, baking it once and drawing the cached
+  /// image is preferable to re-running the shader every frame. The output
+  /// auto-fits [path]'s bounds and [HalftoneBake.origin] gives the placement
+  /// offset. For a Sizzle `StrokePath`, pass its `toPath()`; to fill a plain
+  /// rectangle, pass a rectangular path.
   ///
   /// [clip] chooses how the boundary is treated:
   ///
@@ -259,8 +262,8 @@ class HalftoneRenderer {
   ///   `gridSize * 0.6`, pass 0 for a crisp cutoff).
   ///
   /// The amount LUT (and, for whole-dot fills, the path mask) is built
-  /// internally. For hot loops that reuse the same stops across many bakes, pass
-  /// a cached [lut] (from [buildLut]) to skip rebuilding it each time.
+  /// internally. When baking repeatedly from the same stops, pass a cached [lut]
+  /// (from [buildLut]) to skip rebuilding it on each call.
   Future<HalftoneBake> bake(
     HalftoneGradient gradient,
     Path path, {

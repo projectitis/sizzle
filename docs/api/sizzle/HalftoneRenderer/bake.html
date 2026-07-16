@@ -67,11 +67,12 @@
     </section>
     
 <section class="desc markdown">
-  <p>Renders <code>gradient</code>, filling <code>path</code>, into an offscreen image. This is the
-production path: bake a slice once, then blit the image while it scrolls.
-The output auto-fits <code>path</code>'s bounds and <a href="../../sizzle/HalftoneBake/origin.html">HalftoneBake.origin</a> gives the
-placement offset. For a Sizzle <code>StrokePath</code>, pass its <code>toPath()</code>; to fill a
-plain rectangle, pass a rectangular path.</p>
+  <p>Renders <code>gradient</code>, filling <code>path</code>, into an offscreen image. When the fill
+does not change from frame to frame, baking it once and drawing the cached
+image is preferable to re-running the shader every frame. The output
+auto-fits <code>path</code>'s bounds and <a href="../../sizzle/HalftoneBake/origin.html">HalftoneBake.origin</a> gives the placement
+offset. For a Sizzle <code>StrokePath</code>, pass its <code>toPath()</code>; to fill a plain
+rectangle, pass a rectangular path.</p>
 <p><code>clip</code> chooses how the boundary is treated:</p>
 <ul>
 <li><code>true</code> (default) — the halftone is clipped to <code>path</code> per pixel: dots are
@@ -85,8 +86,8 @@ spilled dots are captured, and <code>feather</code> antialiases the silhouette
 <code>gridSize * 0.6</code>, pass 0 for a crisp cutoff).</li>
 </ul>
 <p>The amount LUT (and, for whole-dot fills, the path mask) is built
-internally. For hot loops that reuse the same stops across many bakes, pass
-a cached <code>lut</code> (from <a href="../../sizzle/HalftoneRenderer/buildLut.html">buildLut</a>) to skip rebuilding it each time.</p>
+internally. When baking repeatedly from the same stops, pass a cached <code>lut</code>
+(from <a href="../../sizzle/HalftoneRenderer/buildLut.html">buildLut</a>) to skip rebuilding it on each call.</p>
 </section>
 
 
