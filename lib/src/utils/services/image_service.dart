@@ -8,6 +8,36 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../math/math.dart';
 
+/// Signature for a per-color substitution callback used when rasterizing an
+/// SVG. Matches [ColorMapper.substitute] exactly: the SVG parser invokes it
+/// for every color it encounters, passing the element's `id` (if any), the
+/// element name (e.g. `path`), the attribute name (e.g. `fill`, `stroke`,
+/// `stop-color`) and the parsed [Color]. Return the color to use in its place
+/// (return [color] unchanged to leave it as-is).
+typedef SvgColorMapper = Color Function(
+  String? id,
+  String elementName,
+  String attributeName,
+  Color color,
+);
+
+/// Adapts a [SvgColorMapper] callback to the flutter_svg [ColorMapper]
+/// interface so it can be handed to an SVG loader.
+class _CallbackColorMapper extends ColorMapper {
+  const _CallbackColorMapper(this._callback);
+
+  final SvgColorMapper _callback;
+
+  @override
+  Color substitute(
+    String? id,
+    String elementName,
+    String attributeName,
+    Color color,
+  ) =>
+      _callback(id, elementName, attributeName, color);
+}
+
 /// A class to store properties of an image, including manipulating the image
 /// prior to caching.
 class ImageProperties {
@@ -248,12 +278,22 @@ class ImageService {
   /// `properties.name`, overwriting any existing entry. The previous entry
   /// (if any) is **not** disposed — the caller owns that lifecycle, because
   /// the previous Image may still be referenced by a live [Sprite].
+  ///
+  /// If [colorMapper] is supplied it is invoked for every color the SVG parser
+  /// encounters, allowing colors to be remapped as the image is parsed (see
+  /// [SvgColorMapper]).
   Future<Image> rasterizeSvgString(
     String svgString,
     ImageProperties? properties, {
     bool cache = true,
+    SvgColorMapper? colorMapper,
   }) async {
-    final pictureInfo = await vg.loadPicture(SvgStringLoader(svgString), null);
+    final loader = SvgStringLoader(
+      svgString,
+      colorMapper:
+          colorMapper == null ? null : _CallbackColorMapper(colorMapper),
+    );
+    final pictureInfo = await vg.loadPicture(loader, null);
 
     final Image image;
     if (properties == null) {
