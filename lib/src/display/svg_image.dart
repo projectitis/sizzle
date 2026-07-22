@@ -49,6 +49,7 @@ class SvgImage {
     this._properties,
     this._imageService,
     this.onRender,
+    this.colorMapper,
   );
 
   final Sprite sprite;
@@ -61,6 +62,12 @@ class SvgImage {
   /// asset SVG string. Its return value is rasterized into the sprite. Set to
   /// `null` to render the original SVG unchanged.
   String Function(String svg)? onRender;
+
+  /// Optional per-color substitution callback applied while the SVG is parsed.
+  /// When supplied, an internal `ColorMapper` is constructed from it so colors
+  /// can be remapped during parsing rather than by mutating the SVG source.
+  /// Reused by subsequent [render] calls. See [SvgColorMapper].
+  SvgColorMapper? colorMapper;
 
   final String _svgString;
   final ImageProperties _properties;
@@ -76,6 +83,12 @@ class SvgImage {
   /// [Services.images]. Pass explicit instances to use custom services (e.g.
   /// in tests). The provided [imageService] is also used by subsequent
   /// [render] calls.
+  ///
+  /// [colorMapper] is an optional per-color substitution callback (see
+  /// [SvgColorMapper]). When supplied, an internal `ColorMapper` is built from
+  /// it and colors are remapped while the SVG is parsed — a cleaner
+  /// alternative to swapping colors in the SVG source via [onRender]. It is
+  /// stored on the instance and reused by [render].
   static Future<SvgImage> load(
     String assetPath, {
     required double contextScale,
@@ -83,6 +96,7 @@ class SvgImage {
     double displayScale = 1.0,
     double renderScale = 1.0,
     String Function(String svg)? onRender,
+    SvgColorMapper? colorMapper,
     FileService? fileService,
     ImageService? imageService,
   }) async {
@@ -97,7 +111,11 @@ class SvgImage {
       scale: Vector2.all(pixelScale),
     );
     final initialSvg = onRender != null ? onRender(svgString) : svgString;
-    final image = await images.rasterizeSvgString(initialSvg, properties);
+    final image = await images.rasterizeSvgString(
+      initialSvg,
+      properties,
+      colorMapper: colorMapper,
+    );
     // Texture sits in physical pixels; sprite is sized in logical pixels so
     // Flutter's DPR scale lands it 1:1 on the display surface. renderScale
     // is divided out so the on-screen size doesn't change when callers ask
@@ -113,6 +131,7 @@ class SvgImage {
       properties,
       images,
       onRender,
+      colorMapper,
     );
   }
 
@@ -135,6 +154,7 @@ class SvgImage {
     final newImage = await _imageService.rasterizeSvgString(
       svg,
       _properties,
+      colorMapper: colorMapper,
     );
     sprite.image = newImage;
     sprite.srcSize = newImage.size;
