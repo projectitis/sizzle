@@ -58,6 +58,7 @@
 <span class="name ">rasterizeSvgString</span>(<wbr><ol class="parameter-list"> <li><span class="parameter" id="rasterizeSvgString-param-svgString"><span class="type-annotation">String</span> <span class="parameter-name">svgString</span>, </span></li>
 <li><span class="parameter" id="rasterizeSvgString-param-properties"><span class="type-annotation"><a href="../../sizzle/ImageProperties-class.html">ImageProperties</a>?</span> <span class="parameter-name">properties</span>, {</span></li>
 <li><span class="parameter" id="rasterizeSvgString-param-cache"><span class="type-annotation">bool</span> <span class="parameter-name">cache</span> = <span class="default-value">true</span>, </span></li>
+<li><span class="parameter" id="rasterizeSvgString-param-colorMapper"><span class="type-annotation"><a href="../../sizzle/SvgColorMapper.html">SvgColorMapper</a>?</span> <span class="parameter-name">colorMapper</span>, </span></li>
 </ol>})
 
       
@@ -74,6 +75,9 @@ ignored for SVG sources.</p>
 <code>properties.name</code>, overwriting any existing entry. The previous entry
 (if any) is <strong>not</strong> disposed — the caller owns that lifecycle, because
 the previous Image may still be referenced by a live <code>Sprite</code>.</p>
+<p>If <code>colorMapper</code> is supplied it is invoked for every color the SVG parser
+encounters, allowing colors to be remapped as the image is parsed (see
+<a href="../../sizzle/SvgColorMapper.html">SvgColorMapper</a>).</p>
 </section>
 
 
@@ -84,8 +88,14 @@ the previous Image may still be referenced by a live <code>Sprite</code>.</p>
   String svgString,
   ImageProperties? properties, {
   bool cache = true,
+  SvgColorMapper? colorMapper,
 }) async {
-  final pictureInfo = await vg.loadPicture(SvgStringLoader(svgString), null);
+  final loader = SvgStringLoader(
+    svgString,
+    colorMapper:
+        colorMapper == null ? null : _CallbackColorMapper(colorMapper),
+  );
+  final pictureInfo = await vg.loadPicture(loader, null);
 
   final Image image;
   if (properties == null) {

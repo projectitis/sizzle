@@ -87,6 +87,7 @@ sprite still references.</p>
   final newImage = await _imageService.rasterizeSvgString(
     svg,
     _properties,
+    colorMapper: colorMapper,
   );
   sprite.image = newImage;
   sprite.srcSize = newImage.size;

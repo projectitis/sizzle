@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the LpngLayer class from the sizzle library, for the Dart programming language.">
+  <title>LpngLayer class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle.dart</a></li>
+    <li class="self-crumb">LpngLayer class</li>
+  </ol>
+  <div class="self-name">LpngLayer</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;sizzle-library-sidebar.html"
+    data-below-sidebar="sizzle&#47;LpngLayer-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">LpngLayer</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>A single node in a <a href="../sizzle/LayeredPng-class.html">LayeredPng</a> tree — either an <strong>image</strong> (has <a href="../sizzle/LpngLayer/src.html">src</a> /
+<a href="../sizzle/LpngLayer/image.html">image</a>) or a <strong>group</strong> (no <a href="../sizzle/LpngLayer/src.html">src</a>; composites its <a href="../sizzle/LpngLayer/layers.html">layers</a>).</p>
+</section>
+
+
+
+    
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="absX" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/absX.html">absX</a></span>
+  <span class="signature">&#8596; double</span>
+  
+
+</dt>
+<dd>
+  Absolute offset within the document, i.e. <a href="../sizzle/LpngLayer/x.html">x</a>/<a href="../sizzle/LpngLayer/y.html">y</a> accumulated down from
+the root. Used for compositing and <a href="../sizzle/LpngLayer/bounds.html">bounds</a>.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="absY" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/absY.html">absY</a></span>
+  <span class="signature">&#8596; double</span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="blend" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/blend.html">blend</a></span>
+  <span class="signature">&#8596; <a href="../sizzle/LpngBlendMode.html">LpngBlendMode</a></span>
+  
+
+</dt>
+<dd>
+  The parsed blend mode. Unrecognised names fall back to
+<a href="../sizzle/LpngBlendMode.html">LpngBlendMode.normal</a> (the original string is kept in <a href="../sizzle/LpngLayer/blendName.html">blendName</a>).
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="blendName" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/blendName.html">blendName</a></span>
+  <span class="signature">&#8596; String</span>
+  
+
+</dt>
+<dd>
+  The raw blend mode string from the manifest (<code>'normal'</code> when omitted).
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="bounds" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/bounds.html">bounds</a></span>
+  <span class="signature">&#8594; Rect</span>
+  
+
+</dt>
+<dd>
+  The absolute bounding box of this layer's subtree in document
+coordinates: the union of this layer's own image and all descendants.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="../sizzle/LpngLayer/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; int</span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="id" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/id.html">id</a></span>
+  <span class="signature">&#8596; String?</span>
+  
+
+</dt>
+<dd>
+  Unique id, if provided.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="image" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/image.html">image</a></span>
+  <span class="signature">&#8596; Image?</span>
+  
+
+</dt>
+<dd>
+  The decoded PNG for this layer, or <code>null</code> for a group (or before load).
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="isGroup" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/isGroup.html">isGroup</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd>
+  Whether this layer is a group (has no image of its own).
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="layers" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/layers.html">layers</a></span>
+  <span class="signature">&#8594; List<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/LpngLayer-class.html">LpngLayer</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  Child layers, ordered bottom-to-top.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="name" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/name.html">name</a></span>
+  <span class="signature">&#8596; String?</span>
+  
+
+</dt>
+<dd>
+  The layer name, if provided. Not guaranteed unique.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="opacity" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/opacity.html">opacity</a></span>
+  <span class="signature">&#8596; double</span>
+  
+
+</dt>
+<dd>
+  Layer opacity, <code>0.0</code>–<code>1.0</code>.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="../sizzle/LpngLayer/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; Type</span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="src" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/src.html">src</a></span>
+  <span class="signature">&#8596; String?</span>
+  
+
+</dt>
+<dd>
+  PNG filename inside the archive. <code>null</code> for groups.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="visible" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/visible.html">visible</a></span>
+  <span class="signature">&#8596; bool</span>
+  
+
+</dt>
+<dd>
+  Whether the layer is visible. Hidden layers are still parsed and decoded.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="x" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/x.html">x</a></span>
+  <span class="signature">&#8596; double</span>
+  
+
+</dt>
+<dd>
+  Offset from the parent's origin (the canvas for a top-level layer, or the
+parent group's tight bounding box otherwise).
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="y" class="property">
+  <span class="name"><a href="../sizzle/LpngLayer/y.html">y</a></span>
+  <span class="signature">&#8596; double</span>
+  
+
+</dt>
+<dd>
+  
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="layerById" class="callable">
+  <span class="name"><a href="../sizzle/LpngLayer/layerById.html">layerById</a></span><span class="signature">(<wbr><span class="parameter" id="layerById-param-id"><span class="type-annotation">String</span> <span class="parameter-name">id</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../sizzle/LpngLayer-class.html">LpngLayer</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Find this layer or a descendant by <code>id</code>, or <code>null</code> if none matches.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="../sizzle/LpngLayer/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toImage" class="callable">
+  <span class="name"><a href="../sizzle/LpngLayer/toImage.html">toImage</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">Image</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Rasterise this layer (and its descendants) to an image sized to <a href="../sizzle/LpngLayer/bounds.html">bounds</a>.
+  
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="../sizzle/LpngLayer/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; String</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="walk" class="callable">
+  <span class="name"><a href="../sizzle/LpngLayer/walk.html">walk</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; Iterable<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/LpngLayer-class.html">LpngLayer</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Depth-first, pre-order iteration over this layer and all its descendants.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="../sizzle/LpngLayer/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation">Object</span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; bool</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle</a></li>
+    <li class="self-crumb">LpngLayer class</li>
+</ol>
+
+    <h5>sizzle library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.3
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

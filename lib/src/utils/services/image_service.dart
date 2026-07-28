@@ -277,7 +277,7 @@ class ImageService {
   /// If [cache] is true and [properties] is non-null, the result is stored at
   /// `properties.name`, overwriting any existing entry. The previous entry
   /// (if any) is **not** disposed — the caller owns that lifecycle, because
-  /// the previous Image may still be referenced by a live [Sprite].
+  /// the previous Image may still be referenced by a live `Sprite`.
   ///
   /// If [colorMapper] is supplied it is invoked for every color the SVG parser
   /// encounters, allowing colors to be remapped as the image is parsed (see

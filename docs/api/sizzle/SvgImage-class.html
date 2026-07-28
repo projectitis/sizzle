@@ -97,6 +97,21 @@ reference to <a href="../sizzle/SvgImage/sprite.html">sprite</a> do not need to 
       id="instance-properties">
     <h2>Properties</h2>
     <dl class="properties">
+        <dt id="colorMapper" class="property">
+  <span class="name"><a href="../sizzle/SvgImage/colorMapper.html">colorMapper</a></span>
+  <span class="signature">&#8596; <a href="../sizzle/SvgColorMapper.html">SvgColorMapper</a>?</span>
+  
+
+</dt>
+<dd>
+  Optional per-color substitution callback applied while the SVG is parsed.
+When supplied, an internal <code>ColorMapper</code> is constructed from it so colors
+can be remapped during parsing rather than by mutating the SVG source.
+Reused by subsequent <a href="../sizzle/SvgImage/render.html">render</a> calls. See <a href="../sizzle/SvgColorMapper.html">SvgColorMapper</a>.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
         <dt id="displaySize" class="property">
   <span class="name"><a href="../sizzle/SvgImage/displaySize.html">displaySize</a></span>
   <span class="signature">&#8594; Vector2</span>
@@ -240,7 +255,7 @@ image is swapped in place and the previous image is disposed.
     <h2>Static Methods</h2>
     <dl class="callables">
         <dt id="load" class="callable">
-  <span class="name"><a href="../sizzle/SvgImage/load.html">load</a></span><span class="signature">(<wbr><span class="parameter" id="load-param-assetPath"><span class="type-annotation">String</span> <span class="parameter-name">assetPath</span>, {</span><span class="parameter" id="load-param-contextScale"><span>required</span> <span class="type-annotation">double</span> <span class="parameter-name">contextScale</span>, </span><span class="parameter" id="load-param-dpr"><span>required</span> <span class="type-annotation">double</span> <span class="parameter-name">dpr</span>, </span><span class="parameter" id="load-param-displayScale"><span class="type-annotation">double</span> <span class="parameter-name">displayScale</span> = <span class="default-value">1.0</span>, </span><span class="parameter" id="load-param-renderScale"><span class="type-annotation">double</span> <span class="parameter-name">renderScale</span> = <span class="default-value">1.0</span>, </span><span class="parameter" id="load-param-onRender"><span class="type-annotation">String</span> <span class="parameter-name">onRender</span>(<span class="parameter" id="param-svg"><span class="type-annotation">String</span> <span class="parameter-name">svg</span></span>)?, </span><span class="parameter" id="load-param-fileService"><span class="type-annotation"><a href="../sizzle/FileService-class.html">FileService</a>?</span> <span class="parameter-name">fileService</span>, </span><span class="parameter" id="load-param-imageService"><span class="type-annotation"><a href="../sizzle/ImageService-class.html">ImageService</a>?</span> <span class="parameter-name">imageService</span></span>})
+  <span class="name"><a href="../sizzle/SvgImage/load.html">load</a></span><span class="signature">(<wbr><span class="parameter" id="load-param-assetPath"><span class="type-annotation">String</span> <span class="parameter-name">assetPath</span>, {</span><span class="parameter" id="load-param-contextScale"><span>required</span> <span class="type-annotation">double</span> <span class="parameter-name">contextScale</span>, </span><span class="parameter" id="load-param-dpr"><span>required</span> <span class="type-annotation">double</span> <span class="parameter-name">dpr</span>, </span><span class="parameter" id="load-param-displayScale"><span class="type-annotation">double</span> <span class="parameter-name">displayScale</span> = <span class="default-value">1.0</span>, </span><span class="parameter" id="load-param-renderScale"><span class="type-annotation">double</span> <span class="parameter-name">renderScale</span> = <span class="default-value">1.0</span>, </span><span class="parameter" id="load-param-onRender"><span class="type-annotation">String</span> <span class="parameter-name">onRender</span>(<span class="parameter" id="param-svg"><span class="type-annotation">String</span> <span class="parameter-name">svg</span></span>)?, </span><span class="parameter" id="load-param-colorMapper"><span class="type-annotation"><a href="../sizzle/SvgColorMapper.html">SvgColorMapper</a>?</span> <span class="parameter-name">colorMapper</span>, </span><span class="parameter" id="load-param-fileService"><span class="type-annotation"><a href="../sizzle/FileService-class.html">FileService</a>?</span> <span class="parameter-name">fileService</span>, </span><span class="parameter" id="load-param-imageService"><span class="type-annotation"><a href="../sizzle/ImageService-class.html">ImageService</a>?</span> <span class="parameter-name">imageService</span></span>})
     <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/SvgImage-class.html">SvgImage</a></span>&gt;</span></span>
   </span>
   

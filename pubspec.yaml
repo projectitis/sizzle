@@ -23,6 +23,7 @@ dependencies:
   jx: ^1.0.5
   xml: '>=6.6.1 <8.0.0'
   flutter_svg: ^2.0.10+1
+  archive: ^3.6.1
 
 dev_dependencies:
   lints: ^6.0.0

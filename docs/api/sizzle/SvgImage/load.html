@@ -62,6 +62,7 @@
 <li><span class="parameter" id="load-param-renderScale"><span class="type-annotation">double</span> <span class="parameter-name">renderScale</span> = <span class="default-value">1.0</span>, </span></li>
 <li><span class="parameter" id="load-param-onRender"><span class="type-annotation">String</span> <span class="parameter-name">onRender</span>(<ol class="parameter-list single-line"> <li><span class="parameter" id="param-svg"><span class="type-annotation">String</span> <span class="parameter-name">svg</span></span></li>
 </ol>)?, </span></li>
+<li><span class="parameter" id="load-param-colorMapper"><span class="type-annotation"><a href="../../sizzle/SvgColorMapper.html">SvgColorMapper</a>?</span> <span class="parameter-name">colorMapper</span>, </span></li>
 <li><span class="parameter" id="load-param-fileService"><span class="type-annotation"><a href="../../sizzle/FileService-class.html">FileService</a>?</span> <span class="parameter-name">fileService</span>, </span></li>
 <li><span class="parameter" id="load-param-imageService"><span class="type-annotation"><a href="../../sizzle/ImageService-class.html">ImageService</a>?</span> <span class="parameter-name">imageService</span>, </span></li>
 </ol>})
@@ -80,6 +81,11 @@ subsequent <a href="../../sizzle/SvgImage/render.html">render</a> calls.</p>
 <a href="../../sizzle/Services/images.html">Services.images</a>. Pass explicit instances to use custom services (e.g.
 in tests). The provided <code>imageService</code> is also used by subsequent
 <a href="../../sizzle/SvgImage/render.html">render</a> calls.</p>
+<p><code>colorMapper</code> is an optional per-color substitution callback (see
+<a href="../../sizzle/SvgColorMapper.html">SvgColorMapper</a>). When supplied, an internal <code>ColorMapper</code> is built from
+it and colors are remapped while the SVG is parsed — a cleaner
+alternative to swapping colors in the SVG source via <code>onRender</code>. It is
+stored on the instance and reused by <a href="../../sizzle/SvgImage/render.html">render</a>.</p>
 </section>
 
 
@@ -93,6 +99,7 @@ in tests). The provided <code>imageService</code> is also used by subsequent
   double displayScale = 1.0,
   double renderScale = 1.0,
   String Function(String svg)? onRender,
+  SvgColorMapper? colorMapper,
   FileService? fileService,
   ImageService? imageService,
 }) async {
@@ -107,7 +114,11 @@ in tests). The provided <code>imageService</code> is also used by subsequent
     scale: Vector2.all(pixelScale),
   );
   final initialSvg = onRender != null ? onRender(svgString) : svgString;
-  final image = await images.rasterizeSvgString(initialSvg, properties);
+  final image = await images.rasterizeSvgString(
+    initialSvg,
+    properties,
+    colorMapper: colorMapper,
+  );
   &#47;&#47; Texture sits in physical pixels; sprite is sized in logical pixels so
   &#47;&#47; Flutter&#39;s DPR scale lands it 1:1 on the display surface. renderScale
   &#47;&#47; is divided out so the on-screen size doesn&#39;t change when callers ask
@@ -123,6 +134,7 @@ in tests). The provided <code>imageService</code> is also used by subsequent
     properties,
     images,
     onRender,
+    colorMapper,
   );
 }</code></pre>
 </section>
