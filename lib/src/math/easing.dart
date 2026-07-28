@@ -24,7 +24,7 @@ class Easing {
 
   /// Modeled after the piecewise quadratic
   /// y = (1/2)((2x)^2)             ; [0, 0.5)
-  /// y = -(1/2)((2x-1)*(2x-3) - 1) ; [0.5, 1]
+  /// y = -(1/2)((2x-1)*(2x-3) - 1) ; \[0.5, 1\]
   static double quadraticEaseInOut(double p) {
     if (p < 0.5) {
       return 2 * p * p;
@@ -44,7 +44,7 @@ class Easing {
 
   /// Modeled after the piecewise cubic
   /// y = (1/2)((2x)^3)       ; [0, 0.5)
-  /// y = (1/2)((2x-2)^3 + 2) ; [0.5, 1]
+  /// y = (1/2)((2x-2)^3 + 2) ; \[0.5, 1\]
   static double cubicEaseInOut(double p) {
     if (p < 0.5) {
       return 4 * p * p * p;
@@ -65,7 +65,7 @@ class Easing {
 
   /// Modeled after the piecewise quartic
   /// y = (1/2)((2x)^4)        ; [0, 0.5)
-  /// y = -(1/2)((2x-2)^4 - 2) ; [0.5, 1]
+  /// y = -(1/2)((2x-2)^4 - 2) ; \[0.5, 1\]
   static double quarticEaseInOut(double p) {
     if (p < 0.5) {
       return 8 * p * p * p * p;
@@ -86,7 +86,7 @@ class Easing {
 
   /// Modeled after the piecewise quintic
   /// y = (1/2)((2x)^5)       ; [0, 0.5)
-  /// y = (1/2)((2x-2)^5 + 2) ; [0.5, 1]
+  /// y = (1/2)((2x-2)^5 + 2) ; \[0.5, 1\]
   static double quinticEaseInOut(double p) {
     if (p < 0.5) {
       return 16 * p * p * p * p * p;
@@ -113,7 +113,7 @@ class Easing {
 
   /// Modeled after the piecewise circular function
   /// y = (1/2)(1 - sqrt(1 - 4x^2))           ; [0, 0.5)
-  /// y = (1/2)(sqrt(-(2x - 3)*(2x - 1)) + 1) ; [0.5, 1]
+  /// y = (1/2)(sqrt(-(2x - 3)*(2x - 1)) + 1) ; \[0.5, 1\]
   static double circularEaseInOut(double p) {
     if (p < 0.5) {
       return 0.5 * (1 - sqrt(1 - 4 * (p * p)));
@@ -132,7 +132,7 @@ class Easing {
 
   /// Modeled after the piecewise exponential
   /// y = (1/2)2^(10(2x - 1))         ; [0,0.5)
-  /// y = -(1/2)*2^(-10(2x - 1))) + 1 ; [0.5,1]
+  /// y = -(1/2)*2^(-10(2x - 1))) + 1 ; \[0.5,1\]
   static double exponentialEaseInOut(double p) {
     if (p == 0.0 || p == 1.0) return p;
     if (p < 0.5) {
@@ -153,7 +153,7 @@ class Easing {
 
   /// Modeled after the piecewise exponentially-damped sine wave:
   /// y = (1/2)*sin(13pi/2*(2*x))*pow(2, 10 * ((2*x) - 1))      ; [0,0.5)
-  /// y = (1/2)*(sin(-13pi/2*((2x-1)+1))*pow(2,-10(2*x-1)) + 2) ; [0.5, 1]
+  /// y = (1/2)*(sin(-13pi/2*((2x-1)+1))*pow(2,-10(2*x-1)) + 2) ; \[0.5, 1\]
   static double elasticEaseInOut(double p) {
     if (p < 0.5) {
       return 0.5 *
@@ -178,7 +178,7 @@ class Easing {
 
   /// Modeled after the piecewise overshooting cubic function:
   /// y = (1/2)*((2x)^3-(2x)*sin(2*x*pi))           ; [0, 0.5)
-  /// y = (1/2)*(1-((1-x)^3-(1-x)*sin((1-x)*pi))+1) ; [0.5, 1]
+  /// y = (1/2)*(1-((1-x)^3-(1-x)*sin((1-x)*pi))+1) ; \[0.5, 1\]
   static double backEaseInOut(double p) {
     if (p < 0.5) {
       final double f = 2 * p;

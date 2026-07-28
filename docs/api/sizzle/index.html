@@ -295,6 +295,14 @@ prior to caching.
   
 </dd>
 
+          <dt id="LayeredPng">
+  <span class="name "><a href="../sizzle/LayeredPng-class.html">LayeredPng</a></span> 
+
+</dt>
+<dd>
+  A parsed Layered PNG (<code>.lpng</code>) document.
+</dd>
+
           <dt id="Light">
   <span class="name "><a href="../sizzle/Light-class.html">Light</a></span> 
 
@@ -386,6 +394,15 @@ relevant) applies any <code>pp:expand</code> offset before doing so.
 </dt>
 <dd>
   Logger interface
+</dd>
+
+          <dt id="LpngLayer">
+  <span class="name "><a href="../sizzle/LpngLayer-class.html">LpngLayer</a></span> 
+
+</dt>
+<dd>
+  A single node in a <a href="../sizzle/LayeredPng-class.html">LayeredPng</a> tree — either an <strong>image</strong> (has <a href="../sizzle/LpngLayer/src.html">src</a> /
+<a href="../sizzle/LpngLayer/image.html">image</a>) or a <strong>group</strong> (no <a href="../sizzle/LpngLayer/src.html">src</a>; composites its <a href="../sizzle/LpngLayer/layers.html">layers</a>).
 </dd>
 
           <dt id="NineGridComponent">
@@ -690,6 +707,16 @@ matte is default
   
 </dd>
 
+          <dt id="LpngBlendMode">
+  <span class="name "><a href="../sizzle/LpngBlendMode.html">LpngBlendMode</a></span> 
+
+</dt>
+<dd>
+  Photoshop blend modes, named in lowerCamelCase as they appear in a
+manifest. Only a subset maps to a native <code>ui.BlendMode</code>; the rest fall back
+to <code>ui.BlendMode.srcOver</code> when compositing (see <a href="../sizzle/LpngBlendMode/uiBlendMode.html">uiBlendMode</a>).
+</dd>
+
           <dt id="NineGridRepeatType">
   <span class="name "><a href="../sizzle/NineGridRepeatType.html">NineGridRepeatType</a></span> 
 
@@ -922,6 +949,25 @@ normalised time <code>t</code> in <code>[0, 1]</code> and returns the eased prog
   </dt>
   <dd>
     
+    
+
+  </dd>
+
+          
+  <dt id="SvgColorMapper" class="callable">
+    <span class="name"><a href="../sizzle/SvgColorMapper.html">SvgColorMapper</a></span><span class="signature">
+      <span class="returntype parameter">= Color Function<span class="signature">(<span class="parameter" id="param-id"><span class="type-annotation">String?</span> <span class="parameter-name">id</span>, </span><span class="parameter" id="param-elementName"><span class="type-annotation">String</span> <span class="parameter-name">elementName</span>, </span><span class="parameter" id="param-attributeName"><span class="type-annotation">String</span> <span class="parameter-name">attributeName</span>, </span><span class="parameter" id="param-color"><span class="type-annotation">Color</span> <span class="parameter-name">color</span></span>)</span></span>
+    </span>
+    
+
+  </dt>
+  <dd>
+    Signature for a per-color substitution callback used when rasterizing an
+SVG. Matches <code>ColorMapper.substitute</code> exactly: the SVG parser invokes it
+for every color it encounters, passing the element's <code>id</code> (if any), the
+element name (e.g. <code>path</code>), the attribute name (e.g. <code>fill</code>, <code>stroke</code>,
+<code>stop-color</code>) and the parsed <code>Color</code>. Return the color to use in its place
+(return <code>color</code> unchanged to leave it as-is).
     
 
   </dd>

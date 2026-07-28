@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the LayeredPng class from the sizzle library, for the Dart programming language.">
+  <title>LayeredPng class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle.dart</a></li>
+    <li class="self-crumb">LayeredPng class</li>
+  </ol>
+  <div class="self-name">LayeredPng</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;sizzle-library-sidebar.html"
+    data-below-sidebar="sizzle&#47;LayeredPng-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">LayeredPng</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>A parsed Layered PNG (<code>.lpng</code>) document.</p>
+<p>An <code>.lpng</code> file is a ZIP archive containing a <code>manifest.json</code>, a
+<code>thumbnail.png</code>, and one PNG per image layer. See <code>scripts/lpng/README.md</code>
+for the format specification.</p>
+<p>Load one from an asset with <a href="../sizzle/LayeredPng/load.html">load</a>, then walk the layer tree, look layers up
+by <a href="../sizzle/LayeredPng/id.html">id</a>, and rasterise the whole document or any single layer to a
+<code>ui.Image</code>:</p>
+<pre class="language-dart"><code class="language-dart">final doc = await LayeredPng.load('assets/character.lpng');
+for (final layer in doc.walk()) {
+  print('${layer.name} ${layer.isGroup ? '(group)' : ''}');
+}
+final logo = doc.layerById('pirelli_logo');
+final image = await logo!.toImage();
+// ... draw image, then doc.dispose() when finished.
+</code></pre>
+<p>Every layer PNG is decoded up front during <a href="../sizzle/LayeredPng/load.html">load</a>, so <a href="../sizzle/LpngLayer/image.html">LpngLayer.image</a> and
+<a href="../sizzle/LpngLayer/bounds.html">LpngLayer.bounds</a> are available synchronously afterwards. Call <a href="../sizzle/LayeredPng/dispose.html">dispose</a>
+when finished to release the decoded images.</p>
+</section>
+
+
+
+    
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="bounds" class="property">
+  <span class="name"><a href="../sizzle/LayeredPng/bounds.html">bounds</a></span>
+  <span class="signature">&#8594; Rect</span>
+  
+
+</dt>
+<dd>
+  The document bounds: <code>(0, 0)</code> to <code>(width, height)</code>.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="dpi" class="property">
+  <span class="name"><a href="../sizzle/LayeredPng/dpi.html">dpi</a></span>
+  <span class="signature">&#8596; double?</span>
+  
+
+</dt>
+<dd>
+  Resolution in dots-per-inch, if provided.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="../sizzle/LayeredPng/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; int</span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="height" class="property">
+  <span class="name"><a href="../sizzle/LayeredPng/height.html">height</a></span>
+  <span class="signature">&#8596; int</span>
+  
+
+</dt>
+<dd>
+  Canvas height in pixels.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="id" class="property">
+  <span class="name"><a href="../sizzle/LayeredPng/id.html">id</a></span>
+  <span class="signature">&#8596; String?</span>
+  
+
+</dt>
+<dd>
+  Document id, if provided.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="layers" class="property">
+  <span class="name"><a href="../sizzle/LayeredPng/layers.html">layers</a></span>
+  <span class="signature">&#8594; List<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/LpngLayer-class.html">LpngLayer</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  Top-level layers, ordered <strong>bottom-to-top</strong> (index 0 is drawn first, and
+therefore appears underneath the others).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="name" class="property">
+  <span class="name"><a href="../sizzle/LayeredPng/name.html">name</a></span>
+  <span class="signature">&#8596; String</span>
+  
+
+</dt>
+<dd>
+  The document name, if provided.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="../sizzle/LayeredPng/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; Type</span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="thumbnail" class="property">
+  <span class="name"><a href="../sizzle/LayeredPng/thumbnail.html">thumbnail</a></span>
+  <span class="signature">&#8596; Image?</span>
+  
+
+</dt>
+<dd>
+  The decoded document thumbnail (max 128x128 by default), or <code>null</code> if the
+archive did not contain one.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="version" class="property">
+  <span class="name"><a href="../sizzle/LayeredPng/version.html">version</a></span>
+  <span class="signature">&#8596; String</span>
+  
+
+</dt>
+<dd>
+  The lpng format version the file was written with.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="width" class="property">
+  <span class="name"><a href="../sizzle/LayeredPng/width.html">width</a></span>
+  <span class="signature">&#8596; int</span>
+  
+
+</dt>
+<dd>
+  Canvas width in pixels.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="dispose" class="callable">
+  <span class="name"><a href="../sizzle/LayeredPng/dispose.html">dispose</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Dispose every decoded layer image and the thumbnail. The document should
+not be used afterwards.
+  
+
+</dd>
+
+        <dt id="layerById" class="callable">
+  <span class="name"><a href="../sizzle/LayeredPng/layerById.html">layerById</a></span><span class="signature">(<wbr><span class="parameter" id="layerById-param-id"><span class="type-annotation">String</span> <span class="parameter-name">id</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../sizzle/LpngLayer-class.html">LpngLayer</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Find a layer anywhere in the tree by its <code>id</code>, or <code>null</code> if none matches.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="../sizzle/LayeredPng/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toImage" class="callable">
+  <span class="name"><a href="../sizzle/LayeredPng/toImage.html">toImage</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">Image</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Rasterise the entire document to a <a href="../sizzle/LayeredPng/width.html">width</a> x <a href="../sizzle/LayeredPng/height.html">height</a> image, compositing
+every visible layer with its offset, opacity and blend mode.
+  
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="../sizzle/LayeredPng/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; String</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="walk" class="callable">
+  <span class="name"><a href="../sizzle/LayeredPng/walk.html">walk</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; Iterable<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/LpngLayer-class.html">LpngLayer</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Depth-first, pre-order iteration over every layer in the document
+(top-level layers and all their descendants).
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="../sizzle/LayeredPng/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation">Object</span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; bool</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">
+        <dt id="fromBytes" class="callable">
+  <span class="name"><a href="../sizzle/LayeredPng/fromBytes.html">fromBytes</a></span><span class="signature">(<wbr><span class="parameter" id="fromBytes-param-bytes"><span class="type-annotation">Uint8List</span> <span class="parameter-name">bytes</span></span>)
+    <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/LayeredPng-class.html">LayeredPng</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Parse an <code>.lpng</code> document from its raw ZIP <code>bytes</code>. Useful for tests or
+loading from sources other than the asset bundle.
+  
+
+</dd>
+
+        <dt id="load" class="callable">
+  <span class="name"><a href="../sizzle/LayeredPng/load.html">load</a></span><span class="signature">(<wbr><span class="parameter" id="load-param-assetPath"><span class="type-annotation">String</span> <span class="parameter-name">assetPath</span>, {</span><span class="parameter" id="load-param-bundle"><span class="type-annotation">AssetBundle?</span> <span class="parameter-name">bundle</span></span>})
+    <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/LayeredPng-class.html">LayeredPng</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Load and parse an <code>.lpng</code> <code>assetPath</code> from <code>bundle</code> (defaults to the
+root asset bundle). All layer images are decoded before this completes.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle</a></li>
+    <li class="self-crumb">LayeredPng class</li>
+</ol>
+
+    <h5>sizzle library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.3
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

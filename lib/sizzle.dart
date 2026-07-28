@@ -24,6 +24,7 @@ export 'src/display/lightning.dart';
 export 'src/display/snap.dart';
 export 'src/display/shape.dart';
 export 'src/display/sprite.dart';
+export 'src/display/layered_png.dart';
 export 'src/display/lit_svg_data.dart';
 export 'src/display/lit_svg_component.dart';
 export 'src/display/svg_image.dart';

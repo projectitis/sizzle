@@ -23,6 +23,7 @@ package also regularly contribute to Flame itself.
 - [Config files](config.md)
 - [Variable-width strokes (calligraphy)](variable_width_stroke.md)
 - [Halftone gradients, shapes and images](halftone.md)
+- [Layered PNG (.lpng)](layered_png.md)
 
 ## API
 
