@@ -18,6 +18,8 @@ export 'package:flame/events.dart';
 /// Sizzle exports
 export 'src/game/game.dart';
 export 'src/game/scene.dart';
+export 'src/game/frame_rate_mode.dart';
+export 'src/game/fps_meter.dart';
 export 'src/display/dialog.dart';
 export 'src/display/environment.dart';
 export 'src/display/lightning.dart';
@@ -49,4 +51,5 @@ export 'src/utils/services/file_service.dart';
 export 'src/utils/services/flag_service.dart';
 export 'src/utils/services/image_service.dart';
 export 'src/utils/services/lit_svg_service.dart';
+export 'src/utils/services/message_service.dart';
 export 'src/utils/services/tween_service.dart';

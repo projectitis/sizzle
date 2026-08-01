@@ -84,10 +84,14 @@ void main() {
     });
 
     test('single-letter sheen shorthand', () {
-      expect(LitSvgData.parseMaterial('#000 d').sheen, LitSvgMaterialSheen.dull);
-      expect(LitSvgData.parseMaterial('#000 m').sheen, LitSvgMaterialSheen.matte);
-      expect(LitSvgData.parseMaterial('#000 g').sheen, LitSvgMaterialSheen.gloss);
-      expect(LitSvgData.parseMaterial('#000 s').sheen, LitSvgMaterialSheen.specular);
+      expect(
+          LitSvgData.parseMaterial('#000 d').sheen, LitSvgMaterialSheen.dull);
+      expect(
+          LitSvgData.parseMaterial('#000 m').sheen, LitSvgMaterialSheen.matte);
+      expect(
+          LitSvgData.parseMaterial('#000 g').sheen, LitSvgMaterialSheen.gloss);
+      expect(LitSvgData.parseMaterial('#000 s').sheen,
+          LitSvgMaterialSheen.specular);
     });
 
     test('mixes 3-digit hex with shorthand sheen', () {
@@ -309,8 +313,7 @@ void main() {
     late LitSvgData svg;
 
     setUpAll(() {
-      final source =
-          File('test/_resources/svg/example.svg').readAsStringSync();
+      final source = File('test/_resources/svg/example.svg').readAsStringSync();
       svg = LitSvgData(source);
     });
 
@@ -368,11 +371,8 @@ void main() {
 
   group('pp:expand', () {
     LitSvgData buildSquare({double? groupExpand, double? pathExpand}) {
-      final groupAttr = groupExpand == null
-          ? ''
-          : ' pp:expand="$groupExpand"';
-      final pathAttr =
-          pathExpand == null ? '' : ' pp:expand="$pathExpand"';
+      final groupAttr = groupExpand == null ? '' : ' pp:expand="$groupExpand"';
+      final pathAttr = pathExpand == null ? '' : ' pp:expand="$pathExpand"';
       final src = '''
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:pp="http://paraplu.io/svg" width="20" height="20">
   <defs>
@@ -447,7 +447,8 @@ void main() {
       expect(out[3].y, _closeTo(11));
     });
 
-    test('LitSvgData.expandPolygon returns input unchanged when amount is 0', () {
+    test('LitSvgData.expandPolygon returns input unchanged when amount is 0',
+        () {
       final input = [Vector2(0, 0), Vector2(1, 0), Vector2(0, 1)];
       final out = LitSvgData.expandPolygon(input, 0);
       expect(identical(out, input), isTrue);

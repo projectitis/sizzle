@@ -638,6 +638,20 @@ are no such children.
 
 </dd>
 
+        <dt id="fixedUpdate" class="callable">
+  <span class="name"><a href="../sizzle/Scene/fixedUpdate.html">fixedUpdate</a></span><span class="signature">(<wbr><span class="parameter" id="fixedUpdate-param-fixedDt"><span class="type-annotation">double</span> <span class="parameter-name">fixedDt</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fixed-timestep update, called at <a href="../sizzle/SizzleGame/fixedUpdateFps.html">SizzleGame.fixedUpdateFps</a> (60 by
+default) independently of how often the game paints.
+  
+
+</dd>
+
         <dt id="lastChild" class="callable inherited">
   <span class="name"><a href="../sizzle/Scene/lastChild.html">lastChild</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends Component</span>&gt;</span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; T?</span>
@@ -718,16 +732,16 @@ to or removed from its parent children list.
 
 </dd>
 
-        <dt id="onMount" class="callable inherited">
+        <dt id="onMount" class="callable">
   <span class="name"><a href="../sizzle/Scene/onMount.html">onMount</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
-<dd class="inherited">
-  Called when the component is added to its parent.
-  <div class="features"><span class="feature">inherited</span></div>
+<dd>
+  Announces the scene on <a href="../sizzle/SizzleMessage/sceneChanged-constant.html">SizzleMessage.sceneChanged</a> once it is live.
+  
 
 </dd>
 

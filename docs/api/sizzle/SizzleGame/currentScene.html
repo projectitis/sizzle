@@ -69,14 +69,20 @@
 <section class="desc markdown">
   <p>The scene currently on top of the navigation stack, or <code>null</code> while
 the initial route is still mounting.</p>
+<p>The router only fills its route stack when it is itself mounted, which
+happens a frame after the game mounts - and later still in the modes
+that pause the ticker. <a href="../../sizzle/SizzleGame/fixedUpdate.html">fixedUpdate</a> can therefore run before there is
+any scene to hand to, hence the mounted check.</p>
 </section>
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">Scene? get currentScene =&gt; _router.currentRoute.hasChildren
-    ? _router.currentRoute.lastChild() as Scene
-    : null;</code></pre>
+  <pre class="language-dart"><code class="language-dart">Scene? get currentScene {
+  if (!_router.isMounted) return null;
+  final route = _router.currentRoute;
+  return route.hasChildren ? route.lastChild() as Scene : null;
+}</code></pre>
 </section>
 
   </section>

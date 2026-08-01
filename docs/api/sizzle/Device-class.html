@@ -160,6 +160,19 @@
   <section class="summary offset-anchor" id="static-properties">
     <h2>Static Properties</h2>
     <dl class="properties">
+        <dt id="hwFrameRateProvider" class="property">
+  <span class="name"><a href="../sizzle/Device/hwFrameRateProvider.html">hwFrameRateProvider</a></span>
+  <span class="signature">&#8596; <a href="../sizzle/HwFrameRateProvider-class.html">HwFrameRateProvider</a>?</span>
+  
+
+</dt>
+<dd>
+  Platform hook for changing the display refresh rate, used by
+<a href="../sizzle/FrameRateMode.html">FrameRateMode.hardwareHalfRate</a>.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
         <dt id="isAndroid" class="property">
   <span class="name"><a href="../sizzle/Device/isAndroid.html">isAndroid</a></span>
   <span class="signature">&#8594; bool</span>
@@ -192,6 +205,19 @@
 </dt>
 <dd>
   
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="isHWFrameRateSupported" class="property">
+  <span class="name"><a href="../sizzle/Device/isHWFrameRateSupported.html">isHWFrameRateSupported</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd>
+  Whether a <a href="../sizzle/Device/hwFrameRateProvider.html">hwFrameRateProvider</a> is registered <em>and</em> reports that this
+platform can accept refresh-rate requests.
   <div class="features"><span class="feature">no setter</span></div>
 
 </dd>
@@ -300,6 +326,19 @@
 </dt>
 <dd>
   
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="refreshRate" class="property">
+  <span class="name"><a href="../sizzle/Device/refreshRate.html">refreshRate</a></span>
+  <span class="signature">&#8594; double</span>
+  
+
+</dt>
+<dd>
+  The display's reported refresh rate in Hz, or <code>60.0</code> when the engine
+does not know (older engines report <code>0</code> for an unknown display).
   <div class="features"><span class="feature">no setter</span></div>
 
 </dd>

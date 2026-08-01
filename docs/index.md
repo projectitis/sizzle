@@ -19,6 +19,7 @@ package also regularly contribute to Flame itself.
 - [Structure of a game](game_structure.md)
 - [Game services](services.md)
 - [Scaling sprites (Snap)](snap.md)
+- [Frame rate and the fixed timestep](frame_rate.md)
 - [Memory pooling](pool.md)
 - [Config files](config.md)
 - [Variable-width strokes (calligraphy)](variable_width_stroke.md)

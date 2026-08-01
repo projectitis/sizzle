@@ -72,7 +72,8 @@ root asset bundle). All layer images are decoded before this completes.</p>
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">static Future&lt;LayeredPng&gt; load(String assetPath, {AssetBundle? bundle}) async {
+  <pre class="language-dart"><code class="language-dart">static Future&lt;LayeredPng&gt; load(String assetPath,
+    {AssetBundle? bundle}) async {
   final data = await (bundle ?? rootBundle).load(assetPath);
   return fromBytes(data.buffer.asUint8List());
 }</code></pre>

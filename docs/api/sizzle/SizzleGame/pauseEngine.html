@@ -62,12 +62,12 @@
 <span class="returntype">void</span>
 <span class="name ">pauseEngine</span>(<wbr>)
 
-      <div class="features"><span class="feature">inherited</span></div>
+      
 
     </section>
     
 <section class="desc markdown">
-  <p>Pauses the engine game loop execution.</p>
+  <p>Pauses the game loop, broadcasting <a href="../../sizzle/SizzleMessage/gamePaused-constant.html">SizzleMessage.gamePaused</a>.</p>
 </section>
 
 
@@ -76,8 +76,9 @@
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
 void pauseEngine() {
-  _pausedBecauseBackgrounded = false;
+  final bool wasPaused = paused;
   super.pauseEngine();
+  _notifyPauseChanged(wasPaused);
 }</code></pre>
 </section>
 

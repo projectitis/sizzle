@@ -68,9 +68,12 @@
     </section>
     
 <section class="desc markdown">
-  <p>Ticks Flame's component tree, then drives any global per-frame
-services (currently the tween service). Pausing the game pauses
-these services for free because Flame stops calling <a href="../../sizzle/SizzleGame/update.html">update</a>.</p>
+  <p>Advances the simulation, ticks Flame's component tree, then drives any
+global per-frame services (currently the tween service).</p>
+<p>This runs once per painted frame, so anything driven from here follows
+the paint rate. In <a href="../../sizzle/FrameRateMode.html">FrameRateMode.native</a> the fixed-timestep simulation
+is pumped from here too; in the half-rate modes the physics timer owns
+it instead, so it is deliberately not pumped twice.</p>
 </section>
 
 
@@ -79,6 +82,9 @@ these services for free because Flame stops calling <a href="../../sizzle/Sizzle
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
 void update(double dt) {
+  if (!_ownsLoop) {
+    _advancePhysics(dt);
+  }
   super.update(dt);
   Services.tween.update(dt);
 }</code></pre>

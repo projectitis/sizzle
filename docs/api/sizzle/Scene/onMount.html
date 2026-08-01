@@ -54,42 +54,38 @@
 
     <section class="multi-line-signature">
       
+  <div>
+    <ol class="annotation-list">
+        <li>@override</li>
+    </ol>
+  </div>
 <span class="returntype">void</span>
 <span class="name ">onMount</span>(<wbr>)
 
-      <div class="features"><span class="feature">inherited</span></div>
+      
 
     </section>
     
 <section class="desc markdown">
-  <p>Called when the component is added to its parent.</p>
-<p>This method only runs when the component is fully loaded, i.e. after
-<code>onLoad</code>. However, <code>onLoad</code> only ever runs once for the component, whereas
-<code>onMount</code> runs every time the component is inserted into the game tree.</p>
-<p>This method runs when the component is about to be added to its parent.
-At this point the <code>parent</code> property already holds a reference to this
-component's parent, however the parent doesn't have this component among
-its <code>children</code> yet.</p>
-<p>After this method completes, the component is added to the parent's
-children set, and then the flag <code>isMounted</code> set to true.</p>
-<p>Example:</p>
-<pre class="language-dart"><code class="language-dart">@override
-void onMount() {
-  position = parent!.size / 2;
-}
-</code></pre>
-<p>See also:</p>
-<ul>
-<li><code>onRemove</code> that is called every time the component is removed from the
-game tree</li>
-</ul>
+  <p>Announces the scene on <a href="../../sizzle/SizzleMessage/sceneChanged-constant.html">SizzleMessage.sceneChanged</a> once it is live.</p>
+<p>The message carries this scene's route name (a <code>String?</code>, since
+Flame only names routes registered in the <code>scenes:</code> map). Sending
+from here rather than from <a href="../../sizzle/SizzleGame/changeScene.html">SizzleGame.changeScene</a> means listeners
+see the new scene already in place on <code>Services.game.currentScene</code>.</p>
 </section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">void onMount() {}</code></pre>
+  <pre class="language-dart"><code class="language-dart">@override
+void onMount() {
+  super.onMount();
+  Services.messages.send(
+    SizzleMessage.sceneChanged,
+    game.router.currentRoute.name,
+  );
+}</code></pre>
 </section>
 
 

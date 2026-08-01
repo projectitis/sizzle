@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the MessageService class from the sizzle library, for the Dart programming language.">
+  <title>MessageService class - sizzle library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle.dart</a></li>
+    <li class="self-crumb">MessageService class</li>
+  </ol>
+  <div class="self-name">MessageService</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="sizzle&#47;sizzle-library-sidebar.html"
+    data-below-sidebar="sizzle&#47;MessageService-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">MessageService</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>A synchronous publish/subscribe hub keyed by <code>int</code> message id.</p>
+<p>Consumers register a <a href="../sizzle/MessageCallback.html">MessageCallback</a> against an id with <a href="../sizzle/MessageService/add.html">add</a>; any
+other consumer can then <a href="../sizzle/MessageService/send.html">send</a> that id without knowing who is
+listening. Dispatch is immediate — <a href="../sizzle/MessageService/send.html">send</a> invokes every live listener
+inline and returns once they have all run. There is no queue, no
+per-send allocation and no update tick.</p>
+<pre class="language-dart"><code class="language-dart">// Somewhere that cares about the player dying
+Services.messages.add(Msg.playerDied, (id, args) {
+  lives -= 1;
+  return lives &gt; 0; // unregister once out of lives
+});
+
+// Somewhere that kills the player
+Services.messages.send(Msg.playerDied, deathCause);
+</code></pre>
+<p>Returning <code>false</code> from a callback removes that listener. For removal
+from outside the callback, keep the <a href="../sizzle/MessageListener-class.html">MessageListener</a> returned by <a href="../sizzle/MessageService/add.html">add</a>
+and call <code>cancel()</code>, or use <a href="../sizzle/MessageService/remove.html">remove</a>.</p>
+<p>Ids may be any <code>int</code>, but <strong><code>0</code>-<code>999</code> are reserved for Sizzle</strong> (see
+<a href="../sizzle/SizzleMessage-class.html">SizzleMessage</a>). Allocate game ids from <code>1000</code> upward. This is a
+convention only; it is not enforced.</p>
+<p>Listener lists are never mutated while a dispatch is in flight, so it
+is safe to call <a href="../sizzle/MessageService/add.html">add</a>, <a href="../sizzle/MessageService/remove.html">remove</a>, <a href="../sizzle/MessageService/send.html">send</a> and <a href="../sizzle/MessageListener/cancel.html">MessageListener.cancel</a>
+from inside a callback. See <a href="../sizzle/MessageService/send.html">send</a> for the exact ordering guarantees.</p>
+</section>
+
+
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="MessageService.new" class="callable">
+          <span class="name"><a href="../sizzle/MessageService/MessageService.html">MessageService</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="../sizzle/MessageService/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; int</span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="../sizzle/MessageService/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; Type</span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="add" class="callable">
+  <span class="name"><a href="../sizzle/MessageService/add.html">add</a></span><span class="signature">(<wbr><span class="parameter" id="add-param-id"><span class="type-annotation">int</span> <span class="parameter-name">id</span>, </span><span class="parameter" id="add-param-callback"><span class="type-annotation"><a href="../sizzle/MessageCallback.html">MessageCallback</a></span> <span class="parameter-name">callback</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../sizzle/MessageListener-class.html">MessageListener</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Register <code>callback</code> against message <code>id</code>. Returns a
+<a href="../sizzle/MessageListener-class.html">MessageListener</a> handle the caller can store to pause, resume or
+cancel the registration.
+  
+
+</dd>
+
+        <dt id="clear" class="callable">
+  <span class="name"><a href="../sizzle/MessageService/clear.html">clear</a></span><span class="signature">(<wbr>[<span class="parameter" id="clear-param-id"><span class="type-annotation">int?</span> <span class="parameter-name">id</span></span>])
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Remove every listener registered against <code>id</code>, or every listener on
+every id when <code>id</code> is omitted.
+  
+
+</dd>
+
+        <dt id="count" class="callable">
+  <span class="name"><a href="../sizzle/MessageService/count.html">count</a></span><span class="signature">(<wbr>[<span class="parameter" id="count-param-id"><span class="type-annotation">int?</span> <span class="parameter-name">id</span></span>])
+    <span class="returntype parameter">&#8594; int</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Number of live listeners registered against <code>id</code>, or across every id
+when <code>id</code> is omitted. Excludes listeners that have been cancelled but
+not yet compacted away. Paused listeners are counted.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="../sizzle/MessageService/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="remove" class="callable">
+  <span class="name"><a href="../sizzle/MessageService/remove.html">remove</a></span><span class="signature">(<wbr><span class="parameter" id="remove-param-id"><span class="type-annotation">int</span> <span class="parameter-name">id</span>, </span><span class="parameter" id="remove-param-callback"><span class="type-annotation"><a href="../sizzle/MessageCallback.html">MessageCallback</a></span> <span class="parameter-name">callback</span></span>)
+    <span class="returntype parameter">&#8594; bool</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Remove the first live listener on <code>id</code> whose callback equals
+<code>callback</code>. Returns <code>true</code> if one was found and removed.
+  
+
+</dd>
+
+        <dt id="send" class="callable">
+  <span class="name"><a href="../sizzle/MessageService/send.html">send</a></span><span class="signature">(<wbr><span class="parameter" id="send-param-id"><span class="type-annotation">int</span> <span class="parameter-name">id</span>, [</span><span class="parameter" id="send-param-args"><span class="type-annotation">dynamic</span> <span class="parameter-name">args</span></span>])
+    <span class="returntype parameter">&#8594; int</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Send message <code>id</code>, invoking every live listener registered against it
+with <code>(id, args)</code>. Returns the number of listeners invoked.
+  
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="../sizzle/MessageService/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; String</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="../sizzle/MessageService/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation">Object</span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; bool</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">sizzle</a></li>
+    <li><a href="../sizzle/">sizzle</a></li>
+    <li class="self-crumb">MessageService class</li>
+</ol>
+
+    <h5>sizzle library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    sizzle
+      0.1.3
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

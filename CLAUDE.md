@@ -143,6 +143,37 @@ final tween = Services.tween.add(
 tween.cancel();
 ```
 
+**MessageService** (`lib/src/utils/services/message_service.dart`)
+- Decoupled publish/subscribe hub keyed by `int` message id. Dispatch is **synchronous** — `send` invokes every listener inline and returns; no queue, no `Stream`, no `update()` tick
+- API: `Services.messages.add(id, callback)` returns a `MessageListener` handle; `send(id, [args])` returns the number of listeners fired; `remove(id, callback)`, `clear([id])`, `count([id])`
+- `MessageCallback = bool Function(int id, dynamic args)`. **Returning `false` unregisters the listener** — the idiomatic one-shot. `args` is the sender's optional payload (any object, `null` if omitted), passed by reference to every listener, so treat it as read-only
+- Handle exposes `cancel()` / `pause()` / `resume()` / `isActive` / `isPaused`
+- Re-entrancy is safe: listener lists are never mutated mid-dispatch. A listener added during a dispatch does not receive that message; one cancelled during a dispatch is skipped even if not yet reached; nested `send` of the same id resumes the outer dispatch correctly. Removals are flagged and compacted when the outermost `send` unwinds
+- `HasMessages` mixin on `Component` provides `listen(id, callback)` and cancels every registration in `onRemove` — use it for anything registered from a `Component`/`Scene`, since `Services.messages` is static and outlives scenes
+- **Ids 0–999 are reserved for Sizzle internal use**; games allocate from `1000` upward. Convention only, not enforced in code. Engine messages are static `int` constants on `SizzleMessage`
+- Engine broadcasts (payload in brackets): `sceneChanged` [route name `String?`, sent from `Scene.onMount`], `frameRateModeChanged` [`FrameRateMode`, sent from `_applyMode` on real changes only], `appLifecycleChanged` [`AppLifecycleState`], `gamePaused` / `gameResumed` [none, transition only]. `noop` is id 0 and does nothing
+- Pause broadcast covers all three Flame entry points (`pauseEngine`, `resumeEngine`, and the `paused` setter — Flame writes its backing field directly in the first two, so overriding one is not enough). `FrameRateMode.softwareHalfRate` pauses the ticker internally and is suppressed via `_internalPauseChange`; do **not** reuse `_pausedByFrameRate` for this, it is set/cleared on the wrong side of the call
+- Deliberately NOT broadcast: per-instance callbacks (`PlySprite.onAnimation*`, `SvgImage.onRender`, `DialogComponent.onFindCharacterPosition`, `Lifetime.onLifeEnded`) stay direct callbacks; flag changes (`String`-keyed, so every listener would string-compare, and `Services.load()` would storm); game resize (Flame already broadcasts `onGameResize` down the tree); `Services.onSave`/`onLoad` and `Config.onChange` (deliberate single-callback design)
+- See `docs/services_messages.md`
+
+```dart
+abstract class Msg {
+  static const int scoreChanged = 1000; // 0-999 reserved for Sizzle
+}
+
+class HudScene extends Scene with HasMessages {
+  @override
+  Future<void> onLoad() async {
+    listen(Msg.scoreChanged, (id, args) {
+      label.text = 'Score: $args';
+      return true; // false would unregister
+    });
+  }
+}
+
+Services.messages.send(Msg.scoreChanged, 1500);
+```
+
 **Logger** (`lib/src/utils/logger.dart`)
 - Accessed via `Services.log`. Defaults to `PrintLogger`; `PrintJsonLogger` and `FileLogger` are also provided. Implement the `Logger` interface for custom sinks.
 
