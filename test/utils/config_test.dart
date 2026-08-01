@@ -30,7 +30,8 @@ void main() async {
       expect(config.asStr('section1Name.property3Name'), 'default');
     });
 
-    test('Mobile + landscape: nested #landscape inside #mobile wins over '
+    test(
+        'Mobile + landscape: nested #landscape inside #mobile wins over '
         'the top-level #landscape (last-write document order)', () {
       final config = Config.parse(
         configSource,

@@ -80,6 +80,9 @@ disposal) safely converge here.</p>
   <pre class="language-dart"><code class="language-dart">@override
 void onDispose() {
   if (!_isDisposed) {
+    _stopPhysicsTimer();
+    _renderFpsMeter.stop();
+    unawaited(_clearHardwareHint());
     onCleanup?.call();
     super.onDispose();
     _isDisposed = true;

@@ -320,7 +320,8 @@ void main() {
       final env = Environment(
         lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
       );
-      final svg = LitSvgComponent.fromLitSvgData(buildMini(), anchor: Anchor.topLeft);
+      final svg =
+          LitSvgComponent.fromLitSvgData(buildMini(), anchor: Anchor.topLeft);
       env.add(svg);
       game.add(env);
       await game.ready();
@@ -398,7 +399,8 @@ void main() {
       expect(identical(svg.picture, first), isFalse);
     });
 
-    testWithEnv('addLight cascades to descendant LitSvgComponent', (game) async {
+    testWithEnv('addLight cascades to descendant LitSvgComponent',
+        (game) async {
       final env = Environment(
         lights: [AmbientLight(color: const Color(0xFFFFFFFF))],
       );

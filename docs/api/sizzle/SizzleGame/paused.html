@@ -83,31 +83,34 @@
   <section id="setter">
     <section class="multi-line-signature">
       
+  <div>
+    <ol class="annotation-list">
+        <li>@override</li>
+    </ol>
+  </div>
       set
       <span class="name ">paused</span>
       <span class="signature">(<wbr><span class="parameter" id="paused=-param-value"><span class="type-annotation">bool</span> <span class="parameter-name">value</span></span>)</span>
-      <div class="features"><span class="feature">inherited</span></div>
+      
 
     </section>
     
 <section class="desc markdown">
-  <p>Pauses or resume the engine</p>
+  <p>Pauses or resumes the game loop, broadcasting
+<a href="../../sizzle/SizzleMessage/gamePaused-constant.html">SizzleMessage.gamePaused</a> or <a href="../../sizzle/SizzleMessage/gameResumed-constant.html">SizzleMessage.gameResumed</a>.</p>
+<p>Overridden as well as <a href="../../sizzle/SizzleGame/pauseEngine.html">pauseEngine</a> / <a href="../../sizzle/SizzleGame/resumeEngine.html">resumeEngine</a> because Flame
+writes its backing field directly in those methods rather than
+routing through this setter, so all three are separate entry points.</p>
 </section>
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">set paused(bool value) {
-  _paused = value;
-
-  final gameLoop = _gameRenderBox?.gameLoop;
-  if (gameLoop != null) {
-    if (value) {
-      gameLoop.stop();
-    } else {
-      gameLoop.start();
-    }
-  }
+  <pre class="language-dart"><code class="language-dart">@override
+set paused(bool value) {
+  final bool wasPaused = paused;
+  super.paused = value;
+  _notifyPauseChanged(wasPaused);
 }</code></pre>
 </section>
 

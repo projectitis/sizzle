@@ -73,6 +73,10 @@ scenes with <a href="../sizzle/SizzleGame/changeScene.html">changeScene</a> from
 <li><strong>Coordinate-transformed input</strong> so taps, drags and hover hit the
 same components they appear over once the letterbox translation has
 been applied (see <a href="../sizzle/SizzleGame/componentsAtPoint.html">componentsAtPoint</a>).</li>
+<li><strong>A simulation clock decoupled from the paint clock.</strong> <a href="../sizzle/SizzleGame/fixedUpdate.html">fixedUpdate</a>
+runs at <a href="../sizzle/SizzleGame/fixedUpdateFps.html">fixedUpdateFps</a> (60 by default) no matter how often the game
+paints, and <a href="../sizzle/SizzleGame/frameRateMode.html">frameRateMode</a> can halve the paint rate to save GPU or
+display power without slowing gameplay down. See <a href="../sizzle/SizzleGame/setFrameRateMode.html">setFrameRateMode</a>.</li>
 </ol>
 <p>Read-only views of the resulting layout are exposed via <a href="../sizzle/SizzleGame/viewWindow.html">viewWindow</a>
 (the visible area inside the letterbox), <a href="../sizzle/SizzleGame/gameWindow.html">gameWindow</a> (the full max
@@ -102,7 +106,7 @@ pixel-to-screen ratio used by <code>Snap</code> components).</p>
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
         <dt id="SizzleGame.new" class="callable">
-          <span class="name"><a href="../sizzle/SizzleGame/SizzleGame.html">SizzleGame</a></span><span class="signature">({<span class="parameter" id="param-scenes"><span class="type-annotation">Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">Component Function<span class="signature">()</span></span>&gt;</span>?</span> <span class="parameter-name">scenes</span>, </span><span class="parameter" id="param-scene"><span class="type-annotation">Component</span> <span class="parameter-name">scene</span>()?, </span><span class="parameter" id="param-targetSize"><span class="type-annotation">Vector2?</span> <span class="parameter-name">targetSize</span>, </span><span class="parameter" id="param-maxSize"><span class="type-annotation">Vector2?</span> <span class="parameter-name">maxSize</span>, </span><span class="parameter" id="param-letterBoxColor"><span class="type-annotation">Color</span> <span class="parameter-name">letterBoxColor</span> = <span class="default-value">const Color(0xff000000)</span>, </span><span class="parameter" id="param-scaleToWholePixels"><span class="type-annotation">bool</span> <span class="parameter-name">scaleToWholePixels</span> = <span class="default-value">false</span>, </span><span class="parameter" id="param-scale"><span class="type-annotation"><a href="../sizzle/Range-class.html">Range</a>?</span> <span class="parameter-name">scale</span></span>})</span>
+          <span class="name"><a href="../sizzle/SizzleGame/SizzleGame.html">SizzleGame</a></span><span class="signature">({<span class="parameter" id="param-scenes"><span class="type-annotation">Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">Component Function<span class="signature">()</span></span>&gt;</span>?</span> <span class="parameter-name">scenes</span>, </span><span class="parameter" id="param-scene"><span class="type-annotation">Component</span> <span class="parameter-name">scene</span>()?, </span><span class="parameter" id="param-targetSize"><span class="type-annotation">Vector2?</span> <span class="parameter-name">targetSize</span>, </span><span class="parameter" id="param-maxSize"><span class="type-annotation">Vector2?</span> <span class="parameter-name">maxSize</span>, </span><span class="parameter" id="param-letterBoxColor"><span class="type-annotation">Color</span> <span class="parameter-name">letterBoxColor</span> = <span class="default-value">const Color(0xff000000)</span>, </span><span class="parameter" id="param-scaleToWholePixels"><span class="type-annotation">bool</span> <span class="parameter-name">scaleToWholePixels</span> = <span class="default-value">false</span>, </span><span class="parameter" id="param-scale"><span class="type-annotation"><a href="../sizzle/Range-class.html">Range</a>?</span> <span class="parameter-name">scale</span>, </span><span class="parameter" id="param-frameRateMode"><span class="type-annotation"><a href="../sizzle/FrameRateMode.html">FrameRateMode</a></span> <span class="parameter-name">frameRateMode</span> = <span class="default-value">FrameRateMode.native</span>, </span><span class="parameter" id="param-frameRateFallbackToSoftware"><span class="type-annotation">bool</span> <span class="parameter-name">frameRateFallbackToSoftware</span> = <span class="default-value">true</span>, </span><span class="parameter" id="param-fixedUpdateFps"><span class="type-annotation">int</span> <span class="parameter-name">fixedUpdateFps</span> = <span class="default-value">60</span>, </span><span class="parameter" id="param-measureFps"><span class="type-annotation">bool</span> <span class="parameter-name">measureFps</span> = <span class="default-value">false</span></span>})</span>
         </dt>
         <dd>
           Creates a new Sizzle game.
@@ -252,6 +256,43 @@ its parent has when it is prepared.
   Returns a <code>TextPaint</code> object with the <code>debugColor</code> set as color for the
 text.
   <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="effectiveFrameRateMode" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/effectiveFrameRateMode.html">effectiveFrameRateMode</a></span>
+  <span class="signature">&#8594; <a href="../sizzle/FrameRateMode.html">FrameRateMode</a></span>
+  
+
+</dt>
+<dd>
+  The frame-rate mode currently in force.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="fixedUpdateFps" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/fixedUpdateFps.html">fixedUpdateFps</a></span>
+  <span class="signature">&#8594; int</span>
+  
+
+</dt>
+<dd>
+  The rate at which <a href="../sizzle/SizzleGame/fixedUpdate.html">fixedUpdate</a> is driven, in calls per second. Fixed
+for the lifetime of the game; set it via the constructor.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="frameRateMode" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/frameRateMode.html">frameRateMode</a></span>
+  <span class="signature">&#8594; <a href="../sizzle/FrameRateMode.html">FrameRateMode</a></span>
+  
+
+</dt>
+<dd>
+  The frame-rate mode that was asked for, before any fallback.
+  <div class="features"><span class="feature">no setter</span></div>
 
 </dd>
 
@@ -508,6 +549,44 @@ processed.
 
 </dd>
 
+        <dt id="measuredFixedUpdateFps" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/measuredFixedUpdateFps.html">measuredFixedUpdateFps</a></span>
+  <span class="signature">&#8594; double</span>
+  
+
+</dt>
+<dd>
+  The rate at which <a href="../sizzle/SizzleGame/fixedUpdate.html">fixedUpdate</a> is actually being called, averaged over
+roughly the last second.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="measuredRenderFps" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/measuredRenderFps.html">measuredRenderFps</a></span>
+  <span class="signature">&#8594; double</span>
+  
+
+</dt>
+<dd>
+  The rate at which frames are actually being presented, averaged over
+the last few frames.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="measureFps" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/measureFps.html">measureFps</a></span>
+  <span class="signature">&#8596; bool</span>
+  
+
+</dt>
+<dd>
+  Whether the frame-rate meters are running.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
         <dt id="mounted" class="property inherited">
   <span class="name"><a href="../sizzle/SizzleGame/mounted.html">mounted</a></span>
   <span class="signature">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
@@ -585,15 +664,15 @@ superclass tears down, giving the game a chance to release resources
 
 </dd>
 
-        <dt id="paused" class="property inherited">
+        <dt id="paused" class="property">
   <span class="name"><a href="../sizzle/SizzleGame/paused.html">paused</a></span>
   <span class="signature">&#8596; bool</span>
   
 
 </dt>
-<dd class="inherited">
+<dd>
   Returns is the engine if currently paused or running
-  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited-getter</span></div>
 
 </dd>
 
@@ -1221,6 +1300,20 @@ are no such children.
 
 </dd>
 
+        <dt id="fixedUpdate" class="callable">
+  <span class="name"><a href="../sizzle/SizzleGame/fixedUpdate.html">fixedUpdate</a></span><span class="signature">(<wbr><span class="parameter" id="fixedUpdate-param-fixedDt"><span class="type-annotation">double</span> <span class="parameter-name">fixedDt</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Fixed-timestep update, called at <a href="../sizzle/SizzleGame/fixedUpdateFps.html">fixedUpdateFps</a> (60 by default)
+independently of how often the game paints.
+  
+
+</dd>
+
         <dt id="lastChild" class="callable inherited">
   <span class="name"><a href="../sizzle/SizzleGame/lastChild.html">lastChild</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends Component</span>&gt;</span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; T?</span>
@@ -1235,17 +1328,17 @@ are no such children.
 
 </dd>
 
-        <dt id="lifecycleStateChange" class="callable inherited">
+        <dt id="lifecycleStateChange" class="callable">
   <span class="name"><a href="../sizzle/SizzleGame/lifecycleStateChange.html">lifecycleStateChange</a></span><span class="signature">(<wbr><span class="parameter" id="lifecycleStateChange-param-state"><span class="type-annotation">AppLifecycleState</span> <span class="parameter-name">state</span></span>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
-<dd class="inherited">
-  This is the lifecycle state change hook; every time the game is resumed,
-paused or suspended, this is called.
-  <div class="features"><span class="feature">inherited</span></div>
+<dd>
+  Keeps the physics timer in step with the app being backgrounded, and
+broadcasts <a href="../sizzle/SizzleMessage/appLifecycleChanged-constant.html">SizzleMessage.appLifecycleChanged</a>.
+  
 
 </dd>
 
@@ -1414,16 +1507,17 @@ not be on the flutter widget tree anymore.
 
 </dd>
 
-        <dt id="onMount" class="callable inherited">
+        <dt id="onMount" class="callable">
   <span class="name"><a href="../sizzle/SizzleGame/onMount.html">onMount</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
-<dd class="inherited">
-  Called when the component is added to its parent.
-  <div class="features"><span class="feature">inherited</span></div>
+<dd>
+  Starts the frame-rate meters and engages the requested
+<a href="../sizzle/FrameRateMode.html">FrameRateMode</a>.
+  
 
 </dd>
 
@@ -1495,16 +1589,16 @@ do cleanups to avoid memory leaks.
 
 </dd>
 
-        <dt id="pauseEngine" class="callable inherited">
+        <dt id="pauseEngine" class="callable">
   <span class="name"><a href="../sizzle/SizzleGame/pauseEngine.html">pauseEngine</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
-<dd class="inherited">
-  Pauses the engine game loop execution.
-  <div class="features"><span class="feature">inherited</span></div>
+<dd>
+  Pauses the game loop, broadcasting <a href="../sizzle/SizzleMessage/gamePaused-constant.html">SizzleMessage.gamePaused</a>.
+  
 
 </dd>
 
@@ -1685,16 +1779,29 @@ letterbox colour.
 
 </dd>
 
-        <dt id="resumeEngine" class="callable inherited">
+        <dt id="resumeEngine" class="callable">
   <span class="name"><a href="../sizzle/SizzleGame/resumeEngine.html">resumeEngine</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
-<dd class="inherited">
-  Resumes the engine game loop execution.
-  <div class="features"><span class="feature">inherited</span></div>
+<dd>
+  Resumes the game loop, broadcasting <a href="../sizzle/SizzleMessage/gameResumed-constant.html">SizzleMessage.gameResumed</a>.
+  
+
+</dd>
+
+        <dt id="setFrameRateMode" class="callable">
+  <span class="name"><a href="../sizzle/SizzleGame/setFrameRateMode.html">setFrameRateMode</a></span><span class="signature">(<wbr><span class="parameter" id="setFrameRateMode-param-mode"><span class="type-annotation"><a href="../sizzle/FrameRateMode.html">FrameRateMode</a></span> <span class="parameter-name">mode</span>, {</span><span class="parameter" id="setFrameRateMode-param-fallbackToSoftware"><span class="type-annotation">bool</span> <span class="parameter-name">fallbackToSoftware</span> = <span class="default-value">true</span></span>})
+    <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/FrameRateMode.html">FrameRateMode</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Switches to <code>mode</code>, returning the mode that ended up in force.
+  
 
 </dd>
 
@@ -1747,9 +1854,8 @@ loaded by the game widget.
 
 </dt>
 <dd>
-  Ticks Flame's component tree, then drives any global per-frame
-services (currently the tween service). Pausing the game pauses
-these services for free because Flame stops calling <a href="../sizzle/SizzleGame/update.html">update</a>.
+  Advances the simulation, ticks Flame's component tree, then drives any
+global per-frame services (currently the tween service).
   
 
 </dd>

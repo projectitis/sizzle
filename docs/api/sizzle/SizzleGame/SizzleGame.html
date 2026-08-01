@@ -61,6 +61,10 @@
 <li><span class="parameter" id="param-letterBoxColor"><span class="type-annotation">Color</span> <span class="parameter-name">letterBoxColor</span> = <span class="default-value">const Color(0xff000000)</span>, </span></li>
 <li><span class="parameter" id="param-scaleToWholePixels"><span class="type-annotation">bool</span> <span class="parameter-name">scaleToWholePixels</span> = <span class="default-value">false</span>, </span></li>
 <li><span class="parameter" id="param-scale"><span class="type-annotation"><a href="../../sizzle/Range-class.html">Range</a>?</span> <span class="parameter-name">scale</span>, </span></li>
+<li><span class="parameter" id="param-frameRateMode"><span class="type-annotation"><a href="../../sizzle/FrameRateMode.html">FrameRateMode</a></span> <span class="parameter-name">frameRateMode</span> = <span class="default-value">FrameRateMode.native</span>, </span></li>
+<li><span class="parameter" id="param-frameRateFallbackToSoftware"><span class="type-annotation">bool</span> <span class="parameter-name">frameRateFallbackToSoftware</span> = <span class="default-value">true</span>, </span></li>
+<li><span class="parameter" id="param-fixedUpdateFps"><span class="type-annotation">int</span> <span class="parameter-name">fixedUpdateFps</span> = <span class="default-value">60</span>, </span></li>
+<li><span class="parameter" id="param-measureFps"><span class="type-annotation">bool</span> <span class="parameter-name">measureFps</span> = <span class="default-value">false</span>, </span></li>
 </ol>})
     </section>
     
@@ -76,6 +80,13 @@ the new minimum visible area. <code>letterBoxColor</code> is painted around
 <code>maxSize</code> when the canvas is larger than the max area.
 <code>scaleToWholePixels</code> forces integer pixel scaling for crisp pixel-art.
 <code>scale</code> clamps the auto-fit scale factor.</p>
+<p><code>frameRateMode</code> selects how often the game paints and
+<code>frameRateFallbackToSoftware</code> what happens when a hardware request is
+not honoured - both are applied on mount and can be changed later with
+<a href="../../sizzle/SizzleGame/setFrameRateMode.html">setFrameRateMode</a>. <code>fixedUpdateFps</code> is the simulation rate driving
+<a href="../../sizzle/SizzleGame/fixedUpdate.html">fixedUpdate</a>, independent of the paint rate. <code>measureFps</code> turns on the
+<a href="../../sizzle/SizzleGame/measuredRenderFps.html">measuredRenderFps</a> / <a href="../../sizzle/SizzleGame/measuredFixedUpdateFps.html">measuredFixedUpdateFps</a> meters; leave it off in
+production, where it costs nothing at all.</p>
 </section>
 
 
@@ -90,7 +101,15 @@ the new minimum visible area. <code>letterBoxColor</code> is painted around
   Color letterBoxColor = const Color(0xff000000),
   this.scaleToWholePixels = false,
   Range? scale,
-}) : super() {
+  FrameRateMode frameRateMode = FrameRateMode.native,
+  bool frameRateFallbackToSoftware = true,
+  int fixedUpdateFps = 60,
+  bool measureFps = false,
+})  : _requestedMode = frameRateMode,
+      _fallbackToSoftware = frameRateFallbackToSoftware,
+      _fixedUpdateFps = fixedUpdateFps,
+      _measureFps = measureFps,
+      super() {
   assert(
     scene != null || scenes != null,
     &#39;A scene or scenes must be provided&#39;,
@@ -98,6 +117,10 @@ the new minimum visible area. <code>letterBoxColor</code> is painted around
   assert(
     !(scene != null &amp;&amp; scenes != null),
     &#39;Provide either a scene or list of scenes, not both&#39;,
+  );
+  assert(
+    fixedUpdateFps &gt; 0,
+    &#39;fixedUpdateFps must be greater than zero&#39;,
   );
 
   if (targetSize != null) {

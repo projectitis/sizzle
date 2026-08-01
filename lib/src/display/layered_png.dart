@@ -63,7 +63,8 @@ class LayeredPng {
 
   /// Load and parse an `.lpng` [assetPath] from [bundle] (defaults to the
   /// root asset bundle). All layer images are decoded before this completes.
-  static Future<LayeredPng> load(String assetPath, {AssetBundle? bundle}) async {
+  static Future<LayeredPng> load(String assetPath,
+      {AssetBundle? bundle}) async {
     final data = await (bundle ?? rootBundle).load(assetPath);
     return fromBytes(data.buffer.asUint8List());
   }

@@ -62,12 +62,12 @@
 <span class="returntype">void</span>
 <span class="name ">resumeEngine</span>(<wbr>)
 
-      <div class="features"><span class="feature">inherited</span></div>
+      
 
     </section>
     
 <section class="desc markdown">
-  <p>Resumes the engine game loop execution.</p>
+  <p>Resumes the game loop, broadcasting <a href="../../sizzle/SizzleMessage/gameResumed-constant.html">SizzleMessage.gameResumed</a>.</p>
 </section>
 
 
@@ -76,8 +76,9 @@
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
 void resumeEngine() {
-  _pausedBecauseBackgrounded = false;
+  final bool wasPaused = paused;
   super.resumeEngine();
+  _notifyPauseChanged(wasPaused);
 }</code></pre>
 </section>
 

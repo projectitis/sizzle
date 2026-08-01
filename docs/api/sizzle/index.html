@@ -228,6 +228,14 @@ open and close the sink for every write?
   
 </dd>
 
+          <dt id="FpsMeter">
+  <span class="name "><a href="../sizzle/FpsMeter-class.html">FpsMeter</a></span> 
+
+</dt>
+<dd>
+  Measures the rate at which the engine actually presents frames.
+</dd>
+
           <dt id="GeneratedStroke">
   <span class="name "><a href="../sizzle/GeneratedStroke-class.html">GeneratedStroke</a></span> 
 
@@ -268,6 +276,14 @@ baked images from a <a href="../sizzle/HalftoneGradient-class.html">HalftoneGrad
 </dt>
 <dd>
   A single stop on the halftone amount curve.
+</dd>
+
+          <dt id="HwFrameRateProvider">
+  <span class="name "><a href="../sizzle/HwFrameRateProvider-class.html">HwFrameRateProvider</a></span> 
+
+</dt>
+<dd>
+  Seam for a platform plugin that can change the display's refresh rate.
 </dd>
 
           <dt id="ImageProperties">
@@ -405,6 +421,24 @@ relevant) applies any <code>pp:expand</code> offset before doing so.
 <a href="../sizzle/LpngLayer/image.html">image</a>) or a <strong>group</strong> (no <a href="../sizzle/LpngLayer/src.html">src</a>; composites its <a href="../sizzle/LpngLayer/layers.html">layers</a>).
 </dd>
 
+          <dt id="MessageListener">
+  <span class="name "><a href="../sizzle/MessageListener-class.html">MessageListener</a></span> 
+
+</dt>
+<dd>
+  Handle to a listener registered on <a href="../sizzle/MessageService-class.html">MessageService</a>. The service owns
+the instance; callers receive it from <a href="../sizzle/MessageService/add.html">MessageService.add</a> and use it to
+inspect state, <a href="../sizzle/MessageListener/pause.html">pause</a>/<a href="../sizzle/MessageListener/resume.html">resume</a>, or <a href="../sizzle/MessageListener/cancel.html">cancel</a>.
+</dd>
+
+          <dt id="MessageService">
+  <span class="name "><a href="../sizzle/MessageService-class.html">MessageService</a></span> 
+
+</dt>
+<dd>
+  A synchronous publish/subscribe hub keyed by <code>int</code> message id.
+</dd>
+
           <dt id="NineGridComponent">
   <span class="name "><a href="../sizzle/NineGridComponent-class.html">NineGridComponent</a></span> 
 
@@ -487,6 +521,15 @@ sprite, resulting in a much smaller image (sprite sheet).
   Utility class that describes a range defined by a minimum and maximum value
 </dd>
 
+          <dt id="RateCounter">
+  <span class="name "><a href="../sizzle/RateCounter-class.html">RateCounter</a></span> 
+
+</dt>
+<dd>
+  Counts how often something happens and reports it as a per-second rate
+over a sliding window.
+</dd>
+
           <dt id="Scene">
   <span class="name "><a href="../sizzle/Scene-class.html">Scene</a></span> 
 
@@ -509,6 +552,14 @@ sprite, resulting in a much smaller image (sprite sheet).
 </dt>
 <dd>
   The root <code>FlameGame</code> for a Sizzle title.
+</dd>
+
+          <dt id="SizzleMessage">
+  <span class="name "><a href="../sizzle/SizzleMessage-class.html">SizzleMessage</a></span> 
+
+</dt>
+<dd>
+  Message ids raised by Sizzle itself.
 </dd>
 
           <dt id="SnapDialogComponent">
@@ -682,6 +733,14 @@ way an ink-loaded nib does in calligraphy.
   
 </dd>
 
+          <dt id="FrameRateMode">
+  <span class="name "><a href="../sizzle/FrameRateMode.html">FrameRateMode</a></span> 
+
+</dt>
+<dd>
+  Strategy used by <code>SizzleGame</code> to decide how often the game paints.
+</dd>
+
           <dt id="HalftoneGrowth">
   <span class="name "><a href="../sizzle/HalftoneGrowth.html">HalftoneGrowth</a></span> 
 
@@ -747,6 +806,15 @@ to <code>ui.BlendMode.srcOver</code> when compositing (see <a href="../sizzle/Lp
     <section class="summary offset-anchor" id="mixins">
       <h2>Mixins</h2>
       <dl>
+          <dt id="HasMessages">
+  <span class="name "><a href="../sizzle/HasMessages-mixin.html">HasMessages</a></span> 
+
+</dt>
+<dd>
+  Mixin for <code>Component</code>s that listen for messages, tying listener
+lifetime to component lifetime.
+</dd>
+
           <dt id="Lifetime">
   <span class="name "><a href="../sizzle/Lifetime-mixin.html">Lifetime</a></span> 
 
@@ -907,6 +975,20 @@ interpolated colour.
   <dd>
     Signature for an easing function used by <a href="../sizzle/TweenService/add.html">TweenService.add</a>. Receives a
 normalised time <code>t</code> in <code>[0, 1]</code> and returns the eased progress.
+    
+
+  </dd>
+
+          
+  <dt id="MessageCallback" class="callable">
+    <span class="name"><a href="../sizzle/MessageCallback.html">MessageCallback</a></span><span class="signature">
+      <span class="returntype parameter">= bool Function<span class="signature">(<span class="parameter" id="param-id"><span class="type-annotation">int</span> <span class="parameter-name">id</span>, </span><span class="parameter" id="param-args"><span class="type-annotation">dynamic</span> <span class="parameter-name">args</span></span>)</span></span>
+    </span>
+    
+
+  </dt>
+  <dd>
+    Signature for a message listener registered with <a href="../sizzle/MessageService/add.html">MessageService.add</a>.
     
 
   </dd>

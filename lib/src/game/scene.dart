@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 
 import '../game/game.dart';
+import '../utils/services.dart';
+import '../utils/services/message_service.dart';
 
 /// Base class for a top-level screen, level, or game state in a Sizzle game.
 ///
@@ -45,12 +47,45 @@ class Scene extends Component with HasGameReference<SizzleGame> {
   /// continue to run.
   bool paused = false;
 
+  /// Announces the scene on [SizzleMessage.sceneChanged] once it is live.
+  ///
+  /// The message carries this scene's route name (a `String?`, since
+  /// Flame only names routes registered in the `scenes:` map). Sending
+  /// from here rather than from [SizzleGame.changeScene] means listeners
+  /// see the new scene already in place on `Services.game.currentScene`.
+  @override
+  void onMount() {
+    super.onMount();
+    Services.messages.send(
+      SizzleMessage.sceneChanged,
+      game.router.currentRoute.name,
+    );
+  }
+
   /// Advances the scene's children by [dt] seconds. Skipped while [paused].
   @override
   void update(double dt) {
     if (paused) return;
     super.update(dt);
   }
+
+  /// Fixed-timestep update, called at [SizzleGame.fixedUpdateFps] (60 by
+  /// default) independently of how often the game paints.
+  ///
+  /// [fixedDt] is always exactly `1 / fixedUpdateFps`, so simulation stepped
+  /// here is deterministic and frame-rate independent. Depending on how long
+  /// the last frame took, this may be called zero, one, or several times per
+  /// rendered frame - and in the half-rate frame-rate modes it keeps ticking
+  /// at the full rate while the game only paints every second tick.
+  ///
+  /// The default implementation does nothing. Override it for physics,
+  /// collision, or any logic that must not drift with the paint rate, and
+  /// dispatch to child components from here as needed. Everything that should
+  /// simply follow the render rate (animation, tweens, effects) belongs in
+  /// [update] instead.
+  ///
+  /// Skipped while [paused].
+  void fixedUpdate(double fixedDt) {}
 
   /// Draws the scene's children. Skipped while [paused], leaving the previous
   /// frame visible.

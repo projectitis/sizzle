@@ -11,6 +11,7 @@ import './services/file_service.dart';
 import './services/flag_service.dart';
 import './services/image_service.dart';
 import './services/lit_svg_service.dart';
+import './services/message_service.dart';
 import './services/tween_service.dart';
 import './logger.dart';
 
@@ -51,6 +52,10 @@ class Services {
   /// Reference to the tween service. Ticked automatically by
   /// `SizzleGame.update`.
   static final TweenService tween = TweenService();
+
+  /// Reference to the message service. Dispatch is synchronous, so this
+  /// service is not ticked.
+  static final MessageService messages = MessageService();
 
   // Logger
   static Logger log = PrintLogger();

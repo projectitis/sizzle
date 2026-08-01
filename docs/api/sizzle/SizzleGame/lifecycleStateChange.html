@@ -57,22 +57,24 @@
   <div>
     <ol class="annotation-list">
         <li>@override</li>
-        <li>@mustCallSuper</li>
     </ol>
   </div>
 <span class="returntype">void</span>
 <span class="name ">lifecycleStateChange</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="lifecycleStateChange-param-state"><span class="type-annotation">AppLifecycleState</span> <span class="parameter-name">state</span></span></li>
 </ol>)
 
-      <div class="features"><span class="feature">inherited</span></div>
+      
 
     </section>
     
 <section class="desc markdown">
-  <p>This is the lifecycle state change hook; every time the game is resumed,
-paused or suspended, this is called.</p>
-<p>The default implementation does nothing; override to use the hook.
-Check <code>AppLifecycleState</code> for details about the events received.</p>
+  <p>Keeps the physics timer in step with the app being backgrounded, and
+broadcasts <a href="../../sizzle/SizzleMessage/appLifecycleChanged-constant.html">SizzleMessage.appLifecycleChanged</a>.</p>
+<p>Flame's own handling only covers the ticker, and in the half-rate modes
+Sizzle owns a timer that would otherwise keep simulating (and, in
+software mode, keep asking for paints) while the app is not visible.</p>
+<p>The message is sent before the early-out below so that it fires in
+every frame rate mode, not just the ones that own the loop.</p>
 </section>
 
 
@@ -80,22 +82,21 @@ Check <code>AppLifecycleState</code> for details about the events received.</p>
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
-@mustCallSuper
 void lifecycleStateChange(AppLifecycleState state) {
+  Services.messages.send(SizzleMessage.appLifecycleChanged, state);
   super.lifecycleStateChange(state);
+  if (!_ownsLoop) return;
   switch (state) {
     case AppLifecycleState.resumed:
     case AppLifecycleState.inactive:
-      if (_pausedBecauseBackgrounded) {
-        resumeEngine();
-      }
+      &#47;&#47; `super` has already restarted the ticker if it paused it; re-engage
+      &#47;&#47; rebuilds our side of the loop with a fresh accumulator so the time
+      &#47;&#47; spent backgrounded is not simulated in one burst.
+      if (isMounted) _engageMode();
     case AppLifecycleState.paused:
     case AppLifecycleState.detached:
     case AppLifecycleState.hidden:
-      if (pauseWhenBackgrounded &amp;&amp; !paused) {
-        pauseEngine();
-        _pausedBecauseBackgrounded = true;
-      }
+      _stopPhysicsTimer();
   }
 }</code></pre>
 </section>
