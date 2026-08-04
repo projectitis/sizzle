@@ -7,6 +7,8 @@
 - [Frame rate modes](#frame-rate-modes)
 - [Choosing a mode](#choosing-a-mode)
 - [Changing mode at runtime](#changing-mode-at-runtime)
+- [Pause reasons](#pause-reasons)
+- [Ambient mode](#ambient-mode)
 - [Measuring what actually happened](#measuring-what-actually-happened)
 - [Hardware frame rate limiting](#hardware-frame-rate-limiting)
 
@@ -141,10 +143,9 @@ returned mode is the one that ended up in force, which is also readable from
 for, so comparing the two tells you whether a fallback happened.
 
 Note that `softwareHalfRate` works by pausing the engine, so `game.paused`
-reads `true` while it is active. Sizzle only resumes a game it paused itself,
-so a pause menu that called `pauseEngine()` stays paused across a mode change.
-For the same reason it does *not* broadcast `SizzleMessage.gamePaused` - the
-title did not pause.
+reads `true` while it is active. That is not the same as the game being
+stopped - see [Pause reasons](#pause-reasons) below. For the same reason it
+does *not* broadcast `SizzleMessage.gamePaused`: the title did not pause.
 
 The engine also broadcasts
 [`SizzleMessage.frameRateModeChanged`](services_messages.md#engine-messages)
@@ -160,6 +161,78 @@ Services.messages.add(SizzleMessage.frameRateModeChanged, (id, args) {
 });
 ```
 
+
+## Pause reasons
+
+Several unrelated things can want the game stopped, and they overlap: the app
+can be backgrounded while the watch is in ambient mode while your pause menu
+is open. Sizzle tracks them as a set rather than a single flag, so the game
+resumes when the **last** reason clears rather than the first:
+
+```dart
+game.pauseReasons;  // {} while running
+```
+
+| Reason | Set by |
+|---|---|
+| `PauseReason.backgrounded` | the OS backgrounding, hiding or detaching the app |
+| `PauseReason.ambient` | the watch entering ambient mode |
+| `PauseReason.user` | your own `pauseEngine()` / `resumeEngine()` / `paused =` |
+
+The practical consequences:
+
+- `resumeEngine()` clears *your* reason. It does not promise the game starts
+  running — if it is also backgrounded, it stays paused until it returns to
+  the foreground.
+- `SizzleMessage.gamePaused` / `gameResumed` fire once per transition in and
+  out of "running", not once per reason.
+- The frame rate mode is deliberately **not** a reason.
+  `softwareHalfRate` stops the ticker to control the paint rate, not because
+  anything wants the game stopped, so `pauseReasons` stays empty there even
+  though `game.paused` reads `true`. This is what lets a pause menu actually
+  pause a `softwareHalfRate` game.
+
+
+## Ambient mode
+
+On a watch, "ambient" is the dimmed low-power state the display drops into
+when you lower your wrist. **On Wear OS 6+ an app targeting SDK 36 is
+always-on whether it asks to be or not**: the activity stays *resumed*, no
+lifecycle callback arrives, and there is no way to opt out. Left unhandled, a
+game would keep simulating and painting at full rate on a screen nobody is
+looking at.
+
+Sizzle does not render an ambient screen. It detects ambient and **stops the
+game**, which is almost always what a game wants:
+
+```dart
+game.pauseReasons;  // {PauseReason.ambient} while the watch is dimmed
+```
+
+Everything follows from that - the physics timer stops, no frames are painted,
+and `SizzleMessage.gamePaused` fires as it would for any other pause. When the
+user raises their wrist the reason clears and the game resumes.
+
+This needs a platform provider; `sizzle_wearable` supplies one. Without it
+`PauseReason.ambient` never appears and nothing changes.
+
+### Staying awake instead
+
+A game with long stretches of no input - an idle round, a cutscene, a timer -
+will be put to sleep by the watch long before it is finished. Those games
+should hold the display awake explicitly:
+
+```dart
+await SizzleWearable.display.setKeepScreenOn(true);
+```
+
+Note the two are mutually exclusive: while the screen is held awake the watch
+never dims, so ambient never happens. That is the intended trade, but it does
+mean a game that holds the display awake for a whole session is choosing to
+spend the battery.
+
+Games with near-continuous interaction should leave it off and let the watch
+sleep normally.
 
 ## Measuring what actually happened
 

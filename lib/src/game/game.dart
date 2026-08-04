@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 import 'dart:ui';
 
@@ -13,6 +14,7 @@ import 'package:flame/game.dart';
 
 import './frame_rate_mode.dart';
 import './fps_meter.dart';
+import './pause_reason.dart';
 import './scene.dart';
 import '../math/math.dart';
 import '../utils/device.dart';
@@ -172,24 +174,25 @@ class SizzleGame extends FlameGame
   /// Counts physics ticks towards the next software-cadenced paint.
   int _paintTickCounter = 0;
 
-  /// Set when [FrameRateMode.softwareHalfRate] paused the engine, so
-  /// returning to [FrameRateMode.native] does not resume a game that the
-  /// title itself had paused.
-  bool _pausedByFrameRate = false;
-
-  /// Set while the engine is being paused or resumed as an implementation
-  /// detail of a frame rate mode, to suppress [SizzleMessage.gamePaused] /
-  /// [SizzleMessage.gameResumed]. The title did not pause, so nothing
-  /// should be told that it did.
+  /// Everything that currently wants the game stopped, ignoring the frame
+  /// rate mode's own use of the paused ticker.
   ///
-  /// [_pausedByFrameRate] cannot serve this purpose: it is set *after*
-  /// `pauseEngine` and cleared *before* `resumeEngine`, so it reads wrong
-  /// at exactly the moment the notification would fire.
-  bool _internalPauseChange = false;
+  /// Empty means the title wants the game running. The engine resumes when
+  /// the last reason clears, not the first, which is what keeps
+  /// backgrounding, ambient mode and a pause menu from undoing each other.
+  final Set<PauseReason> _pauseReasons = <PauseReason>{};
 
   /// Whether a refresh-rate request is currently outstanding with the
-  /// platform and needs clearing on teardown or mode change.
+  /// platform. Owned by [_reconcile], which applies and releases it in step
+  /// with the running state so it survives Surface recreation.
   bool _hardwareHintApplied = false;
+
+  /// Whether a hardware rate request has been applied but not yet confirmed,
+  /// because the game was not producing frames to measure at the time.
+  /// [_reconcile] picks this up once the game runs again.
+  bool _hardwareVerificationPending = false;
+
+  bool _isPowerSaveMode = false;
 
   final FpsMeter _renderFpsMeter = FpsMeter();
   final RateCounter _fixedUpdateCounter = RateCounter();
@@ -206,6 +209,31 @@ class SizzleGame extends FlameGame
   /// Whether the current mode drives the simulation itself rather than
   /// letting the engine ticker drive it from [update].
   bool get _ownsLoop => _effectiveMode != FrameRateMode.native;
+
+  /// Whether the ticker being stopped is *only* the frame rate mode's doing.
+  ///
+  /// The physics timer may step the engine in that case and only in that
+  /// case: if anything in [_pauseReasons] also wants the game stopped, a
+  /// step would resume simulation and painting behind the title's back.
+  bool get _stepAllowed =>
+      _pauseReasons.isEmpty && _effectiveMode == FrameRateMode.softwareHalfRate;
+
+  /// Everything currently keeping the game paused.
+  ///
+  /// Empty while the game is running normally. Note that this stays empty in
+  /// [FrameRateMode.softwareHalfRate] even though `paused` reads `true`
+  /// there - the ticker is stopped to control the paint rate, not because
+  /// anything wants the game to stop.
+  Set<PauseReason> get pauseReasons => UnmodifiableSetView(_pauseReasons);
+
+  /// Whether the device is in battery saver mode.
+  ///
+  /// Sizzle does not act on this by itself - what to trade away for
+  /// endurance is the game's call. Listen for
+  /// [SizzleMessage.powerSaveChanged] and switch [setFrameRateMode] if that
+  /// is the trade you want. Always `false` where the platform cannot report
+  /// it.
+  bool get isPowerSaveMode => _isPowerSaveMode;
 
   /// Creates a new Sizzle game.
   ///
@@ -284,7 +312,11 @@ class SizzleGame extends FlameGame
 
     // Route lifecycle events through onDispose so platform-specific exit
     // paths (close button, OS shutdown) all converge on the same cleanup.
-    AppLifecycleListener(
+    // Held so [onDispose] can release it. Without that, every game ever
+    // constructed stays registered with the binding and keeps receiving
+    // callbacks - which matters in tests, where many games are built and
+    // torn down in one process.
+    _lifecycleListener = AppLifecycleListener(
       onDetach: () {
         onDispose();
       },
@@ -294,6 +326,9 @@ class SizzleGame extends FlameGame
       },
     );
   }
+
+  /// Routes platform exit paths through [onDispose]. See the constructor.
+  late final AppLifecycleListener _lifecycleListener;
 
   /// Recomputes [snapScale], [viewWindow], [gameWindow], [safeWindow] and
   /// [gameWindowOffset] for the new canvas size, then forwards to
@@ -468,21 +503,37 @@ class SizzleGame extends FlameGame
     _requestedMode = mode;
     _fallbackToSoftware = fallbackToSoftware;
 
+    // Snapshot up front so the whole call announces at most one change, even
+    // though the hardware path engages a mode provisionally in order to
+    // measure it and may then roll back.
+    final previous = _effectiveMode;
+
     final resolved = _resolveModeSync(mode, fallbackToSoftware);
     if (resolved != null) {
-      await _clearHardwareHint();
-      _applyMode(resolved);
-      return resolved;
+      _applyMode(resolved, announce: false);
+    } else {
+      final verified = await _resolveHardwareMode(fallbackToSoftware);
+      // A second call may have overtaken us while the cadence was being
+      // sampled; in that case the newer request wins and has already
+      // announced whatever it settled on.
+      if (_requestedMode != mode) {
+        return _effectiveMode;
+      }
+      _applyMode(verified, announce: false);
     }
 
-    final verified = await _resolveHardwareMode(fallbackToSoftware);
-    // A second call may have overtaken us while the cadence was being
-    // sampled; in that case the newer request wins.
-    if (_requestedMode != mode) {
-      return _effectiveMode;
-    }
-    _applyMode(verified);
-    return verified;
+    _announceModeChange(previous);
+    return _effectiveMode;
+  }
+
+  /// Broadcasts [SizzleMessage.frameRateModeChanged] if the effective mode
+  /// ended up somewhere other than [previous].
+  void _announceModeChange(FrameRateMode previous) {
+    if (_effectiveMode == previous) return;
+    Services.messages.send(
+      SizzleMessage.frameRateModeChanged,
+      _effectiveMode,
+    );
   }
 
   /// Resolves [mode] without touching the platform, or returns `null` when
@@ -512,16 +563,50 @@ class SizzleGame extends FlameGame
         'the platform rejected a ${target}fps request',
       );
     }
+
+    // Record the application before reconciling, so [_reconcile] knows a hint
+    // is outstanding and can release it again if we are not actually running.
     _hardwareHintApplied = true;
 
+    // Engage the mode before measuring. The meter has to sample the cadence
+    // of the mode under test, not the one being replaced: going
+    // softwareHalfRate -> hardwareHalfRate the old cadence is already ~30fps,
+    // which would "verify" a panel change that never happened.
+    _applyMode(FrameRateMode.hardwareHalfRate, announce: false);
+
+    // Frames are the evidence, so there is nothing to measure while the game
+    // is paused - it would read 0fps and degrade a mode that may be fine.
+    // Leave the hint applied and let [_reconcile] verify once we run again.
+    if (_pauseReasons.isNotEmpty) {
+      _hardwareVerificationPending = true;
+      return FrameRateMode.hardwareHalfRate;
+    }
+
     if (!await _isHardwareRateHonoured(target)) {
-      await _clearHardwareHint();
       return _hardwareFallback(
         fallback,
         'the display kept presenting faster than the requested ${target}fps',
       );
     }
     return FrameRateMode.hardwareHalfRate;
+  }
+
+  /// Runs the verification that [_resolveHardwareMode] deferred because the
+  /// game was not producing frames at the time.
+  Future<void> _verifyDeferredHardwareRate() async {
+    final target = _fixedUpdateFps / 2;
+    if (await _isHardwareRateHonoured(target)) return;
+    if (_isDisposed || _effectiveMode != FrameRateMode.hardwareHalfRate) return;
+
+    final previous = _effectiveMode;
+    _applyMode(
+      _hardwareFallback(
+        _fallbackToSoftware,
+        'the display kept presenting faster than the requested ${target}fps',
+      ),
+      announce: false,
+    );
+    _announceModeChange(previous);
   }
 
   /// Samples the real frame cadence for long enough to tell whether the
@@ -562,6 +647,8 @@ class SizzleGame extends FlameGame
     return FrameRateMode.native;
   }
 
+  /// Releases any outstanding panel rate request. Only needed on teardown -
+  /// during normal running [_reconcile] owns the hint.
   Future<void> _clearHardwareHint() async {
     if (!_hardwareHintApplied) return;
     _hardwareHintApplied = false;
@@ -573,47 +660,118 @@ class SizzleGame extends FlameGame
   /// Broadcasts [SizzleMessage.frameRateModeChanged] once the new mode is
   /// engaged, but only on an actual change - this is called repeatedly
   /// with the mode already in force.
-  void _applyMode(FrameRateMode mode) {
+  /// Set [announce] to `false` when the caller will decide for itself
+  /// whether a change is worth broadcasting - the hardware path engages a
+  /// mode provisionally in order to measure it, and a rolled-back probe is
+  /// not a change anyone should hear about.
+  void _applyMode(FrameRateMode mode, {bool announce = true}) {
     final bool changed = _effectiveMode != mode;
     _effectiveMode = mode;
-    _engageMode();
-    if (changed) {
+    _reconcile();
+    if (changed && announce) {
       Services.messages.send(SizzleMessage.frameRateModeChanged, mode);
     }
   }
 
-  /// (Re)configures the engine ticker and physics timer for
-  /// [_effectiveMode]. Safe to call repeatedly - each call starts from a
-  /// stopped timer.
-  void _engageMode() {
-    _stopPhysicsTimer();
-    switch (_effectiveMode) {
-      case FrameRateMode.native:
-        _resumeIfPausedByFrameRate();
-      case FrameRateMode.hardwareHalfRate:
-        // The ticker keeps running: paints come from the (now slower) vsync,
-        // and the timer only has to drive the simulation.
-        _resumeIfPausedByFrameRate();
-        _startPhysicsTimer();
-      case FrameRateMode.softwareHalfRate:
-        // The ticker is stopped and the timer drives both the simulation and,
-        // every second tick, a paint via `stepEngine`.
-        if (!paused) {
-          _internalPauseChange = true;
-          pauseEngine();
-          _internalPauseChange = false;
-          _pausedByFrameRate = true;
-        }
-        _startPhysicsTimer();
+  /// Brings the ticker and the physics timer into line with the current
+  /// [pauseReasons] and [effectiveFrameRateMode].
+  ///
+  /// The single writer of both. Every event that could change either - mount,
+  /// mode change, app lifecycle, ambient transitions, the title pausing -
+  /// mutates its own input and then calls this. Because it derives
+  /// everything from current state rather than reacting to the transition
+  /// that got us here, it is idempotent and the order events arrive in does
+  /// not matter. That is what stops a lifecycle callback and a mode change
+  /// racing to leave the loop in a state neither of them intended.
+  void _reconcile() {
+    // softwareHalfRate stops the ticker so that `stepEngine` can drive paints
+    // at its own cadence. That is not the same as wanting the game stopped,
+    // so it is derived here rather than living in [_pauseReasons].
+    final shouldPause = _pauseReasons.isNotEmpty ||
+        _effectiveMode == FrameRateMode.softwareHalfRate;
+
+    if (shouldPause != paused) {
+      // Call Flame's implementations directly - the overrides below route
+      // back into the reason set, which would recurse.
+      if (shouldPause) {
+        super.pauseEngine();
+      } else {
+        super.resumeEngine();
+      }
+    }
+
+    // The timer drives the simulation in the half-rate modes, but only while
+    // the game is actually meant to be running. Stopping it is what keeps a
+    // backgrounded or ambient game from simulating invisibly.
+    if (_ownsLoop && _pauseReasons.isEmpty) {
+      if (_physicsTimer == null) _startPhysicsTimer();
+    } else {
+      _stopPhysicsTimer();
+    }
+
+    // The panel rate hint is attached to the live Surface, and Android
+    // destroys that Surface across background and ambient transitions. Track
+    // it against the running state so it is released when we stop and
+    // re-applied - not merely assumed - when we start again.
+    final wantsHint = _effectiveMode == FrameRateMode.hardwareHalfRate &&
+        _pauseReasons.isEmpty;
+    if (wantsHint != _hardwareHintApplied) {
+      _hardwareHintApplied = wantsHint;
+      final provider = Device.hwFrameRateProvider;
+      if (provider != null) {
+        unawaited(
+          wantsHint
+              ? provider.setHardwareFrameRate(_fixedUpdateFps / 2)
+              : provider.clear(),
+        );
+      }
+    }
+
+    if (_hardwareVerificationPending &&
+        _pauseReasons.isEmpty &&
+        _effectiveMode == FrameRateMode.hardwareHalfRate) {
+      _hardwareVerificationPending = false;
+      unawaited(_verifyDeferredHardwareRate());
     }
   }
 
-  void _resumeIfPausedByFrameRate() {
-    if (_pausedByFrameRate) {
-      _pausedByFrameRate = false;
-      _internalPauseChange = true;
-      resumeEngine();
-      _internalPauseChange = false;
+  /// Handles the display entering or leaving ambient mode.
+  ///
+  /// Ambient stops the game outright. Sizzle does not render a low-power
+  /// screen: on Wear OS 6+ the activity stays *resumed* when the watch dims,
+  /// so without this the game would keep simulating and painting at full rate
+  /// on a display nobody is looking at. There is no way to opt out of that
+  /// platform behaviour, so this is how a game is protected from it.
+  void _onAmbientChanged(bool isAmbient) {
+    _setPauseReason(PauseReason.ambient, isAmbient);
+  }
+
+  /// Records a battery saver transition and tells anyone listening.
+  void _onPowerSaveChanged(bool isPowerSaveMode) {
+    if (isPowerSaveMode == _isPowerSaveMode) return;
+    _isPowerSaveMode = isPowerSaveMode;
+    Services.messages.send(SizzleMessage.powerSaveChanged, isPowerSaveMode);
+  }
+
+  /// Adds or removes a pause reason, reconciling and announcing the result.
+  ///
+  /// [SizzleMessage.gamePaused] / [SizzleMessage.gameResumed] fire only when
+  /// the set transitions between empty and non-empty, so a title that pauses
+  /// while already backgrounded is not told twice, and the ticker stopping
+  /// for [FrameRateMode.softwareHalfRate] is not announced at all.
+  void _setPauseReason(PauseReason reason, bool active) {
+    final wasRunning = _pauseReasons.isEmpty;
+    final changed =
+        active ? _pauseReasons.add(reason) : _pauseReasons.remove(reason);
+    if (!changed) return;
+
+    _reconcile();
+
+    final isRunning = _pauseReasons.isEmpty;
+    if (wasRunning != isRunning) {
+      Services.messages.send(
+        isRunning ? SizzleMessage.gameResumed : SizzleMessage.gamePaused,
+      );
     }
   }
 
@@ -662,7 +820,11 @@ class SizzleGame extends FlameGame
         // `stepEngine` only does anything while paused and attached; it runs
         // `update` and marks the render box dirty, so the paint itself still
         // lands on the next vsync and stays aligned with the display.
-        if (paused && isMounted && isAttached) {
+        //
+        // Gating on [_stepAllowed] rather than `paused` matters: in this mode
+        // the engine is *always* paused, so `paused` alone would step right
+        // through a pause menu, a backgrounded app or ambient mode.
+        if (_stepAllowed && isMounted && isAttached) {
           final paintElapsed = _paintClock.elapsedMicroseconds / 1e6;
           _paintClock
             ..reset()
@@ -810,9 +972,30 @@ class SizzleGame extends FlameGame
   @override
   void onMount() {
     super.onMount();
+
+    // Sizzle owns backgrounding from here on. Flame's own handling stops the
+    // ticker but not our physics timer, and worse, `FlameGame.pauseEngine`
+    // unconditionally clears the flag it uses to remember that it was the one
+    // who paused - so any Sizzle-initiated pause would silently destroy its
+    // bookkeeping and the game would never resume. Handled in
+    // [lifecycleStateChange] as [PauseReason.backgrounded] instead.
+    pauseWhenBackgrounded = false;
+
     if (_measureFps) {
       _renderFpsMeter.start();
     }
+
+    final ambientProvider = Device.ambientProvider;
+    if (ambientProvider != null && ambientProvider.isSupported) {
+      ambientProvider.listen(onChanged: _onAmbientChanged);
+    }
+
+    final powerProvider = Device.powerProvider;
+    if (powerProvider != null && powerProvider.isSupported) {
+      _isPowerSaveMode = powerProvider.isPowerSaveMode;
+      powerProvider.listen(onChanged: _onPowerSaveChanged);
+    }
+
     final resolved = _resolveModeSync(_requestedMode, _fallbackToSoftware);
     if (resolved != null) {
       _applyMode(resolved);
@@ -828,49 +1011,46 @@ class SizzleGame extends FlameGame
     }
   }
 
-  /// Keeps the physics timer in step with the app being backgrounded, and
-  /// broadcasts [SizzleMessage.appLifecycleChanged].
+  /// Tracks backgrounding as a pause reason and broadcasts
+  /// [SizzleMessage.appLifecycleChanged].
   ///
-  /// Flame's own handling only covers the ticker, and in the half-rate modes
-  /// Sizzle owns a timer that would otherwise keep simulating (and, in
-  /// software mode, keep asking for paints) while the app is not visible.
-  ///
-  /// The message is sent before the early-out below so that it fires in
-  /// every frame rate mode, not just the ones that own the loop.
+  /// Sizzle owns backgrounding rather than leaving it to Flame (see the
+  /// `pauseWhenBackgrounded` note in [onMount]), because in the half-rate
+  /// modes it also owns a timer that would otherwise keep simulating - and,
+  /// in software mode, keep asking for paints - while the app is not
+  /// visible.
   @override
   void lifecycleStateChange(AppLifecycleState state) {
     Services.messages.send(SizzleMessage.appLifecycleChanged, state);
     super.lifecycleStateChange(state);
-    if (!_ownsLoop) return;
     switch (state) {
       case AppLifecycleState.resumed:
       case AppLifecycleState.inactive:
-        // `super` has already restarted the ticker if it paused it; re-engage
-        // rebuilds our side of the loop with a fresh accumulator so the time
-        // spent backgrounded is not simulated in one burst.
-        if (isMounted) _engageMode();
+        _setPauseReason(PauseReason.backgrounded, false);
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
       case AppLifecycleState.hidden:
-        _stopPhysicsTimer();
+        _setPauseReason(PauseReason.backgrounded, true);
     }
   }
 
   /// Pauses the game loop, broadcasting [SizzleMessage.gamePaused].
+  ///
+  /// Records [PauseReason.user] rather than stopping the ticker directly, so
+  /// it composes with the engine's other reasons for being stopped. The
+  /// practical consequence is that the game stays paused until *everything*
+  /// wanting it paused has let go - a game paused here and then backgrounded
+  /// does not start running again when it returns to the foreground.
   @override
-  void pauseEngine() {
-    final bool wasPaused = paused;
-    super.pauseEngine();
-    _notifyPauseChanged(wasPaused);
-  }
+  void pauseEngine() => _setPauseReason(PauseReason.user, true);
 
   /// Resumes the game loop, broadcasting [SizzleMessage.gameResumed].
+  ///
+  /// Clears [PauseReason.user]. This does not guarantee the game starts
+  /// running: if it is also backgrounded or in ambient mode it stays paused
+  /// until those clear too. See [pauseReasons].
   @override
-  void resumeEngine() {
-    final bool wasPaused = paused;
-    super.resumeEngine();
-    _notifyPauseChanged(wasPaused);
-  }
+  void resumeEngine() => _setPauseReason(PauseReason.user, false);
 
   /// Pauses or resumes the game loop, broadcasting
   /// [SizzleMessage.gamePaused] or [SizzleMessage.gameResumed].
@@ -879,20 +1059,7 @@ class SizzleGame extends FlameGame
   /// writes its backing field directly in those methods rather than
   /// routing through this setter, so all three are separate entry points.
   @override
-  set paused(bool value) {
-    final bool wasPaused = paused;
-    super.paused = value;
-    _notifyPauseChanged(wasPaused);
-  }
-
-  /// Broadcasts a pause transition, if one actually happened and it was
-  /// not the engine pausing itself for [FrameRateMode.softwareHalfRate].
-  void _notifyPauseChanged(bool wasPaused) {
-    if (_internalPauseChange || paused == wasPaused) return;
-    Services.messages.send(
-      paused ? SizzleMessage.gamePaused : SizzleMessage.gameResumed,
-    );
-  }
+  set paused(bool value) => _setPauseReason(PauseReason.user, value);
 
   /// Runs [onCleanup] (if set) and tears down the game.
   ///
@@ -904,6 +1071,11 @@ class SizzleGame extends FlameGame
     if (!_isDisposed) {
       _stopPhysicsTimer();
       _renderFpsMeter.stop();
+      // Stop listening, but leave the provider itself registered - it belongs
+      // to whoever installed it, not to this game.
+      Device.ambientProvider?.cancel();
+      Device.powerProvider?.cancel();
+      _lifecycleListener.dispose();
       unawaited(_clearHardwareHint());
       onCleanup?.call();
       super.onDispose();

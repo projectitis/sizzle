@@ -64,6 +64,22 @@ abstract final class SizzleMessage {
   /// Not sent when a frame rate mode change resumes the ticker
   /// internally. See [gamePaused].
   static const int gameResumed = 5;
+
+  /// The device's battery saver was switched on or off. Sent on the
+  /// transition only; `args` is the new state as a `bool`.
+  ///
+  /// Sizzle takes no action of its own - what to trade away for endurance is
+  /// the game's decision. The usual response is one line:
+  ///
+  /// ```dart
+  /// Services.messages.add(SizzleMessage.powerSaveChanged, (id, args) {
+  ///   game.setFrameRateMode(
+  ///     args == true ? FrameRateMode.softwareHalfRate : FrameRateMode.native,
+  ///   );
+  ///   return true;
+  /// });
+  /// ```
+  static const int powerSaveChanged = 6;
 }
 
 /// Signature for a message listener registered with [MessageService.add].

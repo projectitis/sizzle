@@ -5,7 +5,9 @@ import 'package:flame/extensions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
+import '../game/ambient.dart';
 import '../game/frame_rate_mode.dart';
+import '../game/power.dart';
 
 class Device {
   static String get os =>
@@ -77,6 +79,32 @@ class Device {
   /// this flag.
   static bool get isHWFrameRateSupported =>
       hwFrameRateProvider?.isSupported ?? false;
+
+  /// Platform hook for reporting ambient (always-on) mode.
+  ///
+  /// Sizzle ships no native implementation; assign one from a companion
+  /// plugin to have `SizzleGame` pause when the watch dims. Games never call
+  /// this directly - the effect shows up as `PauseReason.ambient`.
+  ///
+  /// Sizzle does not render an ambient screen. This exists because on Wear OS
+  /// 6+ an app is always-on whether it asks to be or not, and without
+  /// detection a game would keep running at full rate on a dimmed display.
+  static AmbientProvider? ambientProvider;
+
+  /// Whether an [ambientProvider] is registered and reports that this
+  /// platform can tell us about ambient mode.
+  static bool get isAmbientSupported => ambientProvider?.isSupported ?? false;
+
+  /// Platform hook for reporting battery saver state.
+  ///
+  /// Sizzle ships no native implementation; assign one from a companion
+  /// plugin to have `SizzleGame.isPowerSaveMode` and
+  /// [SizzleMessage.powerSaveChanged] reflect reality.
+  static PowerProvider? powerProvider;
+
+  /// Whether a [powerProvider] is registered and reports that this platform
+  /// can tell us about battery saver.
+  static bool get isPowerSaveSupported => powerProvider?.isSupported ?? false;
 
   static String describe() {
     String s = '';

@@ -18,8 +18,11 @@ export 'package:flame/events.dart';
 /// Sizzle exports
 export 'src/game/game.dart';
 export 'src/game/scene.dart';
+export 'src/game/ambient.dart';
 export 'src/game/frame_rate_mode.dart';
 export 'src/game/fps_meter.dart';
+export 'src/game/pause_reason.dart';
+export 'src/game/power.dart';
 export 'src/display/dialog.dart';
 export 'src/display/environment.dart';
 export 'src/display/lightning.dart';
