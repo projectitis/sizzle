@@ -127,6 +127,9 @@ you are finished to release every layer image and the thumbnail:
 doc.dispose();
 ```
 
+Layers that share a `src` (files exported with `--optimize` store one copy of
+identical layers) share a single decoded `ui.Image`, which is disposed once.
+
 
 ## Producing `.lpng` files
 
@@ -137,7 +140,8 @@ python scripts/lpng/psd_to_lpng.py input.psd --set-id --optimize
 ```
 
 See [`scripts/lpng/README.md`](../scripts/lpng/README.md) for all options
-(output path, thumbnail size, id generation, canvas cropping) and important
+(output path, thumbnail size, id generation, canvas cropping, duplicate-layer
+sharing) and important
 notes — most notably that **Photoshop layer effects are not rendered**, so a
 layer that relies on one (e.g. a Color Overlay) should be rasterised in
 Photoshop before export.

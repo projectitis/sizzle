@@ -5,7 +5,8 @@ psd_to_lpng.py — Convert a Photoshop PSD file to a Layered PNG (.lpng) file.
 A .lpng file is a ZIP archive containing:
   - manifest.json   : the document/layer tree (see example-manifest.json)
   - thumbnail.png   : a full-image preview, max 128x128, aspect preserved
-  - imageN.png ...  : one PNG per rasterised (non-group) layer
+  - imageN.png ...  : one PNG per rasterised (non-group) layer (with
+                      --optimize, layers with identical pixels share one PNG)
 
 The manifest root is a document object:
 
@@ -24,7 +25,8 @@ without a "src" (but with its own "layers") is a group. All properties are
 optional and defaults are omitted rather than written explicitly:
 
     name        layer name from the PSD (need not be unique)
-    src         PNG filename inside the zip (absent => group)
+    src         PNG filename inside the zip (absent => group). More than one
+                layer may reference the same file.
     x, y        integer offset from the parent's origin (default 0)
     opacity     0.0 .. 1.0 (default 1.0)
     visibility  bool (default true)
@@ -43,6 +45,7 @@ Usage:
 """
 
 import argparse
+import hashlib
 import io
 import json
 import os
@@ -231,10 +234,34 @@ class Converter:
         self.images = {}          # filename -> PNG bytes
         self.image_counter = 0
         self.id_registry = set()
+        self.pixel_hashes = {}    # pixel hash -> filename (--optimize only)
+        self.deduped = 0          # layers that reused an existing image
 
     def next_src(self):
         self.image_counter += 1
         return f"image{self.image_counter}.png"
+
+    def store_image(self, image):
+        """Encode an image and return its filename inside the zip.
+
+        With --optimize, layers with byte-identical pixels share a single PNG:
+        the first occurrence is encoded and stored, later ones just point their
+        "src" at it. Without --optimize every layer gets its own copy.
+        """
+        if self.optimize:
+            key = (image.size, hashlib.sha256(image.tobytes()).digest())
+            existing = self.pixel_hashes.get(key)
+            if existing is not None:
+                self.deduped += 1
+                return existing
+
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+        src = self.next_src()
+        self.images[src] = buffer.getvalue()
+        if self.optimize:
+            self.pixel_hashes[key] = src
+        return src
 
     def clip_to_canvas(self, image, left, top):
         """Crop an image to the intersection of its rect and the canvas.
@@ -333,10 +360,7 @@ class Converter:
 
         bbox = (left, top, left + image.width, top + image.height)
 
-        buffer = io.BytesIO()
-        image.save(buffer, format="PNG")
-        src = self.next_src()
-        self.images[src] = buffer.getvalue()
+        src = self.store_image(image)
 
         node = {
             "name": clean_name(layer.name),
@@ -461,8 +485,11 @@ def convert(input_path, output_path, set_id, optimize, thumbnail_size):
         for src, data in converter.images.items():
             zf.writestr(src, data)
 
+    deduped = ""
+    if converter.deduped:
+        deduped = f" ({converter.deduped} duplicate layer(s) shared)"
     print(
-        f"Done. {len(converter.images)} layer image(s), "
+        f"Done. {len(converter.images)} layer image(s){deduped}, "
         f"{'thumbnail, ' if thumbnail else ''}manifest.json."
     )
 
@@ -492,7 +519,8 @@ def main(argv=None):
         "--optimize",
         action="store_true",
         help="Crop each layer PNG to the canvas bounds, discarding pixels that "
-        "fall outside the document (smaller files; layers appear at final size).",
+        "fall outside the document, and store only one copy of layers with "
+        "identical pixels (smaller files; layers appear at final size).",
     )
     parser.add_argument(
         "--thumbnail",

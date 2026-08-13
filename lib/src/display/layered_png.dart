@@ -90,10 +90,15 @@ class LayeredPng {
       ..dpi = (manifest['dpi'] as num?)?.toDouble()
       ..version = manifest['v'] as String? ?? '';
 
+    // Layers with identical pixels may share a `src` (see the exporter's
+    // --optimize flag), so each file is decoded once and the resulting image
+    // is shared between the layers that reference it.
+    final decoded = <String, ui.Image?>{};
+
     final rawLayers = manifest['layers'] as List<dynamic>? ?? const [];
     for (final raw in rawLayers) {
       doc.layers.add(
-        await _buildLayer(raw as Map<String, dynamic>, archive, 0, 0),
+        await _buildLayer(raw as Map<String, dynamic>, archive, 0, 0, decoded),
       );
     }
 
@@ -106,6 +111,7 @@ class LayeredPng {
     Archive archive,
     double parentX,
     double parentY,
+    Map<String, ui.Image?> decoded,
   ) async {
     final src = raw['src'] as String?;
     final x = (raw['x'] as num?)?.toDouble() ?? 0;
@@ -125,7 +131,9 @@ class LayeredPng {
       ..blend = LpngBlendMode.parse(raw['blend'] as String?);
 
     if (src != null) {
-      layer.image = await _decodeImage(archive, src);
+      layer.image = decoded.containsKey(src)
+          ? decoded[src]
+          : decoded[src] = await _decodeImage(archive, src);
     }
 
     final children = raw['layers'] as List<dynamic>? ?? const [];
@@ -136,6 +144,7 @@ class LayeredPng {
           archive,
           layer.absX,
           layer.absY,
+          decoded,
         ),
       );
     }
@@ -178,8 +187,13 @@ class LayeredPng {
   /// Dispose every decoded layer image and the thumbnail. The document should
   /// not be used afterwards.
   void dispose() {
+    // Layers may share a decoded image, so each one is disposed only once.
+    final seen = <ui.Image>{};
     for (final layer in walk()) {
-      layer.image?.dispose();
+      final image = layer.image;
+      if (image != null && seen.add(image)) {
+        image.dispose();
+      }
       layer.image = null;
     }
     thumbnail?.dispose();

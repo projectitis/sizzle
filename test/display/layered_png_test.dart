@@ -157,6 +157,38 @@ void main() {
       expect(grp.bounds, const ui.Rect.fromLTRB(2, 3, 7, 8));
       doc.dispose();
     });
+
+    test('layers sharing a src share one decoded image, disposed once',
+        () async {
+      // The exporter's --optimize flag points identical layers at one PNG.
+      final manifest = <String, dynamic>{
+        'name': 'shared',
+        'w': 8,
+        'h': 8,
+        'v': '0.1.0',
+        'layers': [
+          {'id': 'one', 'src': 'a.png'},
+          {'id': 'two', 'src': 'a.png', 'x': 4},
+          {'id': 'other', 'src': 'b.png'},
+        ],
+      };
+      final doc = await LayeredPng.fromBytes(
+        _lpng(manifest, {
+          'a.png': await _png(4, 4, const ui.Color(0xFF0000FF)),
+          'b.png': await _png(4, 4, const ui.Color(0xFFFF0000)),
+        }),
+      );
+
+      final one = doc.layerById('one')!;
+      final two = doc.layerById('two')!;
+      final other = doc.layerById('other')!;
+      expect(one.image, isNotNull);
+      expect(identical(one.image, two.image), isTrue);
+      expect(identical(one.image, other.image), isFalse);
+
+      // Would assert on a double dispose of the shared image.
+      doc.dispose();
+    });
   });
 
   group('LayeredPng rendering (synthetic)', () {

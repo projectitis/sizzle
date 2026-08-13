@@ -198,6 +198,23 @@ class SizzleGame extends FlameGame
   final RateCounter _fixedUpdateCounter = RateCounter();
   bool _measureFps;
 
+  /// How often [_isHardwareRateHonoured] samples the render meter, and how
+  /// many samples it takes before giving up. The product is the hard cap on
+  /// how long a hardware-rate probe can run (~3s), chosen to outlast the
+  /// Surface-reconfiguration stall that delays the first frame timings after
+  /// the panel-rate hint is applied - on a Pixel Watch 3 that stall runs to
+  /// ~1s before the first frame lands, and a clean averaging window is
+  /// measured on top of it.
+  ///
+  /// Overridable so tests, which present no real frames, can shrink the probe
+  /// to keep the suite fast without changing the behaviour under test.
+  @visibleForTesting
+  static Duration honourSampleStep = const Duration(milliseconds: 100);
+
+  /// @nodoc
+  @visibleForTesting
+  static int honourMaxSamples = 30;
+
   /// Most fixed steps run for a single frame. Once the backlog needs more
   /// than this the game is already too slow to catch up, and trying would
   /// only make the next frame slower still - so the backlog is dropped.
@@ -483,12 +500,21 @@ class SizzleGame extends FlameGame
   double get measuredFixedUpdateFps =>
       _measureFps ? _fixedUpdateCounter.rate : 0.0;
 
+  /// Feeds one presented-frame interval into the render meter, standing in for
+  /// the real `FrameTiming` callbacks that never fire under `flutter test`.
+  /// Lets a test drive the hardware-honour probe as if the panel were
+  /// presenting at a chosen cadence.
+  @visibleForTesting
+  void debugAddRenderFrameInterval(int micros) =>
+      _renderFpsMeter.addInterval(micros);
+
   /// Switches to [mode], returning the mode that ended up in force.
   ///
   /// Asynchronous because [FrameRateMode.hardwareHalfRate] cannot be trusted
   /// on its word: the request is made, the real frame cadence is then
-  /// measured for about half a second, and the mode is only kept if the
-  /// display genuinely slowed down. If it did not - or if no
+  /// measured (for up to a few seconds, since applying the hint can stall
+  /// presentation briefly), and the mode is only kept if the display
+  /// genuinely slowed down. If it did not - or if no
   /// `Device.hwFrameRateProvider` is registered, which is the case for a
   /// stock Sizzle build - the result degrades to
   /// [FrameRateMode.softwareHalfRate] when [fallbackToSoftware] is `true`,
@@ -621,13 +647,40 @@ class SizzleGame extends FlameGame
     } else {
       _renderFpsMeter.start();
     }
-    await Future<void>.delayed(const Duration(milliseconds: 500));
-    final measured = _renderFpsMeter.fps;
+
+    // Poll for a *settled* reading rather than trusting one fixed-delay
+    // snapshot. Applying the panel-rate hint reconfigures the Surface, which
+    // briefly stalls presentation and delays the first `FrameTiming`
+    // callbacks - on a Pixel Watch 3 no timing arrives for ~1s, so the old
+    // 500ms snapshot read 0fps (no intervals yet) and the `measured > 0` test
+    // mistook "no data yet" for "panel did not slow down", wrongly falling
+    // back to software on a device that genuinely honoured the request.
+    //
+    // So wait for the averaging window to fill instead. The first full window
+    // still straddles the 60->30 switch - it holds a few leftover fast
+    // intervals that pull the average up - so once the meter first saturates
+    // it is reset and one clean window is measured on top. A hard cap
+    // ([honourMaxSamples]) bounds the whole probe in case frames never flow.
+    var measured = 0.0;
+    var discardedStraddle = false;
+    for (var i = 0; i < honourMaxSamples; i++) {
+      await Future<void>.delayed(honourSampleStep);
+      if (!_renderFpsMeter.isSaturated) continue;
+      if (!discardedStraddle) {
+        discardedStraddle = true;
+        _renderFpsMeter.reset();
+        continue;
+      }
+      measured = _renderFpsMeter.fps;
+      break;
+    }
     if (!wasRunning) {
       _renderFpsMeter.stop();
     }
-    // Allow generous headroom: the sample straddles the transition and a
-    // honoured 30fps panel still reports the occasional short interval.
+    // Allow generous headroom over the target: a honoured half-rate panel
+    // still reports the occasional short interval. A reading of 0 means no
+    // clean window was ever measured (frames never flowed within the cap) -
+    // treat that as not honoured rather than risk pinning a stalled display.
     return measured > 0 && measured <= target * 1.25;
   }
 

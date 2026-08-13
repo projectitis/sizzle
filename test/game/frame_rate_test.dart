@@ -1,3 +1,5 @@
+import 'dart:async' as async;
+
 import 'package:flutter/widgets.dart' show AppLifecycleState;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sizzle/sizzle.dart';
@@ -146,6 +148,12 @@ void stopGame(SizzleGame game) {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  // The hardware-honour probe waits for real `FrameTiming` callbacks, which
+  // never fire under `flutter test`. Shrink it so the no-frames fallback the
+  // honour tests exercise resolves in ~100ms instead of the ~3s production cap.
+  SizzleGame.honourSampleStep = const Duration(milliseconds: 5);
+  SizzleGame.honourMaxSamples = 40;
+
   group('Frame rate mode resolution', () {
     tearDown(() {
       Device.hwFrameRateProvider = null;
@@ -235,6 +243,43 @@ void main() {
       // be confirmed and the mode degrades.
       expect(resolved, FrameRateMode.softwareHalfRate);
       expect(provider.clearCount, 1);
+
+      stopGame(game);
+    });
+
+    test(
+        'an accepted request whose panel slows is kept, even when the first '
+        'frame timing arrives late', () async {
+      final provider = IgnoringProvider();
+      Device.hwFrameRateProvider = provider;
+
+      final game = await startGame(
+        CountingGame(scenes: {'a': CountingScene.new}, fixedUpdateFps: 60),
+      );
+
+      // Stand in for a Pixel Watch 3: the Surface reconfiguration stalls
+      // presentation, so the first frame timings arrive late; once they do,
+      // the panel is at the requested 30fps. Feeding starts only after a delay
+      // longer than the old fixed 500ms snapshot to prove the probe waits for
+      // real samples rather than reading 0fps and giving up.
+      const halfRateInterval = 1000000 ~/ 30; // 30fps in microseconds
+      async.Timer? feeder;
+      final lateStart = async.Timer(const Duration(milliseconds: 40), () {
+        feeder = async.Timer.periodic(
+          const Duration(milliseconds: 1),
+          (_) => game.debugAddRenderFrameInterval(halfRateInterval),
+        );
+      });
+
+      final resolved =
+          await game.setFrameRateMode(FrameRateMode.hardwareHalfRate);
+
+      lateStart.cancel();
+      feeder?.cancel();
+
+      // The panel genuinely slowed, so the mode is kept rather than degraded.
+      expect(resolved, FrameRateMode.hardwareHalfRate);
+      expect(game.effectiveFrameRateMode, FrameRateMode.hardwareHalfRate);
 
       stopGame(game);
     });
