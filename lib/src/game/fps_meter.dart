@@ -48,6 +48,14 @@ class FpsMeter {
   /// Whether a timings callback is currently registered.
   bool get isRunning => _isRunning;
 
+  /// Whether the averaging window is full, i.e. [fps] is now an average over
+  /// [window] intervals rather than the handful that have arrived so far.
+  ///
+  /// Used to tell a settled reading from one taken while samples are still
+  /// trickling in - the difference between "the panel is at 30fps" and "the
+  /// first frame timing has only just arrived".
+  bool get isSaturated => _count >= _deltas.length;
+
   /// The averaged presented-frame rate, or `0` before enough samples have
   /// arrived.
   double get fps =>
