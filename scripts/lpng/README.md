@@ -52,7 +52,7 @@ rather than written explicitly.
 | `src`        | string  | —          | PNG filename in the zip. Absent ⇒ this layer is a group. Several layers may reference the same file (see `--optimize`). |
 | `x`, `y`     | number  | `0`        | Integer offset from the **parent's** origin (parent = canvas for top level, else the group's tight bounding box). |
 | `opacity`    | number  | `1.0`      | `0.0`–`1.0`.                                                          |
-| `visibility` | boolean | `true`     | `false` for hidden layers (the PNG is still included).                |
+| `visibility` | boolean | `true`     | `false` for hidden layers. The PNG is still written, with its pixels. |
 | `blend`      | string  | `"normal"` | Photoshop blend mode in lowerCamelCase (`normal`/`srcOver` are interchangeable). |
 | `layers`     | array   | —          | Child layers (present on groups, and on images with nested children). |
 
@@ -90,7 +90,10 @@ python psd_to_lpng.py input.psd --thumbnail 128x64
   appear (including layer masks and effects).
 - **Adjustment layers** (curves, levels, hue/saturation, …) have no pixels of
   their own and are **skipped with a warning** — lpng has no equivalent concept.
-- Hidden layers are still exported; `visibility: false` is recorded.
+- **Hidden layers are exported with their pixels**, and `visibility: false` is
+  recorded so a consumer can decide whether to draw them. This applies to a
+  layer inside a hidden group as well as to a hidden layer itself, so a group
+  switched off in Photoshop still exports everything under it.
 
 ### Layer effects / styles are NOT rendered
 
