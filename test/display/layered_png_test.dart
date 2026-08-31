@@ -138,6 +138,11 @@ void main() {
 
       final hidden = doc.layerById('hidden')!;
       expect(hidden.visible, isFalse);
+      // A hidden layer keeps its pixels. `visibility` records how the document
+      // was authored, not whether there is anything to draw — the exporter
+      // writes a PNG for it either way, so a caller can switch it on.
+      expect(hidden.image, isNotNull);
+      expect(hidden.image!.width, 4);
       doc.dispose();
     });
 

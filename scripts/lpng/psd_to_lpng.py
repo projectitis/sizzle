@@ -284,12 +284,17 @@ class Converter:
     def rasterise(self, layer):
         """Composite a single layer to a PIL image (respecting masks/effects).
 
-        Hidden layers are still rasterised (force=True) so their pixels are
-        preserved; visibility is recorded separately in the manifest.
+        Hidden layers are exported with their pixels intact; visibility is
+        recorded separately in the manifest. That is what `layer_filter` is for:
+        psd-tools selects layers with `Layer.is_visible()` by default, which is
+        recursive, so without it a hidden layer -- or any layer inside a hidden
+        group -- composites to a correctly sized but entirely transparent image.
+        `force` is unrelated: it rasterises layers that have no cached preview.
+
         Returns None if the layer has no drawable pixels.
         """
         try:
-            image = layer.composite(force=True)
+            image = layer.composite(force=True, layer_filter=lambda _: True)
         except Exception as exc:
             warn(f"could not composite layer '{layer.name}': {exc}")
             return None
