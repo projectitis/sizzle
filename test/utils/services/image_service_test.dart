@@ -357,6 +357,7 @@ void main() async {
         ),
       );
 
+      // A path-only load still gets the defaults merged in.
       final image1 = await localImageService.load(path: 'sizzle-icon.png');
       final image2 = await localImageService.load(
         properties: ImageProperties(
@@ -371,12 +372,58 @@ void main() async {
 
       await expectLater(
         image1,
-        matchesGoldenFile('$goldens/sizzle-icon.png'),
+        matchesGoldenFile('$goldens/sizzle-icon-default-props.png'),
       );
       await expectLater(
         image2,
         matchesGoldenFile('$goldens/sizzle-icon.png'),
       );
+
+      localImageService.clear();
+    });
+
+    test('Default properties apply to a path-only load', () async {
+      final localImageService = ImageService(
+        '',
+        assetBundle: assets,
+        defaultProperties: ImageProperties('', scale: Vector2(0.5, 0.5)),
+      );
+
+      final plain = await imageService.load(path: 'sizzle-icon.png');
+      final scaled = await localImageService.load(path: 'sizzle-icon.png');
+
+      expect(plain.width, greaterThan(0));
+      expect(scaled.width, (plain.width * 0.5).toInt());
+      expect(scaled.height, (plain.height * 0.5).toInt());
+
+      localImageService.clear();
+    });
+
+    test('Default properties are not mutated by a fitCrop load', () async {
+      final defaults = ImageProperties('', scale: Vector2(0.5, 0.5));
+      final localImageService = ImageService(
+        '',
+        assetBundle: assets,
+        defaultProperties: defaults,
+      );
+
+      // fitCrop scales the merged scale vector up to cover the crop. That must
+      // not write back into defaultProperties, or every later load compounds.
+      await localImageService.load(
+        properties: ImageProperties(
+          'sizzle-icon.png',
+          name: 'fit',
+          angle: radians(45),
+          crop: Rect.fromLTWH(0, 0, 200, 200),
+          fitCrop: true,
+        ),
+      );
+
+      expect(defaults.scale, Vector2(0.5, 0.5));
+
+      final after = await localImageService.load(path: 'sizzle-icon.png');
+      final plain = await imageService.load(path: 'sizzle-icon.png');
+      expect(after.width, (plain.width * 0.5).toInt());
 
       localImageService.clear();
     });

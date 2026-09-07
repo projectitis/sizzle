@@ -312,6 +312,9 @@ Services.images.defaultProperties = ImageProperties(
 );
 ```
 
+The defaults apply to every load, including path-only ones. `load(path: 'a.png')` and
+`enqueue(path: 'a.png')` both behave as if you had passed `ImageProperties('a.png')`.
+
 The default properties can be cleared by setting it to `null`.
 
 ```dart
