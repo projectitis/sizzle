@@ -128,6 +128,12 @@ class ImageService {
   final Map<String, Image> _cache = {};
   final String assetFolder;
   final AssetBundle assetBundle;
+
+  /// Baseline properties merged into every image loaded by this service,
+  /// including path-only loads such as `load(path: 'a.png')`. Per-image
+  /// properties take precedence (see [ImageProperties.copyMerged]); an
+  /// individual image opts out entirely with
+  /// [ImageProperties.ignoreDefaultProperties].
   ImageProperties? defaultProperties;
 
   /// Create a new image service with path to [assetFolder] for loading images.
@@ -175,6 +181,9 @@ class ImageService {
   /// without a `name`, the path will be used as the name. Additional
   /// parameters can be provided to scale and resize the image. Only provide
   /// [properties] or [path], not both.
+  ///
+  /// [defaultProperties] is applied either way — passing [path] on its own is
+  /// equivalent to passing `ImageProperties(path)`.
   Future<Image> load({
     ImageProperties? properties,
     String? path,
@@ -188,26 +197,21 @@ class ImageService {
       !(properties == null && path == null),
       'Provide either properties or path',
     );
-    String assetName = path ?? properties!.name;
-    if (_cache.containsKey(assetName)) {
-      return _cache[assetName]!;
+    // Wrap a bare path exactly as [enqueue] does, so a path-only load goes
+    // through the same merge with [defaultProperties] as a queued one.
+    final ImageProperties props = properties ?? ImageProperties(path!);
+    if (_cache.containsKey(props.name)) {
+      return _cache[props.name]!;
     }
-    String assetPath = path ?? properties!.path;
-    if (assetPath.toLowerCase().endsWith('.svg')) {
-      return _loadSvg(properties, assetName, assetPath, cache);
+    if (props.path.toLowerCase().endsWith('.svg')) {
+      return _loadSvg(props, cache);
     }
-    final data = await assetBundle.load(assetFolder + assetPath);
+    final data = await assetBundle.load(assetFolder + props.path);
     final bytes = Uint8List.view(data.buffer);
     final image = await decodeImageFromList(bytes);
-    if (properties == null) {
-      if (cache) {
-        _cache[assetName] = image;
-      }
-      return image;
-    }
-    final processedImage = await processImage(image, properties);
+    final processedImage = await processImage(image, props);
     if (cache) {
-      _cache[properties.name] = processedImage;
+      _cache[props.name] = processedImage;
     }
     return processedImage;
   }
@@ -251,21 +255,10 @@ class ImageService {
   /// rasterization so the output is lossless. [ImageProperties.blendMode],
   /// [ImageProperties.antiAlias] and [ImageProperties.filterQuality] are
   /// ignored for SVG sources.
-  Future<Image> _loadSvg(
-    ImageProperties? properties,
-    String assetName,
-    String assetPath,
-    bool cache,
-  ) async {
-    final svgString = await assetBundle.loadString(assetFolder + assetPath);
-    if (properties != null) {
-      return await rasterizeSvgString(svgString, properties, cache: cache);
-    }
-    final image = await rasterizeSvgString(svgString, null, cache: false);
-    if (cache) {
-      _cache[assetName] = image;
-    }
-    return image;
+  Future<Image> _loadSvg(ImageProperties properties, bool cache) async {
+    final svgString =
+        await assetBundle.loadString(assetFolder + properties.path);
+    return await rasterizeSvgString(svgString, properties, cache: cache);
   }
 
   /// Rasterize an in-memory SVG string into an [Image]. Geometric transforms
@@ -324,11 +317,41 @@ class ImageService {
     return image;
   }
 
+  /// Merge [imageProperties] over [defaultProperties], unless the image opts
+  /// out with [ImageProperties.ignoreDefaultProperties] or no defaults are set.
+  ImageProperties _mergedProperties(ImageProperties imageProperties) {
+    if (defaultProperties == null || imageProperties.ignoreDefaultProperties) {
+      return imageProperties;
+    }
+    return defaultProperties!.copyMerged(imageProperties);
+  }
+
+  /// Whether [properties] describe a geometric transform, and so need a
+  /// rasterization pass. Blend mode, antialias and filter quality only affect
+  /// how a transform is drawn, so on their own they do not require one.
+  ///
+  /// Must stay in agreement with the `requiresProcessing` flag computed by
+  /// [_prepareTransformedCanvas].
+  bool _hasTransform(ImageProperties properties) {
+    final scale = properties.scale;
+    if (scale != null && (scale.x != 1.0 || scale.y != 1.0)) return true;
+    if ((properties.angle ?? 0.0) != 0.0) return true;
+    if (properties.flipX ?? false) return true;
+    if (properties.flipY ?? false) return true;
+    if (!(properties.crop ?? Rect.zero).isEmpty) return true;
+    return false;
+  }
+
   /// Process an image
   Future<Image> processImage(
     Image image,
     ImageProperties imageProperties,
   ) async {
+    // Checked up front so an untransformed image costs no recorder or canvas.
+    if (!_hasTransform(_mergedProperties(imageProperties))) {
+      return image;
+    }
+
     final prepared = _prepareTransformedCanvas(
       image.width.toDouble(),
       image.height.toDouble(),
@@ -380,17 +403,16 @@ class ImageService {
     bool requiresProcessing = false;
 
     // Prepare properties
-    ImageProperties properties = imageProperties;
-    if (defaultProperties != null && !imageProperties.ignoreDefaultProperties) {
-      properties = defaultProperties!.copyMerged(imageProperties);
-    }
+    final ImageProperties properties = _mergedProperties(imageProperties);
 
     // Prepare crop
     Rect propertyCrop = properties.crop ?? Rect.zero;
     Rect c = propertyCrop;
 
-    // Prepare scale
-    Vector2 propertyScale = properties.scale ?? Vector2.all(1.0);
+    // Prepare scale. Cloned because the fitCrop branch below scales it in
+    // place, which would otherwise mutate the caller's (or defaultProperties')
+    // Vector2 and compound on every subsequent load.
+    Vector2 propertyScale = properties.scale?.clone() ?? Vector2.all(1.0);
     if (propertyScale.x != 1.0 || propertyScale.y != 1.0) {
       width *= propertyScale.x;
       height *= propertyScale.y;

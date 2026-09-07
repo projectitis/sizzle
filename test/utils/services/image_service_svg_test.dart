@@ -357,6 +357,7 @@ void main() async {
         ),
       );
 
+      // A path-only load still gets the defaults merged in.
       final image1 = await localImageService.load(path: 'sizzle-icon.svg');
       final image2 = await localImageService.load(
         properties: ImageProperties(
@@ -371,7 +372,7 @@ void main() async {
 
       await expectLater(
         image1,
-        matchesGoldenFile('$goldens/sizzle-icon-svg.png'),
+        matchesGoldenFile('$goldens/sizzle-icon-svg-default-props.png'),
       );
       await expectLater(
         image2,
