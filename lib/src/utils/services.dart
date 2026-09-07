@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flame/components.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../game/game.dart';
+import './platform/platform.dart';
 import './services/dialog_service.dart';
 import './services/file_service.dart';
 import './services/flag_service.dart';
@@ -25,6 +24,10 @@ class Services {
 
   /// The save file name used by [load] and [save] to
   /// persist player data between game sessions.
+  ///
+  /// On native platforms this is a file in the application documents
+  /// directory. On web it is the `localStorage` key, since web builds have no
+  /// file system.
   static final _savefile = 'sizzle.json';
 
   /// The path to the root asset folder
@@ -63,9 +66,6 @@ class Services {
   /// The data loaded from the device
   static Map<String, dynamic> _data = {};
 
-  /// Documents directory for device
-  static Directory? _dir;
-
   /// Callback for customising data after loading
   static OnFileAccessCallback? _onLoad;
   static set onLoad(OnFileAccessCallback callback) {
@@ -85,20 +85,17 @@ class Services {
   /// variables using `Services.dialog.clear(variables: true)` if this is not
   /// desired. Use [onLoad] callback to customise data after the load operation.
   static FutureOr<void> load() async {
-    _dir ??= await getApplicationDocumentsDirectory();
-    if (_dir == null) return;
+    final contents = await readSaveData(_savefile);
+    if (contents == null) return;
 
-    final File file = File('${_dir!.path}/$_savefile');
-    if (await file.exists()) {
-      _data = json.decode(file.readAsStringSync());
-      _onLoad?.call(_data);
-      if (_data.containsKey('_flags')) {
-        flags.clear();
-        _data['_flags'].forEach((v) => flags[v as String] = true);
-      }
-      if (_data.containsKey('_yarn')) {
-        dialog.yarn.variables.variables.addAll(_data['_yarn']);
-      }
+    _data = json.decode(contents);
+    _onLoad?.call(_data);
+    if (_data.containsKey('_flags')) {
+      flags.clear();
+      _data['_flags'].forEach((v) => flags[v as String] = true);
+    }
+    if (_data.containsKey('_yarn')) {
+      dialog.yarn.variables.variables.addAll(_data['_yarn']);
     }
   }
 
@@ -106,14 +103,10 @@ class Services {
   ///
   /// Use the [onSave] callback to customise data before the save operation.
   static FutureOr<void> save() async {
-    _dir ??= await getApplicationDocumentsDirectory();
-    if (_dir == null) return;
-
     _data['_flags'] = flags.flags;
     _data['_yarn'] = dialog.yarn.variables.variables;
     _onSave?.call(_data);
 
-    final File file = File('${_dir!.path}/$_savefile');
-    file.writeAsStringSync(json.encode(_data));
+    await writeSaveData(_savefile, json.encode(_data));
   }
 }

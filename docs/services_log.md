@@ -106,6 +106,13 @@ logger.dispose();
 Call [`dispose()`](../lib/src/utils/logger.dart#:~:text=dispose) to flush and
 close the underlying file sink before the game exits.
 
+Web builds have no file system, so `init` cannot open a sink there and
+`FileLogger` writes its JSON to the browser console instead - the same output
+`PrintJsonLogger` produces. The same fallback applies on native if the documents
+directory cannot be resolved. Check
+[`isWritingToFile`](../lib/src/utils/logger.dart#:~:text=isWritingToFile) after
+`init` to find out which happened.
+
 
 ## Custom loggers
 

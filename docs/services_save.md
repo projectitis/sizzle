@@ -10,8 +10,18 @@ The save data will contain all [flags](services_flags.md) and all current Yarn
 Spinner variables (see [dialog](services_dialog.md)) by default. So when it's
 reloaded, game and dialog history is maintained.
 
-The save file is a single JSON file (`sizzle.json`) stored in the application's
-documents directory.
+The save data is a single JSON document. Where it is stored depends on the
+platform:
+
+| Platform | Location |
+| --- | --- |
+| Android, iOS, Windows, macOS, Linux | The file `sizzle.json` in the application's documents directory |
+| Web | The `localStorage` entry `sizzle.json`, since web builds have no file system |
+
+On web, `localStorage` is scoped to the origin the game is served from, and is
+erased when the player clears site data. It also has a per-origin quota of a few
+megabytes, so keep custom save data small. Writing throws if the browser denies
+storage access, which happens in private browsing modes that block site data.
 
 
 ## Saving and loading

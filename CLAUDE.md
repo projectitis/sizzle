@@ -23,6 +23,23 @@ flutter test test/display/
 
 # Update golden files (for visual regression tests)
 flutter test --update-goldens
+
+# Browser-only tests. These are marked @TestOn('browser'), so the default
+# `flutter test` run skips them. The rest of the suite imports dart:io via the
+# test helpers and cannot run under Chrome, so name the file explicitly.
+#
+# KNOWN ISSUE: this hangs indefinitely at "loading ..." on the current dev
+# machine (Flutter 3.44.6 / Chrome 152) - Chrome launches and loads the
+# harness page but never connects back to the test runner. It reproduces with
+# a test that imports no sizzle code, so it is the harness, not the engine.
+# services_web_test.dart has therefore never been executed. Web save/load was
+# instead verified by publishing a real Sizzle game to itch.io. Don't sink
+# time into this hang before checking it still reproduces.
+#
+# Also note: `flutter test --platform chrome` compiles with DDC, whereas
+# `flutter build web` uses dart2js - a clean web build does not prove the DDC
+# path loads.
+flutter test --platform chrome test/utils/services_web_test.dart
 ```
 
 ### Code Quality
@@ -368,3 +385,14 @@ For frequently allocated short-lived objects (particles, projectiles, transient 
 - All public APIs are exported through `lib/sizzle.dart` - import only from there
 - Flame APIs are re-exported, so games typically only need `import 'package:sizzle/sizzle.dart'`
 - Code style enforces trailing commas (see `analysis_options.yaml`)
+- **Never import `dart:io` or `path_provider` from `lib/`.** Importing `dart:io`
+  is a compile error on web, not a runtime failure, so a single import breaks
+  `flutter build web` for the whole package. Both live behind the conditional
+  import in `lib/src/utils/platform/platform.dart`, which resolves to
+  `platform_io.dart` when `dart:io` exists and `platform_web.dart` otherwise.
+  Add new platform-dependent APIs to *both* files with identical signatures.
+  Current shimmed API: platform identity (`operatingSystem`, `isAndroid`, ...),
+  save data (`readSaveData` / `writeSaveData`), and `openLogSink`.
+- On web, `Services.save`/`load` use `localStorage` (key `sizzle.json`),
+  `FileLogger` degrades to console output, and every `Device.isAndroid`-style
+  native check is `false` - use `Device.isWeb`.

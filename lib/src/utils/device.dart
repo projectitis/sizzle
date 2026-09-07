@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flame/extensions.dart';
@@ -8,17 +7,22 @@ import 'package:flutter/widgets.dart';
 import '../game/ambient.dart';
 import '../game/frame_rate_mode.dart';
 import '../game/power.dart';
+import './platform/platform.dart' as platform;
 
 class Device {
+  /// The operating system name and version, lowercased. On web this is
+  /// `'web'` followed by the browser user agent.
   static String get os =>
-      '${Platform.operatingSystem.toLowerCase()} ${Platform.operatingSystemVersion.toLowerCase()}';
+      '${platform.operatingSystem.toLowerCase()} ${platform.operatingSystemVersion.toLowerCase()}';
 
-  static bool get isAndroid => Platform.isAndroid;
-  static bool get isIOS => Platform.isIOS;
-  static bool get isWindows => Platform.isWindows;
-  static bool get isMacOS => Platform.isMacOS;
-  static bool get isLinux => Platform.isLinux;
-  static bool get isFuchsia => Platform.isFuchsia;
+  // These report the *native* platform. All of them are `false` on web, even
+  // when the browser is running on that platform - use [isWeb] there.
+  static bool get isAndroid => platform.isAndroid;
+  static bool get isIOS => platform.isIOS;
+  static bool get isWindows => platform.isWindows;
+  static bool get isMacOS => platform.isMacOS;
+  static bool get isLinux => platform.isLinux;
+  static bool get isFuchsia => platform.isFuchsia;
 
   static bool get isMobile => (isAndroid || isIOS) && !isWatch;
   static bool get isWeb => kIsWeb;
@@ -108,19 +112,21 @@ class Device {
 
   static String describe() {
     String s = '';
-    s += isAndroid
-        ? 'Android'
-        : isIOS
-            ? 'iOS'
-            : isWindows
-                ? 'Windows'
-                : isMacOS
-                    ? 'macOS'
-                    : isLinux
-                        ? 'Linux'
-                        : isFuchsia
-                            ? 'Fuchsia'
-                            : 'Unknown OS';
+    s += isWeb
+        ? 'Web'
+        : isAndroid
+            ? 'Android'
+            : isIOS
+                ? 'iOS'
+                : isWindows
+                    ? 'Windows'
+                    : isMacOS
+                        ? 'macOS'
+                        : isLinux
+                            ? 'Linux'
+                            : isFuchsia
+                                ? 'Fuchsia'
+                                : 'Unknown OS';
     s += ' ($os), ';
     s += isWatch
         ? 'Watch'

@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- Web support: Sizzle now compiles for web
+  - `dart:io` and `path_provider` are no longer reachable from a web build.
+    Every use moved behind a conditional-import shim in
+    `lib/src/utils/platform/`
+  - `Services.save` / `Services.load` persist to `localStorage` under the key
+    `sizzle.json` on web, and to the documents-directory file of the same name
+    everywhere else. Existing native save files are unaffected
+  - `FileLogger` falls back to console output on web (no file system). The new
+    `FileLogger.isWritingToFile` reports which sink is in use
+  - `Device.isAndroid` and friends report the *native* platform, so all are
+    `false` on web - use `Device.isWeb`. `Device.os` is `'web'` plus the browser
+    user agent, and `Device.describe()` now names `Web` instead of `Unknown OS`
+  - **Breaking:** the minimum Dart SDK is now 3.3.0, required by
+    `dart:js_interop`. Adds a `web` package dependency
 - Ambient (always-on) mode support
   - `AmbientState` and the `AmbientProvider` seam at `Device.ambientProvider`
   - `SizzleGame.ambient` for burn-in and low-bit constraints while rendering

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
+import './platform/log_sink.dart';
+import './platform/platform.dart';
 
 enum LogLevel { none, error, warn, info, debug }
 
@@ -104,26 +104,21 @@ class PrintJsonLogger extends PrintLogger {
 }
 
 /// Logger that writes to a file
+///
+/// Web builds have no file system, so [init] cannot open a sink there and the
+/// logger falls back to console output (identical to [PrintJsonLogger]). The
+/// same fallback applies on native if the documents directory is unavailable.
 /// TODO: May lock file if crash occurs while sink is open. Do we need to
 /// open and close the sink for every write?
 class FileLogger extends PrintJsonLogger {
-  IOSink? _sink;
+  LogSink? _sink;
+
+  /// Whether a writable sink was opened by [init]. When `false`, output goes
+  /// to the console instead.
+  bool get isWritingToFile => _sink != null;
 
   FutureOr<void> init(String id) async {
-    Directory dir;
-    try {
-      dir = await getApplicationDocumentsDirectory();
-    } catch (e) {
-      return;
-    }
-
-    // Open a file stream for writing
-    final file = File('${dir.path}/$id.log.json');
-    _sink = file.openWrite(mode: FileMode.writeOnly);
-  }
-
-  void _write(dynamic data) {
-    _sink?.write(json.encode(data));
+    _sink = await openLogSink('$id.log.json');
   }
 
   void dispose() {
@@ -134,7 +129,12 @@ class FileLogger extends PrintJsonLogger {
   @override
   void output(LogLevel level, String message, [bool trace = false]) {
     if (_level.index >= level.index) {
-      _write(format(message, trace));
+      final sink = _sink;
+      if (sink == null) {
+        super.output(level, message, trace);
+      } else {
+        sink.write(json.encode(format(message, trace)));
+      }
     }
   }
 }
