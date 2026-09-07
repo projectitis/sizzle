@@ -5,7 +5,8 @@ repository: https://github.com/projectitis/sizzle
 publish_to: 'none' # Remove this line once ready to publish to pub.dev
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  # 3.3.0 is the floor for dart:js_interop, used by the web platform shim
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
 #  flame:
@@ -19,6 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   path_provider: ^2.1.0
+  web: ^1.1.0
   meta: ^1.10.0
   jx: ^1.0.5
   xml: '>=6.6.1 <8.0.0'
