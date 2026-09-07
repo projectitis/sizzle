@@ -31,7 +31,7 @@ Uint8List _lpng(Map<String, dynamic> manifest, Map<String, Uint8List> images) {
   images.forEach((name, bytes) {
     archive.addFile(ArchiveFile(name, bytes.length, bytes));
   });
-  return Uint8List.fromList(ZipEncoder().encode(archive)!);
+  return Uint8List.fromList(ZipEncoder().encode(archive));
 }
 
 /// A synthetic document exercising ids, nesting, offsets, opacity, blend,
