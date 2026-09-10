@@ -18,10 +18,41 @@ platform:
 | Android, iOS, Windows, macOS, Linux | The file `sizzle.json` in the application's documents directory |
 | Web | The `localStorage` entry `sizzle.json`, since web builds have no file system |
 
+The name `sizzle.json` is the default. See
+[changing the save file name](#changing-the-save-file-name) below to use your
+own name or several save slots.
+
 On web, `localStorage` is scoped to the origin the game is served from, and is
 erased when the player clears site data. It also has a per-origin quota of a few
 megabytes, so keep custom save data small. Writing throws if the browser denies
 storage access, which happens in private browsing modes that block site data.
+
+
+## Changing the save file name
+
+[Services.saveFile](../lib/src/utils/services.dart#:~:text=saveFile) holds the
+name used by `save` and `load`. It defaults to `Services.defaultSaveFile`
+(`sizzle.json`). Set it before the first save or load to use your own name:
+
+```dart
+Services.saveFile = 'my_game.json';
+```
+
+The name is used verbatim - as a file name in the documents directory on native
+platforms, and as the `localStorage` key on web. It must be valid for the
+platform, and it cannot be empty.
+
+Changing it between calls gives you independent save slots:
+
+```dart
+Future<void> saveToSlot(int slot) async {
+    Services.saveFile = 'save_$slot.json';
+    await Services.save();
+}
+```
+
+Each slot is a separate save file, so loading a slot that has never been written
+leaves the current flags and yarn variables untouched (see `load` below).
 
 
 ## Saving and loading

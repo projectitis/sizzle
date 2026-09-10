@@ -22,13 +22,35 @@ class Services {
     assert(false, 'Use static methods only. Do not create an instance.');
   }
 
+  /// The default value of [saveFile].
+  static const String defaultSaveFile = 'sizzle.json';
+
+  static String _saveFile = defaultSaveFile;
+
   /// The save file name used by [load] and [save] to
   /// persist player data between game sessions.
   ///
   /// On native platforms this is a file in the application documents
   /// directory. On web it is the `localStorage` key, since web builds have no
   /// file system.
-  static final _savefile = 'sizzle.json';
+  ///
+  /// Defaults to [defaultSaveFile]. Set it before the first [load] or [save]
+  /// to use a different name, or change it between calls to keep several
+  /// independent save slots:
+  ///
+  /// ```dart
+  /// Services.saveFile = 'slot2.json';
+  /// await Services.save();
+  /// ```
+  ///
+  /// The name is used verbatim, so it must be valid for the platform: a file
+  /// name on native, a `localStorage` key on web.
+  static String get saveFile => _saveFile;
+
+  static set saveFile(String value) {
+    assert(value.isNotEmpty, 'The save file name cannot be empty');
+    _saveFile = value;
+  }
 
   /// The path to the root asset folder
   static final _assetFolder = 'assets/';
@@ -85,7 +107,7 @@ class Services {
   /// variables using `Services.dialog.clear(variables: true)` if this is not
   /// desired. Use [onLoad] callback to customise data after the load operation.
   static FutureOr<void> load() async {
-    final contents = await readSaveData(_savefile);
+    final contents = await readSaveData(_saveFile);
     if (contents == null) return;
 
     _data = json.decode(contents);
@@ -107,6 +129,6 @@ class Services {
     _data['_yarn'] = dialog.yarn.variables.variables;
     _onSave?.call(_data);
 
-    await writeSaveData(_savefile, json.encode(_data));
+    await writeSaveData(_saveFile, json.encode(_data));
   }
 }

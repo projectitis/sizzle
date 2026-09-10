@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `Services.saveFile` sets the name used by `Services.save` / `Services.load`,
+  which was previously hardcoded. Defaults to `Services.defaultSaveFile`
+  (`sizzle.json`), so existing saves are unaffected. Change it between calls for
+  multiple save slots
 - Web support: Sizzle now compiles for web
   - `dart:io` and `path_provider` are no longer reachable from a web build.
     Every use moved behind a conditional-import shim in

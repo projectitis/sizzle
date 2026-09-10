@@ -23,6 +23,8 @@ import 'package:web/web.dart' as web;
 void main() {
   setUp(() {
     web.window.localStorage.removeItem('sizzle.json');
+    web.window.localStorage.removeItem('slot2.json');
+    Services.saveFile = Services.defaultSaveFile;
     Services.flags.clear();
   });
 
@@ -54,6 +56,26 @@ void main() {
     await Services.load();
 
     expect(Services.flags['transient'], isTrue);
+  });
+
+  test('saveFile changes the localStorage key used', () async {
+    Services.saveFile = 'slot2.json';
+    Services.flags['castle_key'] = true;
+    await Services.save();
+
+    expect(
+        web.window.localStorage.getItem('slot2.json'), contains('castle_key'));
+    expect(web.window.localStorage.getItem('sizzle.json'), isNull);
+
+    // The two slots are independent - the default slot has nothing in it.
+    Services.flags.clear();
+    Services.saveFile = Services.defaultSaveFile;
+    await Services.load();
+    expect(Services.flags['castle_key'], isFalse);
+
+    Services.saveFile = 'slot2.json';
+    await Services.load();
+    expect(Services.flags['castle_key'], isTrue);
   });
 
   test('onSave / onLoad round-trip custom data', () async {
