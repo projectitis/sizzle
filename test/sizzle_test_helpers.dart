@@ -190,6 +190,49 @@ typedef PrepareGameFunction = Future<void> Function(SizzleGame game);
 String goldens =
     '${Directory.current.path.replaceAll(r'\', '/')}/test/_goldens';
 
+/// A [Logger] that records what it is told instead of printing it, so a test
+/// can assert on the diagnostics an engine call produced.
+///
+/// Assign it to `Services.log` in `setUp` and restore `PrintLogger()` in
+/// `tearDown` - `Services.log` is static and outlives the test.
+class RecordingLogger implements Logger {
+  final List<String> debugs = [];
+  final List<String> infos = [];
+  final List<String> warnings = [];
+  final List<String> errors = [];
+
+  /// Every message recorded, whatever the level.
+  List<String> get all => [...debugs, ...infos, ...warnings, ...errors];
+
+  void clear() {
+    debugs.clear();
+    infos.clear();
+    warnings.clear();
+    errors.clear();
+  }
+
+  @override
+  set level(LogLevel level) {}
+
+  @override
+  void debug(String message) => debugs.add(message);
+
+  @override
+  void info(String message) => infos.add(message);
+
+  @override
+  void warn(String message) => warnings.add(message);
+
+  @override
+  void error(String message) => errors.add(message);
+
+  @override
+  void startTimer() {}
+
+  @override
+  void stopTimer() {}
+}
+
 /// A custom [AssetBundle] that reads files from a directory.
 ///
 /// This is meant to be used in place of [rootBundle] for testing

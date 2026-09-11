@@ -30,7 +30,8 @@ services, the others should feel familiar too.
 - [Message service](services_messages.md) - decoupled publish/subscribe
   messaging by `int` id via `Services.messages`
 - [Save games](services_save.md) - persist flags, dialog state and your own
-  data via `Services.save` / `Services.load`
+  data via `Services.save` / `Services.load`, backed by the `SaveStorage` at
+  `Services.saveStorage`
 - [Logging](services_log.md) - structured logging via `Services.log`
 
 The currently running game can also be accessed via `Services.game`.

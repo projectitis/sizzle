@@ -36,6 +36,11 @@ flutter test --update-goldens
 # instead verified by publishing a real Sizzle game to itch.io. Don't sink
 # time into this hang before checking it still reproduces.
 #
+# The blast radius is now small: save/load *logic* is covered on the VM by
+# test/utils/services_save_test.dart, which swaps in a MemorySaveStorage via
+# Services.saveStorage. services_web_test.dart only checks that
+# PlatformSaveStorage really reaches localStorage.
+#
 # Also note: `flutter test --platform chrome` compiles with DDC, whereas
 # `flutter build web` uses dart2js - a clean web build does not prove the DDC
 # path loads.
@@ -114,6 +119,10 @@ dart doc --output=docs/api .
 - Static class providing global access to game services (no instantiation)
 - Access pattern: `Services.images.load()`, `Services.flags['key']`, etc.
 - `Services.save()` / `Services.load()` persist flags + dialog variables. Hook into `Services.onSave` / `Services.onLoad` to round-trip your own data.
+- Save/load return `Future<bool>` and **never throw** — failures are reported through `Services.log` and the call returns `false`. `save`, `load`, `hasSave` and `deleteSave` each take an optional `name` that falls back to `Services.saveFile`
+- A document that fails to load is validated in full *before* any engine state is touched, then moved aside to `<name>.corrupt`. The engine never deletes player data; recovery is `Services.deleteSave()` driven by the player. Check `Services.hasSave()` **before** `load()` to tell "no save" from "damaged save", since the move makes `hasSave()` false afterwards
+- `Services.saveStorage` is the `SaveStorage` seam all save data passes through (default `PlatformSaveStorage`). Use `MemorySaveStorage` to unit-test save/load on the VM, or implement `SaveStorage` for a cloud backend. Implementations report failure by throwing; `Services` catches and logs
+- See `docs/services_save.md`
 
 **FileService** (`lib/src/utils/services/file_service.dart`)
 - Asset loading and caching from the `assets/` folder
@@ -222,6 +231,7 @@ Located in `lib/src/display/`:
 - `lib/src/utils/pool.dart`: `Pool<T>` and `Pooled` mixin for object pooling. See `docs/pool.md`.
 - `lib/src/utils/device.dart`: platform/device helpers
 - `lib/src/utils/logger.dart`: see Services Architecture above
+- `lib/src/utils/save_storage.dart`: `SaveStorage` seam plus `PlatformSaveStorage` and `MemorySaveStorage`. See Services Architecture above
 
 ## Testing Patterns
 
@@ -354,11 +364,19 @@ The same enqueue/`loadQueue` pattern applies to `Services.files` and `Services.l
 Services.flags['level_complete'] = true;
 if (Services.flags.flagged('level_complete')) { }
 
-// Save/load game state (includes flags and dialog state by default)
-await Services.save();
-await Services.load();
+// Save/load game state (includes flags and dialog state by default).
+// Both return bool and never throw; failures are logged via Services.log.
+if (!await Services.save()) showToast('Could not save');
 
-// Persist your own data alongside flags + yarn variables
+// hasSave must be checked BEFORE load - a damaged save is moved aside
+final had = await Services.hasSave();
+if (!await Services.load() && had) showDamagedSaveDialog();
+
+// A per-call name overrides Services.saveFile for one call
+await Services.save(name: 'slot2.json');
+
+// Persist your own data alongside flags + yarn variables.
+// Everything added must be JSON-encodable or the save fails.
 Services.onSave = (data) => data['hi_score'] = score;
 Services.onLoad = (data) => score = data['hi_score'] as int? ?? 0;
 ```
@@ -392,7 +410,10 @@ For frequently allocated short-lived objects (particles, projectiles, transient 
   `platform_io.dart` when `dart:io` exists and `platform_web.dart` otherwise.
   Add new platform-dependent APIs to *both* files with identical signatures.
   Current shimmed API: platform identity (`operatingSystem`, `isAndroid`, ...),
-  save data (`readSaveData` / `writeSaveData`), and `openLogSink`.
+  save data (`readSaveData` / `writeSaveData` / `saveDataExists` /
+  `deleteSaveData` / `renameSaveData`), and `openLogSink`. The native
+  `writeSaveData` is atomic (writes `<name>.tmp` with `flush: true`, then
+  renames over the target); `localStorage` is already atomic on web.
 - On web, `Services.save`/`load` use `localStorage` (key `sizzle.json`),
   `FileLogger` degrades to console output, and every `Device.isAndroid`-style
   native check is `false` - use `Device.isWeb`.
