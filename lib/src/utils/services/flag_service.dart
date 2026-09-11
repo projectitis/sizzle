@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 class FlagService {
   static final List<String> _flags = [];
 
@@ -27,9 +29,14 @@ class FlagService {
     return _flags.contains(f);
   }
 
-  /// Return full list of flags
+  /// Return full list of flags.
+  ///
+  /// The list is a read-only view of the service's own storage. Mutating it
+  /// throws - use [flag], `[]=` or the [flags] setter instead. It used to be
+  /// the live list, which meant anything handed the list (`Services.onSave`,
+  /// for one) could silently corrupt flag state.
   List<String> get flags {
-    return _flags;
+    return UnmodifiableListView(_flags);
   }
 
   // Replace all flags

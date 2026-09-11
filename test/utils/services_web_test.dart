@@ -5,13 +5,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sizzle/sizzle.dart';
 import 'package:web/web.dart' as web;
 
-/// Web has no file system, so `Services.save`/`load` persist to
-/// `localStorage` instead. This file is browser-only - run it with:
+/// Web has no file system, so `PlatformSaveStorage` persists to `localStorage`
+/// instead. This file is browser-only - run it with:
 ///
 ///     flutter test --platform chrome test/utils/services_web_test.dart
 ///
 /// The rest of the suite imports `dart:io` (via the test helpers) and cannot
 /// run under Chrome, so this file must be named explicitly.
+///
+/// Scope: only that the storage really reaches `localStorage`. The save and
+/// load logic itself - validation, corrupt files, serialisation - is covered by
+/// `services_save_test.dart`, which runs on the VM through a `MemorySaveStorage`
+/// and so runs everywhere.
 ///
 /// NOTE: these assertions have never actually been executed. On the machine
 /// they were written on, `flutter test --platform chrome` hangs forever at
@@ -30,62 +35,41 @@ void main() {
 
   test('save writes the save data to localStorage', () async {
     Services.flags['castle_key'] = true;
-    await Services.save();
+
+    expect(await Services.save(), isTrue);
 
     final raw = web.window.localStorage.getItem('sizzle.json');
     expect(raw, isNotNull);
     expect(raw, contains('castle_key'));
   });
 
-  test('load restores flags written by a previous save', () async {
+  test('load reads the save data back from localStorage', () async {
     Services.flags['castle_key'] = true;
-    Services.flags['bridge_repaired'] = true;
     await Services.save();
-
     Services.flags.clear();
-    expect(Services.flags['castle_key'], isFalse);
 
-    await Services.load();
+    expect(await Services.load(), isTrue);
     expect(Services.flags['castle_key'], isTrue);
-    expect(Services.flags['bridge_repaired'], isTrue);
   });
 
-  test('load with nothing stored leaves state untouched', () async {
-    Services.flags['transient'] = true;
-
-    await Services.load();
-
-    expect(Services.flags['transient'], isTrue);
-  });
-
-  test('saveFile changes the localStorage key used', () async {
-    Services.saveFile = 'slot2.json';
+  test('the save file name selects the localStorage key', () async {
     Services.flags['castle_key'] = true;
-    await Services.save();
+
+    expect(await Services.save(name: 'slot2.json'), isTrue);
 
     expect(
-        web.window.localStorage.getItem('slot2.json'), contains('castle_key'));
+      web.window.localStorage.getItem('slot2.json'),
+      contains('castle_key'),
+    );
     expect(web.window.localStorage.getItem('sizzle.json'), isNull);
-
-    // The two slots are independent - the default slot has nothing in it.
-    Services.flags.clear();
-    Services.saveFile = Services.defaultSaveFile;
-    await Services.load();
-    expect(Services.flags['castle_key'], isFalse);
-
-    Services.saveFile = 'slot2.json';
-    await Services.load();
-    expect(Services.flags['castle_key'], isTrue);
   });
 
-  test('onSave / onLoad round-trip custom data', () async {
-    Services.onSave = (data) => data['hi_score'] = 4200;
+  test('hasSave and deleteSave reach localStorage', () async {
     await Services.save();
+    expect(await Services.hasSave(), isTrue);
 
-    int? restored;
-    Services.onLoad = (data) => restored = data['hi_score'] as int?;
-    await Services.load();
-
-    expect(restored, 4200);
+    expect(await Services.deleteSave(), isTrue);
+    expect(await Services.hasSave(), isFalse);
+    expect(web.window.localStorage.getItem('sizzle.json'), isNull);
   });
 }

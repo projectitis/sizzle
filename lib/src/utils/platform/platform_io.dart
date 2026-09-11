@@ -37,9 +37,45 @@ Future<String?> readSaveData(String name) async {
 
 /// Write [contents] as the save data under [name], replacing anything already
 /// stored there.
+///
+/// The write goes to `<name>.tmp` first and is then renamed over the target, so
+/// a crash or kill part-way through leaves the previous save intact. Writing the
+/// target directly would truncate it before writing, which is how a corrupt save
+/// file gets created in the first place.
 Future<void> writeSaveData(String name, String contents) async {
+  final dir = (await _documentsDir()).path;
+  final temp = File('$dir/$name.tmp');
+  try {
+    // `flush: true` matters here - without it the bytes may not have reached
+    // the device when the rename commits the directory entry.
+    await temp.writeAsString(contents, flush: true);
+    await temp.rename('$dir/$name');
+  } catch (_) {
+    // Do not leave a partial temp file behind in the player's documents folder.
+    try {
+      await temp.delete();
+    } catch (_) {}
+    rethrow;
+  }
+}
+
+/// Whether save data is stored under [name].
+Future<bool> saveDataExists(String name) async =>
+    File('${(await _documentsDir()).path}/$name').exists();
+
+/// Remove the save data stored under [name]. Does nothing if there is none.
+Future<void> deleteSaveData(String name) async {
   final file = File('${(await _documentsDir()).path}/$name');
-  await file.writeAsString(contents);
+  if (await file.exists()) await file.delete();
+}
+
+/// Move the save data stored under [from] to [to], replacing anything already
+/// stored at [to]. Does nothing if there is nothing stored at [from].
+Future<void> renameSaveData(String from, String to) async {
+  final dir = (await _documentsDir()).path;
+  final file = File('$dir/$from');
+  if (!await file.exists()) return;
+  await file.rename('$dir/$to');
 }
 
 // --- Log sink ---------------------------------------------------------------
