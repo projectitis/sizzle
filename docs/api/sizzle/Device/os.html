@@ -66,12 +66,16 @@
 
     </section>
     
+<section class="desc markdown">
+  <p>The operating system name and version, lowercased. On web this is
+<code>'web'</code> followed by the browser user agent.</p>
+</section>
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">static String get os =&gt;
-    &#39;${Platform.operatingSystem.toLowerCase()} ${Platform.operatingSystemVersion.toLowerCase()}&#39;;</code></pre>
+    &#39;${platform.operatingSystem.toLowerCase()} ${platform.operatingSystemVersion.toLowerCase()}&#39;;</code></pre>
 </section>
 
   </section>

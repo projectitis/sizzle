@@ -68,6 +68,11 @@
     
 <section class="desc markdown">
   <p>Pauses the game loop, broadcasting <a href="../../sizzle/SizzleMessage/gamePaused-constant.html">SizzleMessage.gamePaused</a>.</p>
+<p>Records <a href="../../sizzle/PauseReason.html">PauseReason.user</a> rather than stopping the ticker directly, so
+it composes with the engine's other reasons for being stopped. The
+practical consequence is that the game stays paused until <em>everything</em>
+wanting it paused has let go - a game paused here and then backgrounded
+does not start running again when it returns to the foreground.</p>
 </section>
 
 
@@ -75,11 +80,7 @@
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
-void pauseEngine() {
-  final bool wasPaused = paused;
-  super.pauseEngine();
-  _notifyPauseChanged(wasPaused);
-}</code></pre>
+void pauseEngine() =&gt; _setPauseReason(PauseReason.user, true);</code></pre>
 </section>
 
 

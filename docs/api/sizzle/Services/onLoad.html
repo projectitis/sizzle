@@ -67,6 +67,14 @@
 
     </section>
     
+<section class="desc markdown">
+  <p>Called immediately after a save document has been read and applied.
+Mutate the supplied map to read your own keys back out.</p>
+<p>It runs after flags and yarn variables have been restored, so it sees
+fully loaded engine state. An exception thrown from here is <em>not</em> caught -
+that is a bug in the callback, not a failed load. Do not call <a href="../../sizzle/Services/save.html">save</a> or
+<a href="../../sizzle/Services/load.html">load</a> from inside it; those calls are serialised and would deadlock.</p>
+</section>
 
     
 <section class="summary source-code" id="source">

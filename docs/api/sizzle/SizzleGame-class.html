@@ -473,6 +473,18 @@ needed.
 
 </dd>
 
+        <dt id="isPowerSaveMode" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/isPowerSaveMode.html">isPowerSaveMode</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd>
+  Whether the device is in battery saver mode.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
         <dt id="isRemoved" class="property inherited">
   <span class="name"><a href="../sizzle/SizzleGame/isRemoved.html">isRemoved</a></span>
   <span class="signature">&#8594; bool</span>
@@ -626,6 +638,20 @@ game widget.
 
 </dd>
 
+        <dt id="mousePressDetector" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/mousePressDetector.html">mousePressDetector</a></span>
+  <span class="signature">&#8596; void Function<span class="signature">(<span class="parameter" id="param-event"><span class="type-annotation">PointerDownEvent</span> <span class="parameter-name">event</span></span>)</span>?</span>
+  
+
+</dt>
+<dd class="inherited">
+  Set by the PointerMoveDispatcher to receive mouse press events from the
+game widget so it can fire <code>onHoverCancel</code> on hovered <code>HoverCallbacks</code>
+components when the user presses a button while hovering.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
+
+</dd>
+
         <dt id="onCleanup" class="property">
   <span class="name"><a href="../sizzle/SizzleGame/onCleanup.html">onCleanup</a></span>
   <span class="signature">&#8596; Function?</span>
@@ -673,6 +699,18 @@ superclass tears down, giving the game a chance to release resources
 <dd>
   Returns is the engine if currently paused or running
   <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited-getter</span></div>
+
+</dd>
+
+        <dt id="pauseReasons" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/pauseReasons.html">pauseReasons</a></span>
+  <span class="signature">&#8594; Set<span class="signature">&lt;<wbr><span class="type-parameter"><a href="../sizzle/PauseReason.html">PauseReason</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  Everything currently keeping the game paused.
+  <div class="features"><span class="feature">no setter</span></div>
 
 </dd>
 
@@ -801,6 +839,19 @@ chosen by <a href="../sizzle/SizzleGame/onGameResize.html">onGameResize</a> is r
 pixel covers a whole number of screen pixels. Recommended for
 pixel-art games.
   <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="scrollDetector" class="property inherited">
+  <span class="name"><a href="../sizzle/SizzleGame/scrollDetector.html">scrollDetector</a></span>
+  <span class="signature">&#8596; void Function<span class="signature">(<span class="parameter" id="param-event"><span class="type-annotation">PointerScrollEvent</span> <span class="parameter-name">event</span></span>)</span>?</span>
+  
+
+</dt>
+<dd class="inherited">
+  Set by the ScrollDispatcher to receive pointer scroll events from the
+game widget.
+  <div class="features"><span class="feature">getter/setter pair</span><span class="feature">inherited</span></div>
 
 </dd>
 
@@ -1168,6 +1219,22 @@ a particular class.
 
 </dd>
 
+        <dt id="debugAddRenderFrameInterval" class="callable">
+  <span class="name"><a href="../sizzle/SizzleGame/debugAddRenderFrameInterval.html">debugAddRenderFrameInterval</a></span><span class="signature">(<wbr><span class="parameter" id="debugAddRenderFrameInterval-param-micros"><span class="type-annotation">int</span> <span class="parameter-name">micros</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Feeds one presented-frame interval into the render meter, standing in for
+the real <code>FrameTiming</code> callbacks that never fire under <code>flutter test</code>.
+Lets a test drive the hardware-honour probe as if the panel were
+presenting at a chosen cadence.
+  
+
+</dd>
+
         <dt id="descendants" class="callable inherited">
   <span class="name"><a href="../sizzle/SizzleGame/descendants.html">descendants</a></span><span class="signature">(<wbr>{<span class="parameter" id="descendants-param-includeSelf"><span class="type-annotation">bool</span> <span class="parameter-name">includeSelf</span> = <span class="default-value">false</span>, </span><span class="parameter" id="descendants-param-reversed"><span class="type-annotation">bool</span> <span class="parameter-name">reversed</span> = <span class="default-value">false</span></span>})
     <span class="returntype parameter">&#8594; Iterable<span class="signature">&lt;<wbr><span class="type-parameter">Component</span>&gt;</span></span>
@@ -1336,8 +1403,8 @@ are no such children.
 
 </dt>
 <dd>
-  Keeps the physics timer in step with the app being backgrounded, and
-broadcasts <a href="../sizzle/SizzleMessage/appLifecycleChanged-constant.html">SizzleMessage.appLifecycleChanged</a>.
+  Tracks backgrounding as a pause reason and broadcasts
+<a href="../sizzle/SizzleMessage/appLifecycleChanged-constant.html">SizzleMessage.appLifecycleChanged</a>.
   
 
 </dd>
@@ -1899,6 +1966,29 @@ priority of the direct siblings, not the children or the ancestors.
     </dl>
   </section>
     
+  <section class="summary offset-anchor" id="static-properties">
+    <h2>Static Properties</h2>
+    <dl class="properties">
+        <dt id="honourSampleStep" class="property">
+  <span class="name"><a href="../sizzle/SizzleGame/honourSampleStep.html">honourSampleStep</a></span>
+  <span class="signature">&#8596; Duration</span>
+  
+
+</dt>
+<dd>
+  How often <code>_isHardwareRateHonoured</code> samples the render meter, and how
+many samples it takes before giving up. The product is the hard cap on
+how long a hardware-rate probe can run (~3s), chosen to outlast the
+Surface-reconfiguration stall that delays the first frame timings after
+the panel-rate hint is applied - on a Pixel Watch 3 that stall runs to
+~1s before the first frame lands, and a clean averaging window is
+measured on top of it.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+    </dl>
+  </section>
     
     
 

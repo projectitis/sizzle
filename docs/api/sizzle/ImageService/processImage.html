@@ -75,6 +75,11 @@
   Image image,
   ImageProperties imageProperties,
 ) async {
+  &#47;&#47; Checked up front so an untransformed image costs no recorder or canvas.
+  if (!_hasTransform(_mergedProperties(imageProperties))) {
+    return image;
+  }
+
   final prepared = _prepareTransformedCanvas(
     image.width.toDouble(),
     image.height.toDouble(),

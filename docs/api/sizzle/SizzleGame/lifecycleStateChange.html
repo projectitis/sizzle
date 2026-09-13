@@ -68,13 +68,13 @@
     </section>
     
 <section class="desc markdown">
-  <p>Keeps the physics timer in step with the app being backgrounded, and
-broadcasts <a href="../../sizzle/SizzleMessage/appLifecycleChanged-constant.html">SizzleMessage.appLifecycleChanged</a>.</p>
-<p>Flame's own handling only covers the ticker, and in the half-rate modes
-Sizzle owns a timer that would otherwise keep simulating (and, in
-software mode, keep asking for paints) while the app is not visible.</p>
-<p>The message is sent before the early-out below so that it fires in
-every frame rate mode, not just the ones that own the loop.</p>
+  <p>Tracks backgrounding as a pause reason and broadcasts
+<a href="../../sizzle/SizzleMessage/appLifecycleChanged-constant.html">SizzleMessage.appLifecycleChanged</a>.</p>
+<p>Sizzle owns backgrounding rather than leaving it to Flame (see the
+<code>pauseWhenBackgrounded</code> note in <a href="../../sizzle/SizzleGame/onMount.html">onMount</a>), because in the half-rate
+modes it also owns a timer that would otherwise keep simulating - and,
+in software mode, keep asking for paints - while the app is not
+visible.</p>
 </section>
 
 
@@ -85,18 +85,14 @@ every frame rate mode, not just the ones that own the loop.</p>
 void lifecycleStateChange(AppLifecycleState state) {
   Services.messages.send(SizzleMessage.appLifecycleChanged, state);
   super.lifecycleStateChange(state);
-  if (!_ownsLoop) return;
   switch (state) {
     case AppLifecycleState.resumed:
     case AppLifecycleState.inactive:
-      &#47;&#47; `super` has already restarted the ticker if it paused it; re-engage
-      &#47;&#47; rebuilds our side of the loop with a fresh accumulator so the time
-      &#47;&#47; spent backgrounded is not simulated in one burst.
-      if (isMounted) _engageMode();
+      _setPauseReason(PauseReason.backgrounded, false);
     case AppLifecycleState.paused:
     case AppLifecycleState.detached:
     case AppLifecycleState.hidden:
-      _stopPhysicsTimer();
+      _setPauseReason(PauseReason.backgrounded, true);
   }
 }</code></pre>
 </section>

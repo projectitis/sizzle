@@ -75,6 +75,14 @@
   Non-directional fill — lifts overall scene brightness uniformly.
 </dd>
 
+          <dt id="AmbientProvider">
+  <span class="name "><a href="../sizzle/AmbientProvider-class.html">AmbientProvider</a></span> 
+
+</dt>
+<dd>
+  Seam for a platform plugin that can report ambient (always-on) mode.
+</dd>
+
           <dt id="Bitset">
   <span class="name "><a href="../sizzle/Bitset-class.html">Bitset</a></span> 
 
@@ -200,8 +208,6 @@ lighting.
 </dt>
 <dd>
   Logger that writes to a file
-TODO: May lock file if crash occurs while sink is open. Do we need to
-open and close the sink for every write?
 </dd>
 
           <dt id="FileProperties">
@@ -421,6 +427,15 @@ relevant) applies any <code>pp:expand</code> offset before doing so.
 <a href="../sizzle/LpngLayer/image.html">image</a>) or a <strong>group</strong> (no <a href="../sizzle/LpngLayer/src.html">src</a>; composites its <a href="../sizzle/LpngLayer/layers.html">layers</a>).
 </dd>
 
+          <dt id="MemorySaveStorage">
+  <span class="name "><a href="../sizzle/MemorySaveStorage-class.html">MemorySaveStorage</a></span> 
+
+</dt>
+<dd>
+  A <a href="../sizzle/SaveStorage-class.html">SaveStorage</a> that keeps everything in memory. Nothing is persisted, so
+the contents are gone when the process ends.
+</dd>
+
           <dt id="MessageListener">
   <span class="name "><a href="../sizzle/MessageListener-class.html">MessageListener</a></span> 
 
@@ -463,6 +478,16 @@ inspect state, <a href="../sizzle/MessageListener/pause.html">pause</a>/<a href=
   Describes the size of each section of the <a href="../sizzle/NineGridComponent-class.html">NineGridComponent</a>
 </dd>
 
+          <dt id="PlatformSaveStorage">
+  <span class="name "><a href="../sizzle/PlatformSaveStorage-class.html">PlatformSaveStorage</a></span> 
+
+</dt>
+<dd>
+  The default <a href="../sizzle/SaveStorage-class.html">SaveStorage</a>. Stores save data on the device: a file in the
+application documents directory on native platforms, a <code>localStorage</code> entry
+on web.
+</dd>
+
           <dt id="PlyAnimProps">
   <span class="name "><a href="../sizzle/PlyAnimProps-class.html">PlyAnimProps</a></span> 
 
@@ -497,6 +522,15 @@ sprite, resulting in a much smaller image (sprite sheet).
   A pool of objects that can be reused
 </dd>
 
+          <dt id="PowerProvider">
+  <span class="name "><a href="../sizzle/PowerProvider-class.html">PowerProvider</a></span> 
+
+</dt>
+<dd>
+  Seam for a platform plugin that can report the device's battery saver
+state.
+</dd>
+
           <dt id="PrintJsonLogger">
   <span class="name "><a href="../sizzle/PrintJsonLogger-class.html">PrintJsonLogger</a></span> 
 
@@ -528,6 +562,14 @@ sprite, resulting in a much smaller image (sprite sheet).
 <dd>
   Counts how often something happens and reports it as a per-second rate
 over a sliding window.
+</dd>
+
+          <dt id="SaveStorage">
+  <span class="name "><a href="../sizzle/SaveStorage-class.html">SaveStorage</a></span> 
+
+</dt>
+<dd>
+  Where <code>Services.save</code> and <code>Services.load</code> keep their data.
 </dd>
 
           <dt id="Scene">
@@ -782,6 +824,14 @@ to <code>ui.BlendMode.srcOver</code> when compositing (see <a href="../sizzle/Lp
 </dt>
 <dd>
   A nine-tile grid implementation
+</dd>
+
+          <dt id="PauseReason">
+  <span class="name "><a href="../sizzle/PauseReason.html">PauseReason</a></span> 
+
+</dt>
+<dd>
+  Why a <a href="../sizzle/SizzleGame-class.html">SizzleGame</a> is not running.
 </dd>
 
           <dt id="StrokeEndStyle">

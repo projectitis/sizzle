@@ -90,10 +90,15 @@ loading from sources other than the asset bundle.</p>
     ..dpi = (manifest[&#39;dpi&#39;] as num?)?.toDouble()
     ..version = manifest[&#39;v&#39;] as String? ?? &#39;&#39;;
 
+  &#47;&#47; Layers with identical pixels may share a `src` (see the exporter&#39;s
+  &#47;&#47; --optimize flag), so each file is decoded once and the resulting image
+  &#47;&#47; is shared between the layers that reference it.
+  final decoded = &lt;String, ui.Image?&gt;{};
+
   final rawLayers = manifest[&#39;layers&#39;] as List&lt;dynamic&gt;? ?? const [];
   for (final raw in rawLayers) {
     doc.layers.add(
-      await _buildLayer(raw as Map&lt;String, dynamic&gt;, archive, 0, 0),
+      await _buildLayer(raw as Map&lt;String, dynamic&gt;, archive, 0, 0, decoded),
     );
   }
 

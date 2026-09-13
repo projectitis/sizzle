@@ -75,6 +75,7 @@ tinted with the given color.</p>
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">void tint(Color color, {T? paintId}) {
   getPaint(paintId).colorFilter = ColorFilter.mode(color, BlendMode.srcATop);
+  onChanged();
 }</code></pre>
 </section>
 

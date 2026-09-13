@@ -149,7 +149,11 @@ production, where it costs nothing at all.</p>
 
   &#47;&#47; Route lifecycle events through onDispose so platform-specific exit
   &#47;&#47; paths (close button, OS shutdown) all converge on the same cleanup.
-  AppLifecycleListener(
+  &#47;&#47; Held so [onDispose] can release it. Without that, every game ever
+  &#47;&#47; constructed stays registered with the binding and keeps receiving
+  &#47;&#47; callbacks - which matters in tests, where many games are built and
+  &#47;&#47; torn down in one process.
+  _lifecycleListener = AppLifecycleListener(
     onDetach: () {
       onDispose();
     },
