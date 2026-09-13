@@ -68,16 +68,7 @@
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">FutureOr&lt;void&gt; init(String id) async {
-  Directory dir;
-  try {
-    dir = await getApplicationDocumentsDirectory();
-  } catch (e) {
-    return;
-  }
-
-  &#47;&#47; Open a file stream for writing
-  final file = File(&#39;${dir.path}&#47;$id.log.json&#39;);
-  _sink = file.openWrite(mode: FileMode.writeOnly);
+  _sink = await openLogSink(&#39;$id.log.json&#39;);
 }</code></pre>
 </section>
 

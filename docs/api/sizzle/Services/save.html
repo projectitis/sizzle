@@ -54,32 +54,50 @@
 
     <section class="multi-line-signature">
       
-<span class="returntype">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
-<span class="name ">save</span>(<wbr>)
+<span class="returntype">Future<span class="signature">&lt;<wbr><span class="type-parameter">bool</span>&gt;</span></span>
+<span class="name ">save</span>(<wbr>{<ol class="parameter-list"> <li><span class="parameter" id="save-param-name"><span class="type-annotation">String?</span> <span class="parameter-name">name</span>, </span></li>
+</ol>})
 
       
 
     </section>
     
 <section class="desc markdown">
-  <p>Save all data to the device.</p>
-<p>Use the <a href="../../sizzle/Services/onSave.html">onSave</a> callback to customise data before the save operation.</p>
+  <p>Save the current session to <code>name</code>, or to <a href="../../sizzle/Services/saveFile.html">saveFile</a> if <code>name</code> is omitted.</p>
+<p>This stores all flags and all current yarn variables. Use the <a href="../../sizzle/Services/onSave.html">onSave</a>
+callback to add your own keys to the document first.</p>
+<p>Returns <code>true</code> if the document reached storage. Returns <code>false</code> if it
+could not be encoded or written - in which case the reason is reported
+through <a href="../../sizzle/Services/log.html">log</a> and whatever was already saved is left intact. It never
+throws.</p>
+<p>The document is captured when this is called, not when the write happens,
+so it holds the state as of the call even if another save or load is
+still in flight ahead of it.</p>
 </section>
 
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">static FutureOr&lt;void&gt; save() async {
-  _dir ??= await getApplicationDocumentsDirectory();
-  if (_dir == null) return;
+  <pre class="language-dart"><code class="language-dart">static Future&lt;bool&gt; save({String? name}) {
+  final resolved = _resolve(name);
 
-  _data[&#39;_flags&#39;] = flags.flags;
-  _data[&#39;_yarn&#39;] = dialog.yarn.variables.variables;
-  _onSave?.call(_data);
+  final Map&lt;String, dynamic&gt; doc;
+  final String contents;
+  try {
+    doc = _document(resolved);
+    &#47;&#47; Encoded before writing, so data the game added that cannot be
+    &#47;&#47; represented as JSON fails without having touched the stored save.
+    contents = json.encode(doc);
+  } on JsonUnsupportedObjectError catch (e) {
+    log.error(
+      &#39;Save file &quot;$resolved&quot; was not written &#39;
+      &#39;(${e.unsupportedObject.runtimeType} cannot be encoded as JSON)&#39;,
+    );
+    return Future&lt;bool&gt;.value(false);
+  }
 
-  final File file = File(&#39;${_dir!.path}&#47;$_savefile&#39;);
-  file.writeAsStringSync(json.encode(_data));
+  return _serialised(() =&gt; _write(resolved, doc, contents));
 }</code></pre>
 </section>
 

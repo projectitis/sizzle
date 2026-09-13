@@ -67,8 +67,9 @@
   <p>Switches to <code>mode</code>, returning the mode that ended up in force.</p>
 <p>Asynchronous because <a href="../../sizzle/FrameRateMode.html">FrameRateMode.hardwareHalfRate</a> cannot be trusted
 on its word: the request is made, the real frame cadence is then
-measured for about half a second, and the mode is only kept if the
-display genuinely slowed down. If it did not - or if no
+measured (for up to a few seconds, since applying the hint can stall
+presentation briefly), and the mode is only kept if the display
+genuinely slowed down. If it did not - or if no
 <code>Device.hwFrameRateProvider</code> is registered, which is the case for a
 stock Sizzle build - the result degrades to
 <a href="../../sizzle/FrameRateMode.html">FrameRateMode.softwareHalfRate</a> when <code>fallbackToSoftware</code> is <code>true</code>,
@@ -88,21 +89,27 @@ already complete by the time it is handed back.</p>
   _requestedMode = mode;
   _fallbackToSoftware = fallbackToSoftware;
 
+  &#47;&#47; Snapshot up front so the whole call announces at most one change, even
+  &#47;&#47; though the hardware path engages a mode provisionally in order to
+  &#47;&#47; measure it and may then roll back.
+  final previous = _effectiveMode;
+
   final resolved = _resolveModeSync(mode, fallbackToSoftware);
   if (resolved != null) {
-    await _clearHardwareHint();
-    _applyMode(resolved);
-    return resolved;
+    _applyMode(resolved, announce: false);
+  } else {
+    final verified = await _resolveHardwareMode(fallbackToSoftware);
+    &#47;&#47; A second call may have overtaken us while the cadence was being
+    &#47;&#47; sampled; in that case the newer request wins and has already
+    &#47;&#47; announced whatever it settled on.
+    if (_requestedMode != mode) {
+      return _effectiveMode;
+    }
+    _applyMode(verified, announce: false);
   }
 
-  final verified = await _resolveHardwareMode(fallbackToSoftware);
-  &#47;&#47; A second call may have overtaken us while the cadence was being
-  &#47;&#47; sampled; in that case the newer request wins.
-  if (_requestedMode != mode) {
-    return _effectiveMode;
-  }
-  _applyMode(verified);
-  return verified;
+  _announceModeChange(previous);
+  return _effectiveMode;
 }</code></pre>
 </section>
 

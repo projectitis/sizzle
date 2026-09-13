@@ -67,6 +67,14 @@
 
     </section>
     
+<section class="desc markdown">
+  <p>Called immediately before the save document is written. Mutate the
+supplied map to add your own keys.</p>
+<p>Everything added must be JSON-encodable - a <code>DateTime</code> or a custom class
+fails the save. An exception thrown from here is <em>not</em> caught - that is a
+bug in the callback, not a failed save. Do not call <a href="../../sizzle/Services/save.html">save</a> or <a href="../../sizzle/Services/load.html">load</a> from
+inside it; those calls are serialised and would deadlock.</p>
+</section>
 
     
 <section class="summary source-code" id="source">

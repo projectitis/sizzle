@@ -69,6 +69,8 @@
 without a <code>name</code>, the path will be used as the name. Additional
 parameters can be provided to scale and resize the image. Only provide
 <code>properties</code> or <code>path</code>, not both.</p>
+<p><a href="../../sizzle/ImageService/defaultProperties.html">defaultProperties</a> is applied either way — passing <code>path</code> on its own is
+equivalent to passing <code>ImageProperties(path)</code>.</p>
 </section>
 
 
@@ -88,26 +90,21 @@ parameters can be provided to scale and resize the image. Only provide
     !(properties == null &amp;&amp; path == null),
     &#39;Provide either properties or path&#39;,
   );
-  String assetName = path ?? properties!.name;
-  if (_cache.containsKey(assetName)) {
-    return _cache[assetName]!;
+  &#47;&#47; Wrap a bare path exactly as [enqueue] does, so a path-only load goes
+  &#47;&#47; through the same merge with [defaultProperties] as a queued one.
+  final ImageProperties props = properties ?? ImageProperties(path!);
+  if (_cache.containsKey(props.name)) {
+    return _cache[props.name]!;
   }
-  String assetPath = path ?? properties!.path;
-  if (assetPath.toLowerCase().endsWith(&#39;.svg&#39;)) {
-    return _loadSvg(properties, assetName, assetPath, cache);
+  if (props.path.toLowerCase().endsWith(&#39;.svg&#39;)) {
+    return _loadSvg(props, cache);
   }
-  final data = await assetBundle.load(assetFolder + assetPath);
+  final data = await assetBundle.load(assetFolder + props.path);
   final bytes = Uint8List.view(data.buffer);
   final image = await decodeImageFromList(bytes);
-  if (properties == null) {
-    if (cache) {
-      _cache[assetName] = image;
-    }
-    return image;
-  }
-  final processedImage = await processImage(image, properties);
+  final processedImage = await processImage(image, props);
   if (cache) {
-    _cache[properties.name] = processedImage;
+    _cache[props.name] = processedImage;
   }
   return processedImage;
 }</code></pre>

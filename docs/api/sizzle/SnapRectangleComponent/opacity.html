@@ -108,6 +108,7 @@ set opacity(double value) {
   for (final paint in _paints.values) {
     paint.color = paint.color.withValues(alpha: value);
   }
+  onChanged();
 }</code></pre>
 </section>
 

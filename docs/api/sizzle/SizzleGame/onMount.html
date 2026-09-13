@@ -81,9 +81,30 @@ can produce anything.</p>
   <pre class="language-dart"><code class="language-dart">@override
 void onMount() {
   super.onMount();
+
+  &#47;&#47; Sizzle owns backgrounding from here on. Flame&#39;s own handling stops the
+  &#47;&#47; ticker but not our physics timer, and worse, `FlameGame.pauseEngine`
+  &#47;&#47; unconditionally clears the flag it uses to remember that it was the one
+  &#47;&#47; who paused - so any Sizzle-initiated pause would silently destroy its
+  &#47;&#47; bookkeeping and the game would never resume. Handled in
+  &#47;&#47; [lifecycleStateChange] as [PauseReason.backgrounded] instead.
+  pauseWhenBackgrounded = false;
+
   if (_measureFps) {
     _renderFpsMeter.start();
   }
+
+  final ambientProvider = Device.ambientProvider;
+  if (ambientProvider != null &amp;&amp; ambientProvider.isSupported) {
+    ambientProvider.listen(onChanged: _onAmbientChanged);
+  }
+
+  final powerProvider = Device.powerProvider;
+  if (powerProvider != null &amp;&amp; powerProvider.isSupported) {
+    _isPowerSaveMode = powerProvider.isPowerSaveMode;
+    powerProvider.listen(onChanged: _onPowerSaveChanged);
+  }
+
   final resolved = _resolveModeSync(_requestedMode, _fallbackToSoftware);
   if (resolved != null) {
     _applyMode(resolved);

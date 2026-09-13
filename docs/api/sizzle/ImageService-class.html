@@ -126,7 +126,11 @@
 
 </dt>
 <dd>
-  
+  Baseline properties merged into every image loaded by this service,
+including path-only loads such as <code>load(path: 'a.png')</code>. Per-image
+properties take precedence (see <a href="../sizzle/ImageProperties/copyMerged.html">ImageProperties.copyMerged</a>); an
+individual image opts out entirely with
+<a href="../sizzle/ImageProperties/ignoreDefaultProperties.html">ImageProperties.ignoreDefaultProperties</a>.
   <div class="features"><span class="feature">getter/setter pair</span></div>
 
 </dd>

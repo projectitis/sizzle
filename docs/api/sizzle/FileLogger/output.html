@@ -77,7 +77,12 @@
   <pre class="language-dart"><code class="language-dart">@override
 void output(LogLevel level, String message, [bool trace = false]) {
   if (_level.index &gt;= level.index) {
-    _write(format(message, trace));
+    final sink = _sink;
+    if (sink == null) {
+      super.output(level, message, trace);
+    } else {
+      sink.write(json.encode(format(message, trace)));
+    }
   }
 }</code></pre>
 </section>

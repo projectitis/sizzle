@@ -68,19 +68,21 @@
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">static String describe() {
   String s = &#39;&#39;;
-  s += isAndroid
-      ? &#39;Android&#39;
-      : isIOS
-          ? &#39;iOS&#39;
-          : isWindows
-              ? &#39;Windows&#39;
-              : isMacOS
-                  ? &#39;macOS&#39;
-                  : isLinux
-                      ? &#39;Linux&#39;
-                      : isFuchsia
-                          ? &#39;Fuchsia&#39;
-                          : &#39;Unknown OS&#39;;
+  s += isWeb
+      ? &#39;Web&#39;
+      : isAndroid
+          ? &#39;Android&#39;
+          : isIOS
+              ? &#39;iOS&#39;
+              : isWindows
+                  ? &#39;Windows&#39;
+                  : isMacOS
+                      ? &#39;macOS&#39;
+                      : isLinux
+                          ? &#39;Linux&#39;
+                          : isFuchsia
+                              ? &#39;Fuchsia&#39;
+                              : &#39;Unknown OS&#39;;
   s += &#39; ($os), &#39;;
   s += isWatch
       ? &#39;Watch&#39;

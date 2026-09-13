@@ -107,11 +107,7 @@ routing through this setter, so all three are separate entry points.</p>
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
-set paused(bool value) {
-  final bool wasPaused = paused;
-  super.paused = value;
-  _notifyPauseChanged(wasPaused);
-}</code></pre>
+set paused(bool value) =&gt; _setPauseReason(PauseReason.user, value);</code></pre>
 </section>
 
   </section>

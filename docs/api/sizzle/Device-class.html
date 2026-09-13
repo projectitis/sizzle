@@ -160,6 +160,18 @@
   <section class="summary offset-anchor" id="static-properties">
     <h2>Static Properties</h2>
     <dl class="properties">
+        <dt id="ambientProvider" class="property">
+  <span class="name"><a href="../sizzle/Device/ambientProvider.html">ambientProvider</a></span>
+  <span class="signature">&#8596; <a href="../sizzle/AmbientProvider-class.html">AmbientProvider</a>?</span>
+  
+
+</dt>
+<dd>
+  Platform hook for reporting ambient (always-on) mode.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
         <dt id="hwFrameRateProvider" class="property">
   <span class="name"><a href="../sizzle/Device/hwFrameRateProvider.html">hwFrameRateProvider</a></span>
   <span class="signature">&#8596; <a href="../sizzle/HwFrameRateProvider-class.html">HwFrameRateProvider</a>?</span>
@@ -170,6 +182,19 @@
   Platform hook for changing the display refresh rate, used by
 <a href="../sizzle/FrameRateMode.html">FrameRateMode.hardwareHalfRate</a>.
   <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="isAmbientSupported" class="property">
+  <span class="name"><a href="../sizzle/Device/isAmbientSupported.html">isAmbientSupported</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd>
+  Whether an <a href="../sizzle/Device/ambientProvider.html">ambientProvider</a> is registered and reports that this
+platform can tell us about ambient mode.
+  <div class="features"><span class="feature">no setter</span></div>
 
 </dd>
 
@@ -270,6 +295,19 @@ platform can accept refresh-rate requests.
 
 </dd>
 
+        <dt id="isPowerSaveSupported" class="property">
+  <span class="name"><a href="../sizzle/Device/isPowerSaveSupported.html">isPowerSaveSupported</a></span>
+  <span class="signature">&#8594; bool</span>
+  
+
+</dt>
+<dd>
+  Whether a <a href="../sizzle/Device/powerProvider.html">powerProvider</a> is registered and reports that this platform
+can tell us about battery saver.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
         <dt id="isWatch" class="property">
   <span class="name"><a href="../sizzle/Device/isWatch.html">isWatch</a></span>
   <span class="signature">&#8594; bool</span>
@@ -313,7 +351,8 @@ platform can accept refresh-rate requests.
 
 </dt>
 <dd>
-  
+  The operating system name and version, lowercased. On web this is
+<code>'web'</code> followed by the browser user agent.
   <div class="features"><span class="feature">no setter</span></div>
 
 </dd>
@@ -327,6 +366,18 @@ platform can accept refresh-rate requests.
 <dd>
   
   <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="powerProvider" class="property">
+  <span class="name"><a href="../sizzle/Device/powerProvider.html">powerProvider</a></span>
+  <span class="signature">&#8596; <a href="../sizzle/PowerProvider-class.html">PowerProvider</a>?</span>
+  
+
+</dt>
+<dd>
+  Platform hook for reporting battery saver state.
+  <div class="features"><span class="feature">getter/setter pair</span></div>
 
 </dd>
 

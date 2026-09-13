@@ -82,6 +82,11 @@ void onDispose() {
   if (!_isDisposed) {
     _stopPhysicsTimer();
     _renderFpsMeter.stop();
+    &#47;&#47; Stop listening, but leave the provider itself registered - it belongs
+    &#47;&#47; to whoever installed it, not to this game.
+    Device.ambientProvider?.cancel();
+    Device.powerProvider?.cancel();
+    _lifecycleListener.dispose();
     unawaited(_clearHardwareHint());
     onCleanup?.call();
     super.onDispose();

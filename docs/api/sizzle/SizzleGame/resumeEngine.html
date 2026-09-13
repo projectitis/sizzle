@@ -68,6 +68,9 @@
     
 <section class="desc markdown">
   <p>Resumes the game loop, broadcasting <a href="../../sizzle/SizzleMessage/gameResumed-constant.html">SizzleMessage.gameResumed</a>.</p>
+<p>Clears <a href="../../sizzle/PauseReason.html">PauseReason.user</a>. This does not guarantee the game starts
+running: if it is also backgrounded or in ambient mode it stays paused
+until those clear too. See <a href="../../sizzle/SizzleGame/pauseReasons.html">pauseReasons</a>.</p>
 </section>
 
 
@@ -75,11 +78,7 @@
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
-void resumeEngine() {
-  final bool wasPaused = paused;
-  super.resumeEngine();
-  _notifyPauseChanged(wasPaused);
-}</code></pre>
+void resumeEngine() =&gt; _setPauseReason(PauseReason.user, false);</code></pre>
 </section>
 
 

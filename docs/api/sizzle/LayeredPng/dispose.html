@@ -71,8 +71,13 @@ not be used afterwards.</p>
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">void dispose() {
+  &#47;&#47; Layers may share a decoded image, so each one is disposed only once.
+  final seen = &lt;ui.Image&gt;{};
   for (final layer in walk()) {
-    layer.image?.dispose();
+    final image = layer.image;
+    if (image != null &amp;&amp; seen.add(image)) {
+      image.dispose();
+    }
     layer.image = null;
   }
   thumbnail?.dispose();

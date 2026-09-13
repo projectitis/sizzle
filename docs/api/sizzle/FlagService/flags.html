@@ -67,14 +67,18 @@
     </section>
     
 <section class="desc markdown">
-  <p>Return full list of flags</p>
+  <p>Return full list of flags.</p>
+<p>The list is a read-only view of the service's own storage. Mutating it
+throws - use <a href="../../sizzle/FlagService/flag.html">flag</a>, <code>[]=</code> or the <a href="../../sizzle/FlagService/flags.html">flags</a> setter instead. It used to be
+the live list, which meant anything handed the list (<code>Services.onSave</code>,
+for one) could silently corrupt flag state.</p>
 </section>
 
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">List&lt;String&gt; get flags {
-  return _flags;
+  return UnmodifiableListView(_flags);
 }</code></pre>
 </section>
 
