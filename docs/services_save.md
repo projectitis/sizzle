@@ -236,7 +236,17 @@ class CloudSaveStorage implements SaveStorage {
     Future<String?> read(String name) => api.fetch(name);
 
     @override
+    Future<Uint8List?> readBytes(String name) => api.fetchBytes(name);
+
+    @override
     Future<void> write(String name, String contents) => api.put(name, contents);
+
+    @override
+    Future<void> writeBytes(String name, Uint8List bytes) =>
+        api.putBytes(name, bytes);
+
+    @override
+    Future<List<String>> list({String? prefix}) => api.index(prefix);
 
     @override
     Future<bool> exists(String name) => api.head(name);
@@ -252,9 +262,9 @@ Services.saveStorage = CloudSaveStorage();
 ```
 
 Implementations report failure by throwing; `save` and `load` catch, log and
-return `false`, so a backend needs no error handling of its own. `write` must be
-all-or-nothing - a half-written document is exactly the corruption this design
-exists to prevent.
+return `false`, so a backend needs no error handling of its own. `write` and
+`writeBytes` must both be all-or-nothing - a half-written document is exactly
+the corruption this design exists to prevent.
 
 Sizzle also ships `MemorySaveStorage`, which keeps everything in a map and
 persists nothing. Use it to test your own `onSave` and `onLoad` without touching
@@ -267,3 +277,58 @@ Services.saveStorage = storage;
 await Services.save();
 expect(storage.entries[Services.saveFile], contains('hi_score'));
 ```
+
+
+## Storing your own files
+
+`Services.save` and `Services.load` deal in one JSON document. For anything else
+your game wants on the device - a screenshot for a save-slot thumbnail, a
+`.lpng` document, a replay - go through `Services.saveStorage` directly. It is
+the same storage space the save document lives in, so the same location table at
+the top of this page applies.
+
+```dart
+// Write and read a thumbnail alongside slot 2
+await Services.saveStorage.writeBytes('save_2.png', pngBytes);
+final bytes = await Services.saveStorage.readBytes('save_2.png');
+```
+
+Unlike `Services.save`, these methods **do** throw on failure - they are the raw
+seam rather than the guarded layer on top of it. Wrap them in your own
+`try`/`catch`.
+
+Text and bytes are two views onto the same entry, not separate namespaces, and
+they behave the same way on every platform:
+
+| Written with | Read with | Result |
+| --- | --- | --- |
+| `write` | `read` | the text |
+| `write` | `readBytes` | the UTF-8 bytes of the text |
+| `writeBytes` | `readBytes` | the bytes |
+| `writeBytes` | `read` | `FormatException` |
+
+The last row matches what a native file system does - reading bytes that are not
+valid UTF-8 as text is an error, not something to paper over. On web, where
+`localStorage` can only hold strings, binary entries are base64 encoded and
+tagged so the same rules hold. That encoding costs about a third more space
+again, against a per-origin quota of only a few megabytes, so keep binary data
+small on web.
+
+
+## Listing what is stored
+
+`list` returns the names currently stored, sorted:
+
+```dart
+// Every save slot this game has written
+final slots = await Services.saveStorage.list(prefix: 'save_');
+```
+
+It covers the whole storage space rather than only the documents Sizzle wrote.
+On native that is every file in the application documents directory, which
+includes a [FileLogger](services_log.md) log and any `<name>.corrupt` left
+behind by a rejected load. On web it is every `localStorage` key on the origin,
+including keys written by Flutter itself or by other libraries on the page.
+
+That is what `prefix` is for. Name your own files with a common prefix and
+filter on it rather than assuming the listing is yours alone.
