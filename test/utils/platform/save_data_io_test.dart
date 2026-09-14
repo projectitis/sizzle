@@ -1,6 +1,7 @@
 @TestOn('vm')
 library;
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -101,5 +102,75 @@ void main() {
   test('renameSaveData does nothing when the source is missing', () async {
     await expectLater(renameSaveData('nothing.json', 'x.json'), completes);
     expect(await saveDataExists('x.json'), isFalse);
+  });
+
+  group('bytes', () {
+    // 0xFF 0xFE is not valid UTF-8, so a round trip through the string API
+    // would lose or mangle it. That is the point of having a bytes API at all.
+    final binary = Uint8List.fromList([0, 1, 2, 0xFF, 0xFE, 127]);
+
+    test('written bytes read back unchanged', () async {
+      await writeSaveBytes('thumb.png', binary);
+      expect(await readSaveBytes('thumb.png'), binary);
+    });
+
+    test('reading bytes from a file that does not exist returns null',
+        () async {
+      expect(await readSaveBytes('nothing.png'), isNull);
+    });
+
+    test('a byte write replaces a larger file and leaves no temp', () async {
+      await writeSaveBytes('thumb.png', Uint8List(64));
+      await writeSaveBytes('thumb.png', binary);
+
+      expect(await readSaveBytes('thumb.png'), binary);
+      expect(file('thumb.png.tmp').existsSync(), isFalse);
+      expect(temp.listSync(), hasLength(1));
+    });
+
+    test('text reads back through readSaveBytes as its UTF-8 bytes', () async {
+      // The two APIs are views onto the same file, not separate namespaces.
+      await writeSaveData('game.json', '{"a":1}');
+      expect(await readSaveBytes('game.json'), utf8.encode('{"a":1}'));
+    });
+  });
+
+  group('listSaveData', () {
+    test('returns sorted base names', () async {
+      await writeSaveData('b.json', '{}');
+      await writeSaveData('a.json', '{}');
+      await writeSaveData('c.json', '{}');
+
+      expect(await listSaveData(), ['a.json', 'b.json', 'c.json']);
+    });
+
+    test('honours a prefix', () async {
+      await writeSaveData('save_1.json', '{}');
+      await writeSaveData('save_2.json', '{}');
+      await writeSaveData('settings.json', '{}');
+
+      expect(await listSaveData(prefix: 'save_'), [
+        'save_1.json',
+        'save_2.json',
+      ]);
+    });
+
+    test('lists binary and text entries alike', () async {
+      await writeSaveData('game.json', '{}');
+      await writeSaveBytes('thumb.png', Uint8List.fromList([1, 2, 3]));
+
+      expect(await listSaveData(), ['game.json', 'thumb.png']);
+    });
+
+    test('skips subdirectories', () async {
+      Directory('${temp.path}/nested').createSync();
+      await writeSaveData('game.json', '{}');
+
+      expect(await listSaveData(), ['game.json']);
+    });
+
+    test('returns an empty list when nothing is stored', () async {
+      expect(await listSaveData(), isEmpty);
+    });
   });
 }

@@ -1,8 +1,14 @@
 @TestOn('browser')
 library;
 
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sizzle/sizzle.dart';
+// The marker is an internal detail of the string-only encoding, so it is not
+// exported from `package:sizzle/sizzle.dart`. Reach for it directly, the same
+// way `platform/save_data_io_test.dart` reaches for the native shim.
+import 'package:sizzle/src/utils/platform/save_bytes_codec.dart';
 import 'package:web/web.dart' as web;
 
 /// Web has no file system, so `PlatformSaveStorage` persists to `localStorage`
@@ -71,5 +77,40 @@ void main() {
     expect(await Services.deleteSave(), isTrue);
     expect(await Services.hasSave(), isFalse);
     expect(web.window.localStorage.getItem('sizzle.json'), isNull);
+  });
+
+  group('binary storage', () {
+    // The encoding itself is covered on the VM by
+    // `test/utils/services/save_storage_test.dart`, which drives the same codec
+    // through `MemorySaveStorage`. What is only checkable here is that the
+    // encoded value really lands in `localStorage`.
+    final binary = Uint8List.fromList([0, 1, 2, 0xFF, 0xFE, 127]);
+    final storage = PlatformSaveStorage();
+
+    setUp(() {
+      web.window.localStorage.removeItem('thumb.png');
+    });
+
+    test('writeBytes stores an encoded entry in localStorage', () async {
+      await storage.writeBytes('thumb.png', binary);
+
+      final raw = web.window.localStorage.getItem('thumb.png');
+      expect(raw, isNotNull);
+      expect(raw, startsWith(saveBytesMarker));
+    });
+
+    test('bytes round trip through localStorage', () async {
+      await storage.writeBytes('thumb.png', binary);
+      expect(await storage.readBytes('thumb.png'), binary);
+    });
+
+    test('list reports the localStorage keys', () async {
+      await Services.save();
+      await storage.writeBytes('thumb.png', binary);
+
+      final names = await storage.list();
+      expect(names, contains('sizzle.json'));
+      expect(names, contains('thumb.png'));
+    });
   });
 }

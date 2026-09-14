@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:web/web.dart' as web;
 
 import 'log_sink.dart';
+import 'save_bytes_codec.dart';
 
 // --- Platform identity ------------------------------------------------------
 
@@ -27,8 +30,23 @@ bool get isFuchsia => false;
 ///
 /// On web this reads the `localStorage` entry keyed by [name]. Storage is
 /// per-origin and is cleared when the user clears site data.
-Future<String?> readSaveData(String name) async =>
-    web.window.localStorage.getItem(name);
+///
+/// Throws a `FormatException` if the entry holds binary data, matching the
+/// native side, where `File.readAsString` rejects bytes that are not valid
+/// UTF-8. See [saveBytesMarker].
+Future<String?> readSaveData(String name) async {
+  final stored = web.window.localStorage.getItem(name);
+  return stored == null ? null : decodeSaveText(stored);
+}
+
+/// Read the save data stored under [name] as bytes, or `null` if none exists.
+///
+/// Reading a text entry this way returns its UTF-8 bytes, matching what the
+/// native side gets from reading a text file as bytes.
+Future<Uint8List?> readSaveBytes(String name) async {
+  final stored = web.window.localStorage.getItem(name);
+  return stored == null ? null : decodeSaveBytes(stored);
+}
 
 /// Write [contents] as the save data under [name], replacing anything already
 /// stored there.
@@ -41,6 +59,37 @@ Future<String?> readSaveData(String name) async =>
 /// the previous value is left intact.
 Future<void> writeSaveData(String name, String contents) async =>
     web.window.localStorage.setItem(name, contents);
+
+/// Write [bytes] as the save data under [name], replacing anything already
+/// stored there.
+///
+/// `localStorage` holds strings only, so the bytes are base64 encoded and
+/// tagged with [saveBytesMarker]. Base64 costs about a third more space again
+/// against a per-origin quota of only a few megabytes, so keep binary save data
+/// small on web.
+///
+/// Throws under the same conditions as [writeSaveData].
+Future<void> writeSaveBytes(String name, Uint8List bytes) async =>
+    web.window.localStorage.setItem(name, encodeSaveBytes(bytes));
+
+/// The names of everything stored alongside the save data, sorted, optionally
+/// limited to those starting with [prefix].
+///
+/// This lists every `localStorage` key on the origin, not only Sizzle's own
+/// saves - keys written by Flutter or by any other library on the page show up
+/// too. Use [prefix] to narrow it.
+Future<List<String>> listSaveData({String? prefix}) async {
+  final storage = web.window.localStorage;
+  final names = <String>[];
+  for (var i = 0; i < storage.length; i++) {
+    final key = storage.key(i);
+    if (key == null) continue;
+    if (prefix != null && !key.startsWith(prefix)) continue;
+    names.add(key);
+  }
+  names.sort();
+  return names;
+}
 
 /// Whether save data is stored under [name].
 Future<bool> saveDataExists(String name) async =>

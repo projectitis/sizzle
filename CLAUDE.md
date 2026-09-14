@@ -122,6 +122,8 @@ dart doc --output=docs/api .
 - Save/load return `Future<bool>` and **never throw** — failures are reported through `Services.log` and the call returns `false`. `save`, `load`, `hasSave` and `deleteSave` each take an optional `name` that falls back to `Services.saveFile`
 - A document that fails to load is validated in full *before* any engine state is touched, then moved aside to `<name>.corrupt`. The engine never deletes player data; recovery is `Services.deleteSave()` driven by the player. Check `Services.hasSave()` **before** `load()` to tell "no save" from "damaged save", since the move makes `hasSave()` false afterwards
 - `Services.saveStorage` is the `SaveStorage` seam all save data passes through (default `PlatformSaveStorage`). Use `MemorySaveStorage` to unit-test save/load on the VM, or implement `SaveStorage` for a cloud backend. Implementations report failure by throwing; `Services` catches and logs
+- Beyond `read`/`write`/`exists`/`delete`/`rename`, `SaveStorage` also has `readBytes`/`writeBytes` for binary data and `list({prefix})` for a sorted directory listing. These are the raw seam and **do** throw — `Services` only guards the JSON save document, not these. `list` covers the whole storage space (every file in the documents directory, every `localStorage` key on the origin), not just Sizzle's own entries, hence `prefix`
+- Text and bytes are two views onto one entry, not separate namespaces. `write` then `readBytes` yields the text's UTF-8 bytes; `writeBytes` then `read` throws `FormatException`, matching a native file system. On web, `localStorage` holds strings only, so binary entries are base64 encoded and tagged with `saveBytesMarker` (`lib/src/utils/platform/save_bytes_codec.dart`) — without the tag a 4-character text entry would silently base64-decode to garbage. `MemorySaveStorage` shares that codec, so VM tests cover the web encoding path
 - See `docs/services_save.md`
 
 **FileService** (`lib/src/utils/services/file_service.dart`)
@@ -231,7 +233,7 @@ Located in `lib/src/display/`:
 - `lib/src/utils/pool.dart`: `Pool<T>` and `Pooled` mixin for object pooling. See `docs/pool.md`.
 - `lib/src/utils/device.dart`: platform/device helpers
 - `lib/src/utils/logger.dart`: see Services Architecture above
-- `lib/src/utils/save_storage.dart`: `SaveStorage` seam plus `PlatformSaveStorage` and `MemorySaveStorage`. See Services Architecture above
+- `lib/src/utils/services/save_storage.dart`: `SaveStorage` seam plus `PlatformSaveStorage` and `MemorySaveStorage`. See Services Architecture above
 
 ## Testing Patterns
 
@@ -410,9 +412,10 @@ For frequently allocated short-lived objects (particles, projectiles, transient 
   `platform_io.dart` when `dart:io` exists and `platform_web.dart` otherwise.
   Add new platform-dependent APIs to *both* files with identical signatures.
   Current shimmed API: platform identity (`operatingSystem`, `isAndroid`, ...),
-  save data (`readSaveData` / `writeSaveData` / `saveDataExists` /
-  `deleteSaveData` / `renameSaveData`), and `openLogSink`. The native
-  `writeSaveData` is atomic (writes `<name>.tmp` with `flush: true`, then
+  save data (`readSaveData` / `readSaveBytes` / `writeSaveData` /
+  `writeSaveBytes` / `saveDataExists` / `deleteSaveData` / `renameSaveData` /
+  `listSaveData`), and `openLogSink`. The native writes are atomic via the
+  shared `_atomicWrite` helper (writes `<name>.tmp` with `flush: true`, then
   renames over the target); `localStorage` is already atomic on web.
 - On web, `Services.save`/`load` use `localStorage` (key `sizzle.json`),
   `FileLogger` degrades to console output, and every `Device.isAndroid`-style
