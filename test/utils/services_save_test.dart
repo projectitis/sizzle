@@ -463,6 +463,38 @@ void main() {
       expect(stored()['_flags'], containsAll(['first', 'second']));
     });
 
+    test('a save called while another is mid-write queues behind it', () async {
+      // The case the same-tick test above cannot reach: the first save has
+      // already started its write when the second is called — a game that
+      // persists on every step of a knob drag. It must queue, not assert.
+      Services.flags['first'] = true;
+      final a = Services.save();
+      while (!storage.writing) {
+        await Future<void>.delayed(Duration.zero);
+      }
+      Services.flags['second'] = true;
+      final b = Services.save();
+
+      expect(await Future.wait([a, b]), [true, true]);
+      expect(storage.overlapped, isFalse);
+      expect(storage.writeCount, 2);
+      expect(stored()['_flags'], containsAll(['first', 'second']));
+    });
+
+    test('a save from inside an onLoad callback is still caught', () async {
+      await Services.save();
+      // The error is caught where the call is made: the assert fails the
+      // returned future, and one left unhandled for a tick is reported as
+      // uncaught before an `expectLater` could subscribe to it.
+      Future<Object?>? inner;
+      Services.onLoad = (_) => inner = Services.save().then<Object?>(
+        (_) => null,
+        onError: (Object e) => e,
+      );
+      await Services.load();
+      expect(await inner, isA<AssertionError>());
+    });
+
     test('a save records the state as of the call, not of the write', () async {
       // The write is queued, but the document is captured synchronously, so
       // changing state after calling save does not change what gets written.

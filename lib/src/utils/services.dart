@@ -142,9 +142,16 @@ class Services {
   /// their reads, writes and mutations of engine state.
   static Future<void> _queue = Future<void>.value();
 
-  /// Whether a queued operation is running, used only to catch the reentrancy
-  /// that would deadlock [_queue].
-  static bool _busy = false;
+  /// Zone key marking code that runs *inside* a queued operation — the
+  /// operation itself and the `onLoad` / `onSave` callbacks it calls. Used only
+  /// to catch the reentrancy that would deadlock [_queue].
+  ///
+  /// **A zone value rather than a flag**, because a flag set while an
+  /// operation runs cannot tell a call from inside it (which deadlocks) from a
+  /// call made elsewhere while it is awaiting its write (which simply queues).
+  /// The flag version asserted on the second, so a game persisting on every
+  /// step of a knob drag tripped it as soon as one save outlived a frame.
+  static final Object _inOperation = Object();
 
   /// Whether a save document is being built, used only to catch a [save] made
   /// from inside an `onSave` callback, which would recurse.
@@ -152,7 +159,7 @@ class Services {
 
   static Future<T> _serialised<T>(Future<T> Function() action) async {
     assert(
-      !_busy,
+      Zone.current[_inOperation] != true,
       'Services.save, load and deleteSave are serialised, so calling one from '
       'inside an onLoad callback and awaiting it deadlocks.',
     );
@@ -162,11 +169,9 @@ class Services {
     // `previous` is only ever completed from the `finally` below, never with an
     // error, so one failed operation cannot poison the queue.
     await previous;
-    _busy = true;
     try {
-      return await action();
+      return await runZoned(action, zoneValues: {_inOperation: true});
     } finally {
-      _busy = false;
       done.complete();
     }
   }
