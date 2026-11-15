@@ -15,8 +15,7 @@ dependencies:
 #      url: https://github.com/flame-engine/flame.git
 #      path: packages/flame
   flame: ^1.8.2
-  jenny:
-    path: D:/Projects/flutter/flame/packages/flame_jenny/jenny
+  jenny: ^1.3.0
   flutter:
     sdk: flutter
   path_provider: ^2.1.0
