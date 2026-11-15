@@ -61,9 +61,9 @@ dart format .
 # Install dependencies
 flutter pub get
 
-# Note: jenny dependency uses a local path (see pubspec.yaml).
-# Flame may also switch to a local path during development - check the
-# commented lines in pubspec.yaml.
+# Note: other projects take sizzle as a git dependency, and pub refuses an
+# absolute `path:` dependency inside a git package. Do not commit one; use an
+# uncommitted dependency_overrides block to develop against local Flame/jenny.
 ```
 
 ### Documentation
@@ -400,8 +400,9 @@ For frequently allocated short-lived objects (particles, projectiles, transient 
 
 ## Important Notes
 
-- The project uses local path dependencies for `jenny` - check pubspec.yaml if build fails
-- Flame dependency may switch between pub and local path during development
+- `jenny` comes from pub.dev (since 2026-11-15; a local path until then). Never commit an absolute
+  `path:` dependency: sizzle and sizzle_wearable are git dependencies of other projects, and pub
+  rejects a git package whose pubspec has one, before any override can apply
 - All public APIs are exported through `lib/sizzle.dart` - import only from there
 - Flame APIs are re-exported, so games typically only need `import 'package:sizzle/sizzle.dart'`
 - Code style enforces trailing commas (see `analysis_options.yaml`)
